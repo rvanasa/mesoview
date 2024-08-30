@@ -1,0 +1,38 @@
+import { usePathname, useSearchParams, useRouter } from "next/navigation";
+
+export function useQueryParam(
+  key: string
+): [string | null, (value: string | null | undefined) => void] {
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  return [
+    searchParams.get(key),
+    (value) => {
+      const params = new URLSearchParams(searchParams.toString());
+      if (value === null || value === undefined) {
+        params.delete(key);
+      } else {
+        params.set(key, value);
+      }
+      router.push(pathname + "?" + params.toString());
+    },
+  ];
+}
+
+export function useQueryParams(
+  key: string
+): [string[], (values: string[]) => void] {
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  return [
+    searchParams.getAll(key),
+    (values) => {
+      const params = new URLSearchParams(searchParams.toString());
+      params.delete(key);
+      values.forEach((value) => params.append(key, value));
+      router.push(pathname + "?" + params.toString());
+    },
+  ];
+}

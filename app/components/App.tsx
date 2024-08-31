@@ -99,8 +99,8 @@ function getRadarUrl(date: Date, sector: string) {
 
 function roundToNearestHour(date: Date) {
   date = new Date(date);
-  date.setHours(date.getHours() + Math.round(date.getMinutes() / 60));
-  date.setMinutes(0, 0, 0);
+  date.setUTCHours(date.getUTCHours() + Math.round(date.getUTCMinutes() / 60));
+  date.setUTCMinutes(0, 0, 0);
   return date;
 }
 

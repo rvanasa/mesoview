@@ -154,8 +154,8 @@ export default function App() {
     ? parseDate(inputDateString, 12)
     : new Date();
   const setInputDate = useCallback(
-    (date: Date) => {
-      setInputDateString(formatDate(date));
+    (date: Date | undefined) => {
+      setInputDateString(date && formatDate(date));
     },
     [setInputDateString],
   );
@@ -225,7 +225,7 @@ export default function App() {
             <code className="font-bold">
               {formatDate(date)}
               {
-                Math.abs(nowOffset) <= 12 && (
+                Math.abs(nowOffset) <= 24 && (
                   <span className="ml-3 opacity-70 text-blue-600">
                     {nowOffset > 0 && '+'}
                     {nowOffset === 0 ? 'Now' : nowOffset}
@@ -324,15 +324,15 @@ export default function App() {
               inline
               onSelectedDateChanged={(date) => {
                 setInputDate(
-                  roundToNearestHour(
-                    Math.abs(date.getTime() - Date.now()) < 1000
-                      ? date
-                      : new Date(
+                  Math.abs(date.getTime() - Date.now()) < 1000
+                    ? undefined
+                    : roundToNearestHour(
+                        new Date(
                           date.getTime() +
                             3600000 * 12 -
                             60000 * date.getTimezoneOffset(),
                         ),
-                  ),
+                      ),
                 );
                 setHourOffset(0);
                 setShowDatepicker(false);

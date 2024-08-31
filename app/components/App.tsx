@@ -1,10 +1,9 @@
 'use client';
 
 import { Button, Datepicker, Dropdown } from 'flowbite-react';
-import Image, { ImageProps } from 'next/image';
 import Slider from 'rc-slider';
 import { useCallback, useEffect, useState } from 'react';
-import { FaMinus, FaPlus, FaTimes } from 'react-icons/fa';
+import { FaMinus, FaPlus, FaRegCalendarAlt, FaTimes } from 'react-icons/fa';
 import { useQueryParam, useQueryParams } from '../hooks/useQueryParam';
 
 import 'rc-slider/assets/index.css';
@@ -320,7 +319,7 @@ export default function App() {
             color="gray"
             onClick={() => setShowDatepicker(!showDatepicker)}
           >
-            Set Day
+            <FaRegCalendarAlt />
           </Button>
         </div>
         <div className="flex justify-end">

@@ -4,6 +4,7 @@ import Image from "next/image";
 import { useCallback, useState } from "react";
 import { useQueryParam, useQueryParams } from "./hooks/useQueryParam";
 import { Button, Dropdown, RangeSlider } from "flowbite-react";
+import { FaTimes } from "react-icons/fa";
 
 const mesoParams: [string, string][] = [
   ["300mb", "300 mb Analysis"],
@@ -131,31 +132,33 @@ export default function Home() {
       </div>
       {params.map((param, i) => (
         <div key={i}>
-          <div className="p-2">
+          <div className="flex content-between m-2">
+            <div className="flex-1">
+              <Dropdown
+                label={mesoParamNames.get(param) || param || "Choose parameter"}
+                inline
+              >
+                {/* <div style={{ maxHeight: "70vh" }} className="overflow-y-scroll"> */}
+                {mesoParams.map(([key, title], j) => (
+                  <Dropdown.Item
+                    key={j}
+                    onClick={() => setParams(spliced(params, i, 1, key))}
+                  >
+                    {title}
+                  </Dropdown.Item>
+                ))}
+                {/* </div> */}
+              </Dropdown>
+            </div>
             <Button
               outline
               color="gray"
               size="xs"
-              className="float-right"
+              className="flex items-center p-0 py-1"
               onClick={() => setParams(spliced(params, i, 1))}
             >
-              x
+              <FaTimes style={{ fontSize: 11 }} />
             </Button>
-            <Dropdown
-              label={mesoParamNames.get(param) || param || "Choose parameter"}
-              inline
-            >
-              {/* <div style={{ maxHeight: "70vh" }} className="overflow-y-scroll"> */}
-              {mesoParams.map(([key, title], j) => (
-                <Dropdown.Item
-                  key={j}
-                  onClick={() => setParams(spliced(params, i, 1, key))}
-                >
-                  {title}
-                </Dropdown.Item>
-              ))}
-              {/* </div> */}
-            </Dropdown>
           </div>
           <MesoanalysisImage
             date={date}

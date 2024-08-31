@@ -407,27 +407,26 @@ function CachedImage({ src, alt, ...rest }: CachedImageProps) {
       promise.then((data) => setData(data));
       return;
     }
-    imageLoadingCache.set(
-      src,
-      new Promise((resolve, reject) => {
-        fetch(src)
-          .then(async (response) => {
-            const blob = await response.blob();
-            const reader = new FileReader();
-            reader.onload = () => {
-              const result = reader.result;
-              if (typeof result === 'string') {
-                resolve(result);
-              } else {
-                reject(new Error('Unexpected result from FileReader'));
-              }
-            };
-            reader.onerror = (err) => reject(err);
-            reader.readAsDataURL(blob);
-          })
-          .catch(reject);
-      }),
-    );
+    const loadingPromise = new Promise<string>((resolve, reject) => {
+      fetch(src)
+        .then(async (response) => {
+          const blob = await response.blob();
+          const reader = new FileReader();
+          reader.onload = () => {
+            const result = reader.result;
+            if (typeof result === 'string') {
+              resolve(result);
+            } else {
+              reject(new Error('Unexpected result from FileReader'));
+            }
+          };
+          reader.onerror = (err) => reject(err);
+          reader.readAsDataURL(blob);
+        })
+        .catch(reject);
+    });
+    imageLoadingCache.set(src, loadingPromise);
+    loadingPromise.then((data) => setData(data));
   }, [src]);
   if (!data) {
     return (

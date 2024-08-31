@@ -3,7 +3,14 @@
 import { Button, Datepicker, Dropdown } from 'flowbite-react';
 import Slider from 'rc-slider';
 import { useCallback, useEffect, useState } from 'react';
-import { FaMinus, FaPlus, FaRegCalendarAlt, FaTimes } from 'react-icons/fa';
+import {
+  FaMinus,
+  FaPlus,
+  FaRegCalendarAlt,
+  FaShare,
+  FaShareAlt,
+  FaTimes,
+} from 'react-icons/fa';
 import { useQueryParam, useQueryParams } from '../hooks/useQueryParam';
 
 import 'rc-slider/assets/index.css';
@@ -220,7 +227,7 @@ export default function App() {
           />
         </div>
       ))}
-      <div className="p-3">
+      <div className="p-3 flex justify-between">
         <Dropdown label="Add parameter" inline>
           {mesoParams.map(([key, title], i) => (
             <Dropdown.Item key={i} onClick={() => setParams([...params, key])}>
@@ -228,6 +235,22 @@ export default function App() {
             </Dropdown.Item>
           ))}
         </Dropdown>
+        {!!navigator.share && (
+          <Button
+            size="sm"
+            color="gray"
+            onClick={() =>
+              navigator.share({
+                title:
+                  params.map((param) => mesoParamMap.get(param)).join(', ') ||
+                  'Mesoanalysis',
+                url: window.location.href,
+              })
+            }
+          >
+            <FaShareAlt />
+          </Button>
+        )}
       </div>
       <div style={{ paddingBottom: 130 }}></div>
       <div

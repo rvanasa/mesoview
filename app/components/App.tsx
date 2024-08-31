@@ -1,6 +1,6 @@
 'use client';
 
-import Slider, { Range } from 'rc-slider';
+import Slider from 'rc-slider';
 import { Button, Datepicker, Dropdown } from 'flowbite-react';
 import Image from 'next/image';
 import { useCallback, useState } from 'react';

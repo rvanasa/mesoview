@@ -377,8 +377,8 @@ function MesoanalysisImage({
           src={url}
           width={width}
           height={height}
-          quality={100}
-          priority
+          // quality={100}
+          // priority
           alt=""
           style={i ? { position: 'absolute', top: 0, left: 0 } : {}}
           onError={(e) => ((e.target as any).style.opacity = 0)}
@@ -392,7 +392,7 @@ function MesoanalysisImage({
 const imageCache = new Map<string, string>();
 const imageLoadingCache = new Map<string, Promise<string>>();
 
-interface CachedImageProps extends ImageProps {
+interface CachedImageProps extends React.ImgHTMLAttributes<HTMLImageElement> {
   src: string;
 }
 
@@ -429,10 +429,17 @@ function CachedImage({ src, alt, ...rest }: CachedImageProps) {
     });
     imageLoadingCache.set(src, loadingPromise);
     let cancelled = false;
-    loadingPromise.then((data) => !cancelled && setData(data));
+    loadingPromise.then((data) => {
+      imageCache.set(src, data);
+      imageLoadingCache.delete(src);
+      if (!cancelled) {
+        setData(data);
+      }
+    });
     return () => {
       cancelled = true;
     };
   }, [src]);
-  return <Image src={data ?? ''} alt={alt} {...rest} />;
+  // eslint-disable-next-line @next/next/no-img-element
+  return <img src={data ?? ''} alt={alt} {...rest} />;
 }

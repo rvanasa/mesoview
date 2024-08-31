@@ -234,23 +234,6 @@ export default function App() {
             </Dropdown.Item>
           ))}
         </Dropdown>
-        {!!navigator.share && (
-          <Button
-            size="sm"
-            color="gray"
-            className="px-0 py-1 text-blue-700"
-            onClick={() =>
-              navigator.share({
-                title:
-                  params.map((param) => mesoParamMap.get(param)).join(', ') ||
-                  'Mesoanalysis',
-                url: location.href,
-              })
-            }
-          >
-            <FaShareAlt style={{ fontSize: 11 }} />
-          </Button>
-        )}
       </div>
       <div style={{ paddingBottom: 130 }}></div>
       <div
@@ -258,53 +241,36 @@ export default function App() {
         style={{ maxWidth: 1000 }}
       >
         <div className="p-3">
-          <div className="flex justify-between">
-            <code className="font-bold">
+          <div className="flex items-center justify-between gap-x-3">
+            <Button
+              color="gray"
+              onClick={() => setShowDatepicker(!showDatepicker)}
+            >
+              <FaRegCalendarAlt />
+            </Button>
+            <code className="font-bold flex-1 text-left text-lg">
               {formatDate(date)}
-              {
-                Math.abs(nowOffset) <= 12 && (
-                  <span className="ml-3 opacity-70 text-green-700">
-                    {nowOffset > 0 && '+'}
-                    {nowOffset === 0 ? 'Now' : `${nowOffset}h`}
-                  </span>
-                ) /* : (
-                hourOffset !== 0 && (
-                  <span className="ml-3 opacity-70">
-                    {hourOffset > 0 && '+'}
-                    {hourOffset}
-                  </span>
-                )
-              ) */
-              }
+              {Math.abs(nowOffset) <= 12 && (
+                <span className="ml-3 opacity-70 text-green-700">
+                  {nowOffset > 0 && '+'}
+                  {nowOffset === 0 ? 'Now' : `${nowOffset}h`}
+                </span>
+              )}
             </code>
             <Button.Group>
-              {/* <Button
-                color="gray"
-                size="xs"
-                className="px-1 py-1"
-                disabled={hourOffset === 0}
-                onClick={() => {
-                  setInputDate(new Date(date.getTime()));
-                  setHourOffset(0);
-                }}
-              >
-                <FaLink style={{ fontSize: 11, color: 'black' }} />
-              </Button> */}
               <Button
                 color="gray"
-                size="xs"
                 className="px-1 py-1"
                 onClick={() => setInputDate(plusHours(inputDate, -1))}
               >
-                <FaMinus style={{ fontSize: 11 }} />
+                <FaMinus />
               </Button>
               <Button
                 color="gray"
-                size="xs"
                 className="px-1 py-1"
                 onClick={() => setInputDate(plusHours(inputDate, 1))}
               >
-                <FaPlus style={{ fontSize: 11 }} />
+                <FaPlus />
               </Button>
             </Button.Group>
           </div>
@@ -322,54 +288,64 @@ export default function App() {
           onChange={(value) => setHourOffset(value as number)}
           onChangeComplete={() => setHourOffset(0)}
         />
-        <div className="flex justify-between p-3">
-          <Dropdown
-            className="flex-1"
+
+        {showDatepicker ? (
+          <Datepicker
+            value={inputDate.toDateString()}
+            style={{ maxWidth: 180 }}
+            showTodayButton={false}
+            labelClearButton="Reset"
             inline
-            label={sectorName || 'Choose region...'}
-          >
-            {mesoSectors.map(([number, name], i) => (
-              <Dropdown.Item
-                key={i}
-                onClick={() => setSectorString(String(number))}
-              >
-                {name}
-              </Dropdown.Item>
-            ))}
-          </Dropdown>
-          <Button
-            size="sm"
-            color="gray"
-            onClick={() => setShowDatepicker(!showDatepicker)}
-          >
-            <FaRegCalendarAlt />
-          </Button>
-        </div>
-        <div className="flex justify-end">
-          {!!showDatepicker && (
-            <Datepicker
-              value={inputDate.toDateString()}
-              style={{ maxWidth: 180 }}
-              showTodayButton={false}
-              labelClearButton="Reset"
-              inline
-              onSelectedDateChanged={(date) => {
-                setInputDate(
-                  Math.abs(date.getTime() - Date.now()) < 1000
-                    ? undefined
-                    : roundToNearestHour(
-                        new Date(
-                          date.getTime() +
-                            3600000 * 12 -
-                            60000 * date.getTimezoneOffset(),
-                        ),
+            onSelectedDateChanged={(date) => {
+              setInputDate(
+                Math.abs(date.getTime() - Date.now()) < 1000
+                  ? undefined
+                  : roundToNearestHour(
+                      new Date(
+                        date.getTime() +
+                          3600000 * 12 -
+                          60000 * date.getTimezoneOffset(),
                       ),
-                );
-                setShowDatepicker(false);
-              }}
-            />
-          )}
-        </div>
+                    ),
+              );
+              setShowDatepicker(false);
+            }}
+          />
+        ) : (
+          <div className="flex justify-between p-3">
+            <Dropdown
+              className="flex-1"
+              inline
+              label={sectorName || 'Choose region...'}
+            >
+              {mesoSectors.map(([number, name], i) => (
+                <Dropdown.Item
+                  key={i}
+                  onClick={() => setSectorString(String(number))}
+                >
+                  {name}
+                </Dropdown.Item>
+              ))}
+            </Dropdown>
+            {!!navigator.share && (
+              <Button
+                color="gray"
+                className="px-0 py-1 text-blue-700"
+                onClick={() =>
+                  navigator.share({
+                    title:
+                      params
+                        .map((param) => mesoParamMap.get(param))
+                        .join(', ') || 'Mesoanalysis',
+                    url: location.href,
+                  })
+                }
+              >
+                <FaShareAlt />
+              </Button>
+            )}
+          </div>
+        )}
       </div>
     </div>
   );

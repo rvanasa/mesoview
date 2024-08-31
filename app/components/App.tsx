@@ -211,7 +211,7 @@ export default function App() {
               <Button
                 color="gray"
                 size="xs"
-                className="px-0 py-1 text-red-600"
+                className="px-0 py-1 text-red-700"
                 onClick={() => setParams(spliced(params, i, 1))}
               >
                 <FaTimes style={{ fontSize: 11 }} />
@@ -238,7 +238,7 @@ export default function App() {
           <Button
             size="sm"
             color="gray"
-            className="px-0 py-1 text-blue-600"
+            className="px-0 py-1 text-blue-700"
             onClick={() =>
               navigator.share({
                 title:
@@ -263,9 +263,9 @@ export default function App() {
               {formatDate(date)}
               {
                 Math.abs(nowOffset) <= 12 && (
-                  <span className="ml-3 opacity-70 text-blue-600">
+                  <span className="ml-3 opacity-70 text-green-700">
                     {nowOffset > 0 && '+'}
-                    {nowOffset === 0 ? 'Now' : nowOffset}
+                    {nowOffset === 0 ? 'Now' : `${nowOffset}h`}
                   </span>
                 ) /* : (
                 hourOffset !== 0 && (

@@ -29,7 +29,9 @@ export function useQueryParams(
   const pathname = usePathname();
   const searchParams = useSearchParams();
   return [
-    searchParams.has(key) ? searchParams.getAll(key) : defaultValues,
+    searchParams.has(key) || defaultValues === undefined
+      ? searchParams.getAll(key)
+      : defaultValues,
     (values) => {
       const params = new URLSearchParams(searchParams.toString());
       params.delete(key);

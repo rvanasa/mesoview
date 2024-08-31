@@ -417,6 +417,14 @@ function MesoanalysisImage({
 const imageCache = new Map<string, string>();
 const imageLoadingCache = new Map<string, Promise<string>>();
 
+setInterval(
+  () => {
+    imageCache.clear();
+    imageLoadingCache.clear();
+  },
+  1000 * 60 * 30,
+);
+
 interface CachedImageProps extends React.ImgHTMLAttributes<HTMLImageElement> {
   src: string;
 }

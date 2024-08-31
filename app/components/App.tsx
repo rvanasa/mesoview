@@ -432,10 +432,5 @@ function CachedImage({ src, alt, ...rest }: CachedImageProps) {
       cancelled = true;
     };
   }, [src]);
-  // if (!data) {
-  //   return (
-  //     <div style={{ ...rest.style, width: rest.width, height: rest.height }} />
-  //   );
-  // }
-  return <Image src={data} alt={alt} {...rest} />;
+  return <Image src={data ?? ''} alt={alt} {...rest} />;
 }

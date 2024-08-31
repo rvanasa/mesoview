@@ -189,14 +189,16 @@ export default function App() {
                 {/* </div> */}
               </Dropdown>
             </div>
-            <Button
-              color="gray"
-              size="xs"
-              className="px-0 py-1"
-              onClick={() => setParams(spliced(params, i, 1))}
-            >
-              <FaTimes style={{ fontSize: 11 }} />
-            </Button>
+            {params.length > 1 && (
+              <Button
+                color="gray"
+                size="xs"
+                className="px-0 py-1"
+                onClick={() => setParams(spliced(params, i, 1))}
+              >
+                <FaTimes style={{ fontSize: 11 }} />
+              </Button>
+            )}
           </div>
           <MesoanalysisImage
             date={date}

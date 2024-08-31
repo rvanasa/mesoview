@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { useState } from "react";
 import { useQueryParams } from "./hooks/useQueryParam";
+import { Button, RangeSlider } from "flowbite-react";
 
 const mesoParams = [
   ["300mb", "300 mb Analysis"],
@@ -32,12 +33,17 @@ const mesoParams = [
 
 const mesoBaseUrl = "https://www.spc.noaa.gov/exper/mesoanalysis";
 
+function getLayerUrl(sector: string, param: string) {
+  return `${mesoBaseUrl}/${sector}/${param}/${param}.gif`;
+}
+
 function getMesoanalysisUrl(date: Date, sector: string, param: string) {
+  date = roundToNearestHour(date);
   const now = new Date();
   const deltaHours = Math.round((date.getTime() - now.getTime()) / 3600000);
 
   if (deltaHours === 0) {
-    return `${mesoBaseUrl}/${sector}/${param}/${param}.gif`;
+    return `${mesoBaseUrl}/${sector}/${param}/${param}.gif?${date.getTime()}`;
   } else if (deltaHours > 0) {
     return `${mesoBaseUrl}/fcst/${sector}/${param}_${String(
       date.getUTCHours()
@@ -51,11 +57,12 @@ function getMesoanalysisUrl(date: Date, sector: string, param: string) {
 }
 
 function getRadarUrl(date: Date, sector: string) {
+  date = roundToNearestHour(date);
   const now = new Date();
   const deltaHours = Math.round((date.getTime() - now.getTime()) / 3600000);
 
   if (deltaHours === 0) {
-    return `${mesoBaseUrl}/${sector}/rgnlrad/rgnlrad.gif`;
+    return `${mesoBaseUrl}/${sector}/rgnlrad/rgnlrad.gif?${date.getTime()}`;
   } else if (deltaHours > 0) {
     return `${mesoBaseUrl}/fcst/${sector}/hrrr_${String(
       date.getUTCHours()
@@ -68,28 +75,44 @@ function getRadarUrl(date: Date, sector: string) {
   }
 }
 
+function roundToNearestHour(date: Date) {
+  date = new Date(date);
+  date.setHours(date.getHours() + Math.round(date.getMinutes() / 60));
+  date.setMinutes(0, 0, 0);
+  return date;
+}
+
 export default function Home() {
   const [params, setParams] = useQueryParams("param");
-  const [date, setDate] = useState<Date>(new Date());
-  const [sectorNumber, setSectorNumber] = useState<number>(14);
+  // const [date, setDate] = useState<Date>();
+  const [sectorNumber, setSectorNumber] = useState(14);
+  const [hourOffset, setHourOffset] = useState(0);
+
+  const inputDate = new Date();
+
+  const date = new Date(inputDate.getTime() + 3600000 * hourOffset);
 
   const sector = `s${sectorNumber}`;
 
   return (
     <>
-      {/* <div className="p-3">
-        
-      </div> */}
+      <div className="p-3 flex">
+        <RangeSlider
+          className="flex-1"
+          value={hourOffset}
+          min={-12}
+          max={12}
+          onChange={(e) => setHourOffset(+e.target.value)}
+        ></RangeSlider>
+        {/* <Button onClick={() => setHourOffset(0)}>Reset</Button> */}
+      </div>
       {params.map((param, i) => (
         <MesoanalysisImage
           key={i}
           date={date}
           sector={sector}
-          params={[
-            "cnty",
-            "hiway",
-            ...param.split(" ").filter((param) => param),
-          ]}
+          layers={["cnty", "hiway"]}
+          params={param.split(" ").filter((param) => param)}
         />
       ))}
     </>
@@ -99,11 +122,18 @@ export default function Home() {
 interface MesoanalysisImageProps {
   date: Date;
   sector: string;
+  layers: string[];
   params: string[];
 }
 
-function MesoanalysisImage({ date, sector, params }: MesoanalysisImageProps) {
+function MesoanalysisImage({
+  date,
+  sector,
+  layers,
+  params,
+}: MesoanalysisImageProps) {
   const urls = [
+    ...layers.map((param) => getLayerUrl(sector, param)),
     getRadarUrl(date, sector),
     ...params.map((param) => getMesoanalysisUrl(date, sector, param)),
   ];
@@ -115,6 +145,8 @@ function MesoanalysisImage({ date, sector, params }: MesoanalysisImageProps) {
           src={url}
           width={1000}
           height={750}
+          quality={100}
+          priority
           alt=""
           style={i ? { position: "absolute", top: 0, left: 0 } : {}}
         ></Image>

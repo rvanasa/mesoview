@@ -288,11 +288,11 @@ export default function App() {
               borderWidth: 3,
               top: 3,
             },
-            track: {
-              backgroundColor: '#222',
+            rail: {
               height: 6,
             },
-            rail: {
+            track: {
+              backgroundColor: '#222',
               height: 6,
             },
           }}

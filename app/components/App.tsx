@@ -144,8 +144,6 @@ export default function App() {
   const [hourOffset, setHourOffset] = useState(0);
   const [inputDateString, setInputDateString] = useQueryParam('time');
 
-  const now = Date.now();
-
   const sectorNumber =
     sectorString === undefined || isNaN(+sectorString) ? 19 : +sectorString;
 
@@ -185,7 +183,7 @@ export default function App() {
           labelClearButton="Reset"
           onSelectedDateChanged={(date) => {
             setInputDate(
-              date.getTime() >= now
+              Math.abs(date.getTime() - Date.now()) < 1000
                 ? date
                 : new Date(
                     date.getTime() +

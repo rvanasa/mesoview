@@ -227,7 +227,7 @@ export default function App() {
             <code className="font-bold">
               {formatDate(date)}
               {
-                Math.abs(nowOffset) <= 24 && (
+                Math.abs(nowOffset) <= 12 && (
                   <span className="ml-3 opacity-70 text-blue-600">
                     {nowOffset > 0 && '+'}
                     {nowOffset === 0 ? 'Now' : nowOffset}

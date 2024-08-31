@@ -388,7 +388,6 @@ function MesoanalysisImage({
   layers,
   params,
 }: MesoanalysisImageProps) {
-  const [data, setData] = useState<string>();
   const urls = [
     ...layers.map((param) => getLayerUrl(sector, param)),
     getRadarUrl(date, sector),
@@ -462,13 +461,18 @@ function CachedImage({ src, alt, ...rest }: CachedImageProps) {
     });
     imageLoadingCache.set(src, loadingPromise);
     let cancelled = false;
-    loadingPromise.then((data) => {
-      imageCache.set(src, data);
-      imageLoadingCache.delete(src);
-      if (!cancelled) {
-        setData(data);
-      }
-    });
+    loadingPromise
+      .then((data) => {
+        imageCache.set(src, data);
+        imageLoadingCache.delete(src);
+        if (!cancelled) {
+          setData(data);
+        }
+      })
+      .catch((err) => {
+        console.error(err);
+        imageLoadingCache.delete(src);
+      });
     return () => {
       cancelled = true;
     };

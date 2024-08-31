@@ -224,27 +224,41 @@ export default function App() {
           <div className="flex justify-between">
             <code className="font-bold">
               {formatDate(date)}
-              {Math.abs(nowOffset) <= 12 ? (
-                <span className="ml-3 opacity-70 text-blue-600">
-                  {nowOffset > 0 && '+'}
-                  {nowOffset === 0 ? 'Now' : nowOffset}
-                </span>
-              ) : (
+              {
+                Math.abs(nowOffset) <= 12 && (
+                  <span className="ml-3 opacity-70 text-blue-600">
+                    {nowOffset > 0 && '+'}
+                    {nowOffset === 0 ? 'Now' : nowOffset}
+                  </span>
+                ) /* : (
                 hourOffset !== 0 && (
                   <span className="ml-3 opacity-70">
                     {hourOffset > 0 && '+'}
                     {hourOffset}
                   </span>
                 )
-              )}
+              ) */
+              }
             </code>
             <Button.Group>
+              {/* <Button
+                color="gray"
+                size="xs"
+                className="px-1 py-1"
+                disabled={hourOffset === 0}
+                onClick={() => {
+                  setInputDate(new Date(date.getTime()));
+                  setHourOffset(0);
+                }}
+              >
+                <FaLink style={{ fontSize: 11, color: 'black' }} />
+              </Button> */}
               <Button
                 color="gray"
                 size="xs"
                 className="px-1 py-1"
                 onClick={() => {
-                  setInputDate(new Date(inputDate.getTime() - 3600000));
+                  setInputDate(new Date(date.getTime() - 3600000));
                   setHourOffset(0);
                 }}
               >
@@ -255,7 +269,7 @@ export default function App() {
                 size="xs"
                 className="px-1 py-1"
                 onClick={() => {
-                  setInputDate(new Date(inputDate.getTime() + 3600000));
+                  setInputDate(new Date(date.getTime() + 3600000));
                   setHourOffset(0);
                 }}
               >
@@ -275,6 +289,7 @@ export default function App() {
           }}
           startPoint={0}
           onChange={(value) => setHourOffset(value as number)}
+          onChangeComplete={() => setHourOffset(0)}
         />
         <div className="flex justify-between p-3">
           <Dropdown
@@ -309,13 +324,15 @@ export default function App() {
               inline
               onSelectedDateChanged={(date) => {
                 setInputDate(
-                  Math.abs(date.getTime() - Date.now()) < 1000
-                    ? date
-                    : new Date(
-                        date.getTime() +
-                          3600000 * 12 -
-                          60000 * date.getTimezoneOffset(),
-                      ),
+                  roundToNearestHour(
+                    Math.abs(date.getTime() - Date.now()) < 1000
+                      ? date
+                      : new Date(
+                          date.getTime() +
+                            3600000 * 12 -
+                            60000 * date.getTimezoneOffset(),
+                        ),
+                  ),
                 );
                 setHourOffset(0);
                 setShowDatepicker(false);

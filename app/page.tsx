@@ -1,8 +1,8 @@
 "use client";
 
 import Image from "next/image";
-import { useCallback, useState } from "react";
-import { useQueryParam, useQueryParams } from "./hooks/useQueryParam";
+import { useState } from "react";
+import { useQueryParams } from "./hooks/useQueryParam";
 import { Button, Dropdown, RangeSlider } from "flowbite-react";
 import { FaTimes } from "react-icons/fa";
 

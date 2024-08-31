@@ -2,12 +2,13 @@ import { usePathname, useSearchParams, useRouter } from 'next/navigation';
 
 export function useQueryParam(
   key: string,
+  defaultValue?: string | undefined,
 ): [string | undefined, (value: string | undefined) => void] {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
   return [
-    searchParams.get(key) ?? undefined,
+    searchParams.get(key) ?? defaultValue,
     (value) => {
       const params = new URLSearchParams(searchParams.toString());
       if (value === null || value === undefined) {

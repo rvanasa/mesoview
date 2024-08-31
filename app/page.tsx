@@ -6,6 +6,21 @@ import { useCallback, useState } from 'react';
 import { FaMinus, FaPlus, FaTimes } from 'react-icons/fa';
 import { useQueryParam, useQueryParams } from './hooks/useQueryParam';
 
+const mesoSectors: [number, string][] = [
+  [11, 'Northwest'],
+  [12, 'Southwest'],
+  [13, 'Northern Plains'],
+  [14, 'Central Plains'],
+  [15, 'Southern Plains'],
+  [16, 'Northeast'],
+  [17, 'Atlantic'],
+  [18, 'Deep South'],
+  [19, 'Continental U.S.'],
+  [20, 'Midwest'],
+  [21, 'Great Lakes'],
+  [22, 'Mountain West'],
+];
+
 const mesoParams: [string, string][] = [
   ['300mb', '300 mb Analysis'],
   ['500mb', '500 mb Analysis'],
@@ -32,7 +47,8 @@ const mesoParams: [string, string][] = [
   ['oprh', 'OPRH'],
 ];
 
-const mesoParamNames = new Map(mesoParams);
+const mesoSectorMap = new Map(mesoSectors);
+const mesoParamMap = new Map(mesoParams);
 
 const mesoBaseUrl = 'https://www.spc.noaa.gov/exper/mesoanalysis';
 
@@ -124,9 +140,12 @@ function parseDate(dateString: string, defaultHour?: number): Date | undefined {
 
 export default function Home() {
   const [params, setParams] = useQueryParams('param');
-  const [sectorNumber, setSectorNumber] = useState(14);
+  const [sectorString, setSectorString] = useQueryParam('sector');
   const [hourOffset, setHourOffset] = useState(0);
   const [inputDateString, setInputDateString] = useQueryParam('time');
+
+  const sectorNumber =
+    sectorString === undefined || isNaN(+sectorString) ? 19 : +sectorString;
 
   const inputDate = inputDateString
     ? parseDate(inputDateString, 12)
@@ -141,6 +160,7 @@ export default function Home() {
   const date = new Date(inputDate.getTime() + 3600000 * hourOffset);
 
   const sector = `s${sectorNumber}`;
+  const sectorName = mesoSectorMap.get(sectorNumber);
 
   // const params = paramString?.split(",") ?? [];
   // const setParams = useCallback(
@@ -152,7 +172,17 @@ export default function Home() {
 
   return (
     <div>
-      <div className="p-3">
+      <div className="flex flex-col space-y-2 p-3">
+        <Dropdown inline label={sectorName || 'Choose region...'}>
+          {mesoSectors.map(([number, name], i) => (
+            <Dropdown.Item
+              key={i}
+              onClick={() => setSectorString(String(number))}
+            >
+              {name}
+            </Dropdown.Item>
+          ))}
+        </Dropdown>
         <Datepicker
           value={inputDate.toDateString()}
           onSelectedDateChanged={(date) =>
@@ -217,7 +247,7 @@ export default function Home() {
           <div className="flex content-between m-2">
             <div className="flex-1">
               <Dropdown
-                label={mesoParamNames.get(param) || param || 'Choose parameter'}
+                label={mesoParamMap.get(param) || param || 'Choose parameter'}
                 inline
               >
                 {/* <div style={{ maxHeight: "70vh" }} className="overflow-y-scroll"> */}

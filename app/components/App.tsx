@@ -373,12 +373,9 @@ function MesoanalysisImage({
       {urls.map((url, i) => (
         <CachedImage
           key={i}
-          // src={url}
           src={url}
           width={width}
           height={height}
-          // quality={100}
-          // priority
           alt=""
           style={i ? { position: 'absolute', top: 0, left: 0 } : {}}
           onError={(e) => ((e.target as any).style.opacity = 0)}

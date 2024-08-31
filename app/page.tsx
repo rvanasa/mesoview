@@ -1,11 +1,11 @@
 "use client";
 
 import Image from "next/image";
-import { useState } from "react";
-import { useQueryParams } from "./hooks/useQueryParam";
-import { Button, RangeSlider } from "flowbite-react";
+import { useCallback, useState } from "react";
+import { useQueryParam, useQueryParams } from "./hooks/useQueryParam";
+import { Button, Dropdown, RangeSlider } from "flowbite-react";
 
-const mesoParams = [
+const mesoParams: [string, string][] = [
   ["300mb", "300 mb Analysis"],
   ["500mb", "500 mb Analysis"],
   ["700mb", "700 mb Analysis"],
@@ -30,6 +30,8 @@ const mesoParams = [
   ["snsq", "Snow Squall"],
   ["oprh", "OPRH"],
 ];
+
+const mesoParamNames = new Map(mesoParams);
 
 const mesoBaseUrl = "https://www.spc.noaa.gov/exper/mesoanalysis";
 
@@ -82,7 +84,20 @@ function roundToNearestHour(date: Date) {
   return date;
 }
 
+function spliced<T>(
+  array: T[],
+  index: number,
+  count: number,
+  ...items: T[]
+): T[] {
+  const newArray = [...array];
+  newArray.splice(index, count, ...items);
+  console.log(array, index, count, newArray);
+  return newArray;
+}
+
 export default function Home() {
+  // const [paramString, setParamString] = useQueryParam("params");
   const [params, setParams] = useQueryParams("param");
   // const [date, setDate] = useState<Date>();
   const [sectorNumber, setSectorNumber] = useState(14);
@@ -94,9 +109,17 @@ export default function Home() {
 
   const sector = `s${sectorNumber}`;
 
+  // const params = paramString?.split(",") ?? [];
+  // const setParams = useCallback(
+  //   (params: string[]) => {
+  //     setParamString(params.join(","));
+  //   },
+  //   [setParamString]
+  // );
+
   return (
-    <>
-      <div className="p-3 flex">
+    <div>
+      <div className="p-3">
         <RangeSlider
           className="flex-1"
           value={hourOffset}
@@ -107,15 +130,51 @@ export default function Home() {
         {/* <Button onClick={() => setHourOffset(0)}>Reset</Button> */}
       </div>
       {params.map((param, i) => (
-        <MesoanalysisImage
-          key={i}
-          date={date}
-          sector={sector}
-          layers={["cnty", "hiway"]}
-          params={param.split(" ").filter((param) => param)}
-        />
+        <div key={i}>
+          <div className="p-2">
+            <Button
+              outline
+              color="gray"
+              size="xs"
+              className="float-right"
+              onClick={() => setParams(spliced(params, i, 1))}
+            >
+              x
+            </Button>
+            <Dropdown
+              label={mesoParamNames.get(param) || param || "Choose parameter"}
+              inline
+            >
+              {/* <div style={{ maxHeight: "70vh" }} className="overflow-y-scroll"> */}
+              {mesoParams.map(([key, title], j) => (
+                <Dropdown.Item
+                  key={j}
+                  onClick={() => setParams(spliced(params, i, 1, key))}
+                >
+                  {title}
+                </Dropdown.Item>
+              ))}
+              {/* </div> */}
+            </Dropdown>
+          </div>
+          <MesoanalysisImage
+            date={date}
+            sector={sector}
+            layers={["cnty", "hiway"]}
+            params={param.split(" ").filter((param) => param)}
+          />
+        </div>
       ))}
-    </>
+      <div className="p-2">
+        <Dropdown label="Add parameter" inline>
+          {mesoParams.map(([key, title], i) => (
+            <Dropdown.Item key={i} onClick={() => setParams([...params, key])}>
+              {title}
+            </Dropdown.Item>
+          ))}
+        </Dropdown>
+      </div>
+    </div>
   );
 }
 

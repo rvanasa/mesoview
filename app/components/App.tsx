@@ -260,14 +260,12 @@ export default function App() {
             <Button.Group>
               <Button
                 color="gray"
-                className="px-1 py-1"
                 onClick={() => setInputDate(plusHours(inputDate, -1))}
               >
                 <FaMinus />
               </Button>
               <Button
                 color="gray"
-                className="px-1 py-1"
                 onClick={() => setInputDate(plusHours(inputDate, 1))}
               >
                 <FaPlus />
@@ -330,7 +328,7 @@ export default function App() {
             {!!navigator.share && (
               <Button
                 color="gray"
-                className="px-0 py-1 text-blue-700"
+                className="text-blue-700"
                 onClick={() =>
                   navigator.share({
                     title:

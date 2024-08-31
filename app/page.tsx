@@ -7,6 +7,7 @@ import { FaMinus, FaPlus, FaTimes } from 'react-icons/fa';
 import { useQueryParam, useQueryParams } from './hooks/useQueryParam';
 
 const mesoSectors: [number, string][] = [
+  [19, 'Continental U.S.'],
   [11, 'Northwest'],
   [12, 'Southwest'],
   [13, 'Northern Plains'],
@@ -15,7 +16,6 @@ const mesoSectors: [number, string][] = [
   [16, 'Northeast'],
   [17, 'Atlantic'],
   [18, 'Deep South'],
-  [19, 'Continental U.S.'],
   [20, 'Midwest'],
   [21, 'Great Lakes'],
   [22, 'Mountain West'],
@@ -138,11 +138,13 @@ function parseDate(dateString: string, defaultHour?: number): Date | undefined {
   );
 }
 
-export default function Home() {
+export default function App() {
   const [params, setParams] = useQueryParams('param');
-  const [sectorString, setSectorString] = useQueryParam('sector');
+  const [sectorString, setSectorString] = useQueryParam('sector', '500mb');
   const [hourOffset, setHourOffset] = useState(0);
   const [inputDateString, setInputDateString] = useQueryParam('time');
+
+  const now = Date.now();
 
   const sectorNumber =
     sectorString === undefined || isNaN(+sectorString) ? 19 : +sectorString;
@@ -171,9 +173,34 @@ export default function Home() {
   // );
 
   return (
-    <div>
-      <div className="flex flex-col space-y-2 p-3">
-        <Dropdown inline label={sectorName || 'Choose region...'}>
+    <div
+      style={{ maxWidth: 1000 }}
+      className="mx-auto bg-white pb-3 rounded-b-lg"
+    >
+      <div className="flex justify-between space-y-2 p-3">
+        <Datepicker
+          value={inputDate.toDateString()}
+          style={{ maxWidth: 180 }}
+          showTodayButton={false}
+          labelClearButton="Reset"
+          onSelectedDateChanged={(date) => {
+            setInputDate(
+              date.getTime() >= now
+                ? date
+                : new Date(
+                    date.getTime() +
+                      3600000 * 12 -
+                      60000 * date.getTimezoneOffset(),
+                  ),
+            );
+            setHourOffset(0);
+          }}
+        />
+        <Dropdown
+          className="flex-1"
+          inline
+          label={sectorName || 'Choose region...'}
+        >
           {mesoSectors.map(([number, name], i) => (
             <Dropdown.Item
               key={i}
@@ -183,32 +210,18 @@ export default function Home() {
             </Dropdown.Item>
           ))}
         </Dropdown>
-        <Datepicker
-          value={inputDate.toDateString()}
-          onSelectedDateChanged={(date) =>
-            setInputDate(
-              new Date(
-                date.getTime() +
-                  3600000 * 12 -
-                  60000 * date.getTimezoneOffset(),
-              ),
-            )
-          }
-        />
       </div>
       <div className="p-3">
-        <div className="flex items-between">
-          <div className="flex-1 flex content-center">
-            <code className="font-bold">
-              {formatDate(date)}
-              {hourOffset !== 0 && (
-                <span className="ml-3 opacity-70">
-                  {hourOffset > 0 && '+'}
-                  {hourOffset}
-                </span>
-              )}
-            </code>
-          </div>
+        <div className="flex justify-between">
+          <code className="font-bold">
+            {formatDate(date)}
+            {hourOffset !== 0 && (
+              <span className="ml-3 opacity-70">
+                {hourOffset > 0 && '+'}
+                {hourOffset}
+              </span>
+            )}
+          </code>
           <Button.Group>
             <Button
               color="gray"
@@ -244,8 +257,8 @@ export default function Home() {
       </div>
       {params.map((param, i) => (
         <div key={i}>
-          <div className="flex content-between m-2">
-            <div className="flex-1">
+          <div className="flex justify-between m-2">
+            <div>
               <Dropdown
                 label={mesoParamMap.get(param) || param || 'Choose parameter'}
                 inline
@@ -322,6 +335,7 @@ function MesoanalysisImage({
           priority
           alt=""
           style={i ? { position: 'absolute', top: 0, left: 0 } : {}}
+          onError={(e) => ((e.target as any).style.opacity = 0)}
         ></Image>
       ))}
     </div>

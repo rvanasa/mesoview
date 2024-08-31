@@ -170,36 +170,48 @@ export default function App() {
       style={{ maxWidth: 1000 }}
       className="mx-auto bg-white pb-3 rounded-b-lg"
     >
-      <div className="flex justify-between p-3">
-        <Datepicker
-          value={inputDate.toDateString()}
-          style={{ maxWidth: 180 }}
-          showTodayButton={false}
-          labelClearButton="Reset"
-          onSelectedDateChanged={(date) => {
-            setInputDate(
-              Math.abs(date.getTime() - Date.now()) < 1000
-                ? date
-                : new Date(
-                    date.getTime() +
-                      3600000 * 12 -
-                      60000 * date.getTimezoneOffset(),
-                  ),
-            );
-            setHourOffset(0);
-          }}
-        />
-        <Dropdown
-          className="flex-1"
-          inline
-          label={sectorName || 'Choose region...'}
-        >
-          {mesoSectors.map(([number, name], i) => (
-            <Dropdown.Item
-              key={i}
-              onClick={() => setSectorString(String(number))}
+      {params.map((param, i) => (
+        <div key={i}>
+          <div className="flex justify-between p-2">
+            <div>
+              <Dropdown
+                label={mesoParamMap.get(param) || param || 'Choose parameter'}
+                inline
+              >
+                {/* <div style={{ maxHeight: "70vh" }} className="overflow-y-scroll"> */}
+                {mesoParams.map(([key, title], j) => (
+                  <Dropdown.Item
+                    key={j}
+                    onClick={() => setParams(spliced(params, i, 1, key))}
+                  >
+                    {title}
+                  </Dropdown.Item>
+                ))}
+                {/* </div> */}
+              </Dropdown>
+            </div>
+            <Button
+              color="gray"
+              size="xs"
+              className="px-0 py-1"
+              onClick={() => setParams(spliced(params, i, 1))}
             >
-              {name}
+              <FaTimes style={{ fontSize: 11 }} />
+            </Button>
+          </div>
+          <MesoanalysisImage
+            date={date}
+            sector={sector}
+            layers={['cnty', 'hiway']}
+            params={param.split(' ').filter((param) => param)}
+          />
+        </div>
+      ))}
+      <div className="p-3">
+        <Dropdown label="Add parameter" inline>
+          {mesoParams.map(([key, title], i) => (
+            <Dropdown.Item key={i} onClick={() => setParams([...params, key])}>
+              {title}
             </Dropdown.Item>
           ))}
         </Dropdown>
@@ -255,54 +267,42 @@ export default function App() {
           // marks={{ '0': { style: {}, label: '0' } }}
           styles={{
             handle: { borderColor: '#222' },
-            track: { borderColor: '#222' },
+            track: { backgroundColor: '#222' },
           }}
           startPoint={0}
           onChange={(value) => setHourOffset(value as number)}
         />
       </div>
-      {params.map((param, i) => (
-        <div key={i}>
-          <div className="flex justify-between m-2">
-            <div>
-              <Dropdown
-                label={mesoParamMap.get(param) || param || 'Choose parameter'}
-                inline
-              >
-                {/* <div style={{ maxHeight: "70vh" }} className="overflow-y-scroll"> */}
-                {mesoParams.map(([key, title], j) => (
-                  <Dropdown.Item
-                    key={j}
-                    onClick={() => setParams(spliced(params, i, 1, key))}
-                  >
-                    {title}
-                  </Dropdown.Item>
-                ))}
-                {/* </div> */}
-              </Dropdown>
-            </div>
-            <Button
-              color="gray"
-              size="xs"
-              className="px-0 py-1"
-              onClick={() => setParams(spliced(params, i, 1))}
+      <div className="flex justify-between p-3">
+        <Datepicker
+          value={inputDate.toDateString()}
+          style={{ maxWidth: 180 }}
+          showTodayButton={false}
+          labelClearButton="Reset"
+          onSelectedDateChanged={(date) => {
+            setInputDate(
+              Math.abs(date.getTime() - Date.now()) < 1000
+                ? date
+                : new Date(
+                    date.getTime() +
+                      3600000 * 12 -
+                      60000 * date.getTimezoneOffset(),
+                  ),
+            );
+            setHourOffset(0);
+          }}
+        />
+        <Dropdown
+          className="flex-1"
+          inline
+          label={sectorName || 'Choose region...'}
+        >
+          {mesoSectors.map(([number, name], i) => (
+            <Dropdown.Item
+              key={i}
+              onClick={() => setSectorString(String(number))}
             >
-              <FaTimes style={{ fontSize: 11 }} />
-            </Button>
-          </div>
-          <MesoanalysisImage
-            date={date}
-            sector={sector}
-            layers={['cnty', 'hiway']}
-            params={param.split(' ').filter((param) => param)}
-          />
-        </div>
-      ))}
-      <div className="p-3">
-        <Dropdown label="Add parameter" inline>
-          {mesoParams.map(([key, title], i) => (
-            <Dropdown.Item key={i} onClick={() => setParams([...params, key])}>
-              {title}
+              {name}
             </Dropdown.Item>
           ))}
         </Dropdown>

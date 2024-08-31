@@ -23,12 +23,13 @@ export function useQueryParam(
 
 export function useQueryParams(
   key: string,
+  defaultValues?: string[],
 ): [string[], (values: string[]) => void] {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
   return [
-    searchParams.getAll(key),
+    searchParams.has(key) ? searchParams.getAll(key) : defaultValues,
     (values) => {
       const params = new URLSearchParams(searchParams.toString());
       params.delete(key);

@@ -166,10 +166,7 @@ export default function App() {
   const sectorName = mesoSectorMap.get(sectorNumber);
 
   return (
-    <div
-      style={{ maxWidth: 1000 }}
-      className="mx-auto bg-white pb-3 rounded-b-lg"
-    >
+    <div style={{ maxWidth: 1000 }} className="mx-auto">
       {params.map((param, i) => (
         <div key={i}>
           <div className="flex justify-between p-2">
@@ -216,96 +213,102 @@ export default function App() {
           ))}
         </Dropdown>
       </div>
-      <div className="p-3">
-        <div className="flex justify-between">
-          <code className="font-bold">
-            {formatDate(date)}
-            {hourOffset !== 0 && (
-              <span className="ml-3 opacity-70">
-                {hourOffset > 0 && '+'}
-                {hourOffset}
-              </span>
-            )}
-          </code>
-          <Button.Group>
-            <Button
-              color="gray"
-              size="xs"
-              className="px-1 py-1"
-              onClick={() => {
-                setInputDate(new Date(inputDate.getTime() - 3600000));
-                setHourOffset(0);
-              }}
-            >
-              <FaMinus style={{ fontSize: 11 }} />
-            </Button>
-            <Button
-              color="gray"
-              size="xs"
-              className="px-1 py-1"
-              onClick={() => {
-                setInputDate(new Date(inputDate.getTime() + 3600000));
-                setHourOffset(0);
-              }}
-            >
-              <FaPlus style={{ fontSize: 11 }} />
-            </Button>
-          </Button.Group>
-        </div>
-        {/* <RangeSlider
+      <div style={{ paddingBottom: 500 }}></div>
+      <div
+        className="fixed bottom-0 w-full bg-white"
+        style={{ maxWidth: 1000 }}
+      >
+        <div className="p-3">
+          <div className="flex justify-between">
+            <code className="font-bold">
+              {formatDate(date)}
+              {hourOffset !== 0 && (
+                <span className="ml-3 opacity-70">
+                  {hourOffset > 0 && '+'}
+                  {hourOffset}
+                </span>
+              )}
+            </code>
+            <Button.Group>
+              <Button
+                color="gray"
+                size="xs"
+                className="px-1 py-1"
+                onClick={() => {
+                  setInputDate(new Date(inputDate.getTime() - 3600000));
+                  setHourOffset(0);
+                }}
+              >
+                <FaMinus style={{ fontSize: 11 }} />
+              </Button>
+              <Button
+                color="gray"
+                size="xs"
+                className="px-1 py-1"
+                onClick={() => {
+                  setInputDate(new Date(inputDate.getTime() + 3600000));
+                  setHourOffset(0);
+                }}
+              >
+                <FaPlus style={{ fontSize: 11 }} />
+              </Button>
+            </Button.Group>
+          </div>
+          {/* <RangeSlider
           className="flex-1"
           value={hourOffset}
           min={-12}
           max={12}
           onChange={(e) => setHourOffset(+e.target.value)}
         /> */}
-        <Slider
-          className="flex-1"
-          value={hourOffset}
-          min={-12}
-          max={12}
-          // marks={{ '0': { style: {}, label: '0' } }}
-          styles={{
-            handle: { borderColor: '#222' },
-            track: { backgroundColor: '#222' },
-          }}
-          startPoint={0}
-          onChange={(value) => setHourOffset(value as number)}
-        />
-      </div>
-      <div className="flex justify-between p-3">
-        <Datepicker
-          value={inputDate.toDateString()}
-          style={{ maxWidth: 180 }}
-          showTodayButton={false}
-          labelClearButton="Reset"
-          onSelectedDateChanged={(date) => {
-            setInputDate(
-              Math.abs(date.getTime() - Date.now()) < 1000
-                ? date
-                : new Date(
-                    date.getTime() +
-                      3600000 * 12 -
-                      60000 * date.getTimezoneOffset(),
-                  ),
-            );
-            setHourOffset(0);
-          }}
-        />
-        <Dropdown
-          className="flex-1"
-          inline
-          label={sectorName || 'Choose region...'}
-        >
-          {mesoSectors.map(([number, name], i) => (
-            <Dropdown.Item
-              key={i}
-              onClick={() => setSectorString(String(number))}
-            >
-              {name}
-            </Dropdown.Item>
-          ))}
-        </Dropdown>
+          <Slider
+            className="flex-1"
+            value={hourOffset}
+            min={-12}
+            max={12}
+            // marks={{ '0': { style: {}, label: '0' } }}
+            styles={{
+              handle: { borderColor: '#222' },
+              track: { backgroundColor: '#222' },
+            }}
+            startPoint={0}
+            onChange={(value) => setHourOffset(value as number)}
+          />
+        </div>
+        <div className="flex justify-between p-3">
+          <Datepicker
+            value={inputDate.toDateString()}
+            style={{ maxWidth: 180 }}
+            showTodayButton={false}
+            labelClearButton="Reset"
+            onSelectedDateChanged={(date) => {
+              setInputDate(
+                Math.abs(date.getTime() - Date.now()) < 1000
+                  ? date
+                  : new Date(
+                      date.getTime() +
+                        3600000 * 12 -
+                        60000 * date.getTimezoneOffset(),
+                    ),
+              );
+              setHourOffset(0);
+            }}
+          />
+          <Dropdown
+            className="flex-1"
+            inline
+            label={sectorName || 'Choose region...'}
+          >
+            {mesoSectors.map(([number, name], i) => (
+              <Dropdown.Item
+                key={i}
+                onClick={() => setSectorString(String(number))}
+              >
+                {name}
+              </Dropdown.Item>
+            ))}
+          </Dropdown>
+        </div>
       </div>
     </div>
   );

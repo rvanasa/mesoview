@@ -1,9 +1,9 @@
 'use client';
 
 import { Button, Datepicker, Dropdown } from 'flowbite-react';
-import Image from 'next/image';
+import Image, { ImageProps } from 'next/image';
 import Slider from 'rc-slider';
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { FaMinus, FaPlus, FaTimes } from 'react-icons/fa';
 import { useQueryParam, useQueryParams } from '../hooks/useQueryParam';
 
@@ -65,7 +65,7 @@ function getMesoanalysisUrl(date: Date, sector: string, param: string) {
   const deltaHours = Math.round((date.getTime() - now.getTime()) / 3600000);
 
   if (deltaHours === 0) {
-    return `${mesoBaseUrl}/${sector}/${param}/${param}.gif?${date.getTime()}`;
+    return `${mesoBaseUrl}/${sector}/${param}/${param}.gif`;
   } else if (deltaHours > 0) {
     return `${mesoBaseUrl}/fcst/${sector}/${param}_${String(
       date.getUTCHours(),
@@ -84,7 +84,7 @@ function getRadarUrl(date: Date, sector: string) {
   const deltaHours = Math.round((date.getTime() - now.getTime()) / 3600000);
 
   if (deltaHours === 0) {
-    return `${mesoBaseUrl}/${sector}/rgnlrad/rgnlrad.gif?${date.getTime()}`;
+    return `${mesoBaseUrl}/${sector}/rgnlrad/rgnlrad.gif`;
   } else if (deltaHours > 0) {
     return `${mesoBaseUrl}/fcst/${sector}/hrrr_${String(
       date.getUTCHours(),
@@ -358,26 +358,81 @@ function MesoanalysisImage({
   layers,
   params,
 }: MesoanalysisImageProps) {
+  const [data, setData] = useState<string>();
   const urls = [
     ...layers.map((param) => getLayerUrl(sector, param)),
     getRadarUrl(date, sector),
     ...params.map((param) => getMesoanalysisUrl(date, sector, param)),
   ];
+  const width = 1000;
+  const height = 750;
   return (
     <div style={{ position: 'relative', background: 'white' }}>
       {urls.map((url, i) => (
-        <Image
+        <CachedImage
           key={i}
+          // src={url}
           src={url}
-          width={1000}
-          height={750}
+          width={width}
+          height={height}
           quality={100}
           priority
           alt=""
           style={i ? { position: 'absolute', top: 0, left: 0 } : {}}
           onError={(e) => ((e.target as any).style.opacity = 0)}
+          onLoad={(e) => ((e.target as any).style.opacity = 1)}
         />
       ))}
     </div>
   );
+}
+
+const imageCache = new Map<string, string>();
+const imageLoadingCache = new Map<string, Promise<string>>();
+
+interface CachedImageProps extends ImageProps {
+  src: string;
+}
+
+function CachedImage({ src, alt, ...rest }: CachedImageProps) {
+  const [data, setData] = useState<string | undefined>();
+  useEffect(() => {
+    const data = imageCache.get(src);
+    if (data) {
+      setData(data);
+      return;
+    }
+    const promise = imageLoadingCache.get(src);
+    if (promise) {
+      promise.then((data) => setData(data));
+      return;
+    }
+    imageLoadingCache.set(
+      src,
+      new Promise((resolve, reject) => {
+        fetch(src)
+          .then(async (response) => {
+            const blob = await response.blob();
+            const reader = new FileReader();
+            reader.onload = () => {
+              const result = reader.result;
+              if (typeof result === 'string') {
+                resolve(result);
+              } else {
+                reject(new Error('Unexpected result from FileReader'));
+              }
+            };
+            reader.onerror = (err) => reject(err);
+            reader.readAsDataURL(blob);
+          })
+          .catch(reject);
+      }),
+    );
+  }, [src]);
+  if (!data) {
+    return (
+      <div style={{ ...rest.style, width: rest.width, height: rest.height }} />
+    );
+  }
+  return <Image src={data} alt={alt} {...rest} />;
 }

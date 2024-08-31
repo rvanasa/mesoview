@@ -1,10 +1,13 @@
 'use client';
 
-import { Button, Datepicker, Dropdown, RangeSlider } from 'flowbite-react';
+import Slider, { Range } from 'rc-slider';
+import { Button, Datepicker, Dropdown } from 'flowbite-react';
 import Image from 'next/image';
 import { useCallback, useState } from 'react';
 import { FaMinus, FaPlus, FaTimes } from 'react-icons/fa';
 import { useQueryParam, useQueryParams } from '../hooks/useQueryParam';
+
+import 'rc-slider/assets/index.css';
 
 const mesoSectors: [number, string][] = [
   [19, 'Continental U.S.'],
@@ -162,14 +165,6 @@ export default function App() {
   const sector = `s${sectorNumber}`;
   const sectorName = mesoSectorMap.get(sectorNumber);
 
-  // const params = paramString?.split(",") ?? [];
-  // const setParams = useCallback(
-  //   (params: string[]) => {
-  //     setParamString(params.join(","));
-  //   },
-  //   [setParamString]
-  // );
-
   return (
     <div
       style={{ maxWidth: 1000 }}
@@ -245,12 +240,25 @@ export default function App() {
             </Button>
           </Button.Group>
         </div>
-        <RangeSlider
+        {/* <RangeSlider
           className="flex-1"
           value={hourOffset}
           min={-12}
           max={12}
           onChange={(e) => setHourOffset(+e.target.value)}
+        /> */}
+        <Slider
+          className="flex-1"
+          value={hourOffset}
+          min={-12}
+          max={12}
+          // marks={{ '0': { style: {}, label: '0' } }}
+          styles={{
+            handle: { borderColor: '#222' },
+            track: { borderColor: '#222' },
+          }}
+          startPoint={0}
+          onChange={(value) => setHourOffset(value as number)}
         />
       </div>
       {params.map((param, i) => (

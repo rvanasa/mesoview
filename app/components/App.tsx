@@ -426,12 +426,16 @@ function CachedImage({ src, alt, ...rest }: CachedImageProps) {
         .catch(reject);
     });
     imageLoadingCache.set(src, loadingPromise);
-    loadingPromise.then((data) => setData(data));
+    let cancelled = false;
+    loadingPromise.then((data) => !cancelled && setData(data));
+    return () => {
+      cancelled = true;
+    };
   }, [src]);
-  if (!data) {
-    return (
-      <div style={{ ...rest.style, width: rest.width, height: rest.height }} />
-    );
-  }
+  // if (!data) {
+  //   return (
+  //     <div style={{ ...rest.style, width: rest.width, height: rest.height }} />
+  //   );
+  // }
   return <Image src={data} alt={alt} {...rest} />;
 }

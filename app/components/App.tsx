@@ -7,7 +7,6 @@ import {
   FaMinus,
   FaPlus,
   FaRegCalendarAlt,
-  FaShare,
   FaShareAlt,
   FaTimes,
 } from 'react-icons/fa';
@@ -212,7 +211,7 @@ export default function App() {
               <Button
                 color="gray"
                 size="xs"
-                className="px-0 py-1"
+                className="px-0 py-1 text-red-600"
                 onClick={() => setParams(spliced(params, i, 1))}
               >
                 <FaTimes style={{ fontSize: 11 }} />
@@ -239,16 +238,17 @@ export default function App() {
           <Button
             size="sm"
             color="gray"
+            className="px-0 py-1 text-blue-600"
             onClick={() =>
               navigator.share({
                 title:
                   params.map((param) => mesoParamMap.get(param)).join(', ') ||
                   'Mesoanalysis',
-                url: window.location.href,
+                url: location.href,
               })
             }
           >
-            <FaShareAlt />
+            <FaShareAlt style={{ fontSize: 11 }} />
           </Button>
         )}
       </div>

@@ -112,7 +112,6 @@ function spliced<T>(
 ): T[] {
   const newArray = [...array];
   newArray.splice(index, count, ...items);
-  console.log(array, index, count, newArray);
   return newArray;
 }
 
@@ -146,6 +145,7 @@ export default function App() {
   const [sectorString, setSectorString] = useQueryParam('sector');
   const [hourOffset, setHourOffset] = useState(0);
   const [inputDateString, setInputDateString] = useQueryParam('time');
+  const [showDatepicker, setShowDatepicker] = useState(false);
 
   const sectorNumber =
     sectorString === undefined || isNaN(+sectorString) ? 19 : +sectorString;
@@ -167,40 +167,6 @@ export default function App() {
 
   return (
     <div style={{ maxWidth: 1000 }} className="mx-auto">
-      <div className="flex justify-between p-3">
-        <Datepicker
-          value={inputDate.toDateString()}
-          style={{ maxWidth: 180 }}
-          showTodayButton={false}
-          labelClearButton="Reset"
-          onSelectedDateChanged={(date) => {
-            setInputDate(
-              Math.abs(date.getTime() - Date.now()) < 1000
-                ? date
-                : new Date(
-                    date.getTime() +
-                      3600000 * 12 -
-                      60000 * date.getTimezoneOffset(),
-                  ),
-            );
-            setHourOffset(0);
-          }}
-        />
-        <Dropdown
-          className="flex-1"
-          inline
-          label={sectorName || 'Choose region...'}
-        >
-          {mesoSectors.map(([number, name], i) => (
-            <Dropdown.Item
-              key={i}
-              onClick={() => setSectorString(String(number))}
-            >
-              {name}
-            </Dropdown.Item>
-          ))}
-        </Dropdown>
-      </div>
       {params.map((param, i) => (
         <div key={i}>
           <div className="flex justify-between p-2">
@@ -249,7 +215,7 @@ export default function App() {
       </div>
       <div style={{ paddingBottom: 130 }}></div>
       <div
-        className="fixed bottom-0 w-full bg-white"
+        className="fixed bottom-0 rounded-t-lg w-full bg-white"
         style={{ maxWidth: 1000 }}
       >
         <div className="p-3">
@@ -288,19 +254,63 @@ export default function App() {
               </Button>
             </Button.Group>
           </div>
-          <Slider
-            className="flex-1"
-            value={hourOffset}
-            min={-12}
-            max={12}
-            styles={{
-              handle: { borderColor: '#222', boxShadow: 'none' },
-              track: { backgroundColor: '#222' },
-            }}
-            startPoint={0}
-            onChange={(value) => setHourOffset(value as number)}
-          />
         </div>
+        <Slider
+          className="flex-1"
+          value={hourOffset}
+          min={-12}
+          max={12}
+          styles={{
+            handle: { borderColor: '#222', boxShadow: 'none' },
+            track: { backgroundColor: '#222' },
+          }}
+          startPoint={0}
+          onChange={(value) => setHourOffset(value as number)}
+        />
+        <div className="flex justify-between p-3">
+          <Dropdown
+            className="flex-1"
+            inline
+            label={sectorName || 'Choose region...'}
+          >
+            {mesoSectors.map(([number, name], i) => (
+              <Dropdown.Item
+                key={i}
+                onClick={() => setSectorString(String(number))}
+              >
+                {name}
+              </Dropdown.Item>
+            ))}
+          </Dropdown>
+          <Button
+            color="gray"
+            onClick={() => setShowDatepicker(!showDatepicker)}
+          >
+            {date.toDateString()}
+          </Button>
+        </div>
+        {!!showDatepicker && (
+          <Datepicker
+            value={inputDate.toDateString()}
+            style={{ maxWidth: 180 }}
+            showTodayButton={false}
+            labelClearButton="Reset"
+            inline
+            onSelectedDateChanged={(date) => {
+              setInputDate(
+                Math.abs(date.getTime() - Date.now()) < 1000
+                  ? date
+                  : new Date(
+                      date.getTime() +
+                        3600000 * 12 -
+                        60000 * date.getTimezoneOffset(),
+                    ),
+              );
+              setHourOffset(0);
+              setShowDatepicker(false);
+            }}
+          />
+        )}
       </div>
     </div>
   );
@@ -337,7 +347,7 @@ function MesoanalysisImage({
           alt=""
           style={i ? { position: 'absolute', top: 0, left: 0 } : {}}
           onError={(e) => ((e.target as any).style.opacity = 0)}
-        ></Image>
+        />
       ))}
     </div>
   );

@@ -162,6 +162,8 @@ export default function App() {
 
   const date = new Date(inputDate.getTime() + 3600000 * hourOffset);
 
+  const nowOffset = Math.round((date.getTime() - Date.now()) / 3600000);
+
   const sector = `s${sectorNumber}`;
   const sectorName = mesoSectorMap.get(sectorNumber);
 
@@ -222,11 +224,18 @@ export default function App() {
           <div className="flex justify-between">
             <code className="font-bold">
               {formatDate(date)}
-              {hourOffset !== 0 && (
-                <span className="ml-3 opacity-70">
-                  {hourOffset > 0 && '+'}
-                  {hourOffset}
+              {Math.abs(nowOffset) <= 12 ? (
+                <span className="ml-3 opacity-70 text-blue-600">
+                  {nowOffset > 0 && '+'}
+                  {nowOffset === 0 ? 'Now' : nowOffset}
                 </span>
+              ) : (
+                hourOffset !== 0 && (
+                  <span className="ml-3 opacity-70">
+                    {hourOffset > 0 && '+'}
+                    {hourOffset}
+                  </span>
+                )
               )}
             </code>
             <Button.Group>
@@ -283,6 +292,7 @@ export default function App() {
             ))}
           </Dropdown>
           <Button
+            size="sm"
             color="gray"
             onClick={() => setShowDatepicker(!showDatepicker)}
           >

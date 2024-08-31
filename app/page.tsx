@@ -1,40 +1,40 @@
-"use client";
+'use client';
 
-import Image from "next/image";
-import { useState } from "react";
-import { useQueryParams } from "./hooks/useQueryParam";
-import { Button, Dropdown, RangeSlider } from "flowbite-react";
-import { FaTimes } from "react-icons/fa";
+import { Button, Datepicker, Dropdown, RangeSlider } from 'flowbite-react';
+import Image from 'next/image';
+import { useCallback, useState } from 'react';
+import { FaMinus, FaPlus, FaTimes } from 'react-icons/fa';
+import { useQueryParam, useQueryParams } from './hooks/useQueryParam';
 
 const mesoParams: [string, string][] = [
-  ["300mb", "300 mb Analysis"],
-  ["500mb", "500 mb Analysis"],
-  ["700mb", "700 mb Analysis"],
-  ["850mb", "850 mb Analysis"],
-  ["ageo", "300 mb Jet Circulation"],
-  ["pmsl", "MSL Pressure / Wind"],
-  ["ttd", "Temp / Dewpoint / Wind"],
-  ["scp", "Supercell Composite"],
-  ["3cvr", "Sfc Vorticity / 3CAPE"],
-  ["stor", "Sig Tornado (fixed layer)"],
-  ["stpc", "Sig Tornado (effective layer)"],
-  ["stpc5", "Sig Tornado (0-500m SRH)"],
-  ["dvvr", "Sfc Convergence & Vorticity"],
-  ["lr3c", "0-3km Lapse Rate & ML3CAPE"],
-  ["nstp", "Non-supercell Tornado"],
-  ["effh", "Eff. inflow base + ESRH"],
-  ["srh5", "Eff. inflow base + 0-500m SRH"],
-  ["mlcp", "MLCAPE / MLCIN"],
-  ["hail", "Hail Parameters"],
-  ["mbcp", "Microburst Composite"],
-  ["ddrh", "Dendritic Growth Layer"],
-  ["snsq", "Snow Squall"],
-  ["oprh", "OPRH"],
+  ['300mb', '300 mb Analysis'],
+  ['500mb', '500 mb Analysis'],
+  ['700mb', '700 mb Analysis'],
+  ['850mb', '850 mb Analysis'],
+  ['ageo', '300 mb Jet Circulation'],
+  ['pmsl', 'MSL Pressure / Wind'],
+  ['ttd', 'Temp / Dewpoint / Wind'],
+  ['scp', 'Supercell Composite'],
+  ['3cvr', 'Sfc Vorticity / 3CAPE'],
+  ['stor', 'Sig Tornado (fixed layer)'],
+  ['stpc', 'Sig Tornado (effective layer)'],
+  ['stpc5', 'Sig Tornado (0-500m SRH)'],
+  ['dvvr', 'Sfc Convergence & Vorticity'],
+  ['lr3c', '0-3km Lapse Rate & ML3CAPE'],
+  ['nstp', 'Non-supercell Tornado'],
+  ['effh', 'Eff. inflow base + ESRH'],
+  ['srh5', 'Eff. inflow base + 0-500m SRH'],
+  ['mlcp', 'MLCAPE / MLCIN'],
+  ['hail', 'Hail Parameters'],
+  ['mbcp', 'Microburst Composite'],
+  ['ddrh', 'Dendritic Growth Layer'],
+  ['snsq', 'Snow Squall'],
+  ['oprh', 'OPRH'],
 ];
 
 const mesoParamNames = new Map(mesoParams);
 
-const mesoBaseUrl = "https://www.spc.noaa.gov/exper/mesoanalysis";
+const mesoBaseUrl = 'https://www.spc.noaa.gov/exper/mesoanalysis';
 
 function getLayerUrl(sector: string, param: string) {
   return `${mesoBaseUrl}/${sector}/${param}/${param}.gif`;
@@ -49,13 +49,13 @@ function getMesoanalysisUrl(date: Date, sector: string, param: string) {
     return `${mesoBaseUrl}/${sector}/${param}/${param}.gif?${date.getTime()}`;
   } else if (deltaHours > 0) {
     return `${mesoBaseUrl}/fcst/${sector}/${param}_${String(
-      date.getUTCHours()
-    ).padStart(2, "0")}_trans.gif`;
+      date.getUTCHours(),
+    ).padStart(2, '0')}_trans.gif`;
   } else {
     return `${mesoBaseUrl}/${sector}/${param}/${param}_${date
       .toISOString()
       .slice(2, 10)
-      .replace(/-/g, "")}${String(date.getUTCHours()).padStart(2, "0")}.gif`;
+      .replace(/-/g, '')}${String(date.getUTCHours()).padStart(2, '0')}.gif`;
   }
 }
 
@@ -68,13 +68,13 @@ function getRadarUrl(date: Date, sector: string) {
     return `${mesoBaseUrl}/${sector}/rgnlrad/rgnlrad.gif?${date.getTime()}`;
   } else if (deltaHours > 0) {
     return `${mesoBaseUrl}/fcst/${sector}/hrrr_${String(
-      date.getUTCHours()
-    ).padStart(2, "0")}.gif`;
+      date.getUTCHours(),
+    ).padStart(2, '0')}.gif`;
   } else {
     return `${mesoBaseUrl}/${sector}/rgnlrad/rad_${date
       .toISOString()
       .slice(0, 10)
-      .replace(/-/g, "")}_${String(date.getUTCHours()).padStart(2, "0")}00.gif`;
+      .replace(/-/g, '')}_${String(date.getUTCHours()).padStart(2, '0')}00.gif`;
   }
 }
 
@@ -97,14 +97,46 @@ function spliced<T>(
   return newArray;
 }
 
+function zeroPad(value: number, digits: number): string {
+  return String(value).padStart(digits, '0');
+}
+
+function formatDate(date: Date): string {
+  return `${date.toISOString().slice(0, 10)} ${zeroPad(
+    date.getUTCHours(),
+    2,
+  )}z`;
+}
+
+function parseDate(dateString: string, defaultHour: number): Date;
+function parseDate(dateString: string): Date | undefined;
+function parseDate(dateString: string, defaultHour?: number): Date | undefined {
+  const [date, time] = dateString.split(' ');
+  const [year, month, day] = date.split('-').map(Number);
+  const hour = parseInt(time, 10);
+  if (isNaN(hour) && arguments.length < 2) {
+    return;
+  }
+  return new Date(
+    Date.UTC(year, month - 1, day, isNaN(hour) ? defaultHour : hour),
+  );
+}
+
 export default function Home() {
-  // const [paramString, setParamString] = useQueryParam("params");
-  const [params, setParams] = useQueryParams("param");
-  // const [date, setDate] = useState<Date>();
+  const [params, setParams] = useQueryParams('param');
   const [sectorNumber, setSectorNumber] = useState(14);
   const [hourOffset, setHourOffset] = useState(0);
+  const [inputDateString, setInputDateString] = useQueryParam('time');
 
-  const inputDate = new Date();
+  const inputDate = inputDateString
+    ? parseDate(inputDateString, 12)
+    : new Date();
+  const setInputDate = useCallback(
+    (date: Date) => {
+      setInputDateString(formatDate(date));
+    },
+    [setInputDateString],
+  );
 
   const date = new Date(inputDate.getTime() + 3600000 * hourOffset);
 
@@ -121,21 +153,71 @@ export default function Home() {
   return (
     <div>
       <div className="p-3">
+        <Datepicker
+          value={inputDate.toDateString()}
+          onSelectedDateChanged={(date) =>
+            setInputDate(
+              new Date(
+                date.getTime() +
+                  3600000 * 12 -
+                  60000 * date.getTimezoneOffset(),
+              ),
+            )
+          }
+        />
+      </div>
+      <div className="p-3">
+        <div className="flex items-between">
+          <div className="flex-1 flex content-center">
+            <code className="font-bold">
+              {formatDate(date)}
+              {hourOffset !== 0 && (
+                <span className="ml-3 opacity-70">
+                  {hourOffset > 0 && '+'}
+                  {hourOffset}
+                </span>
+              )}
+            </code>
+          </div>
+          <Button.Group>
+            <Button
+              color="gray"
+              size="xs"
+              className="px-1 py-1"
+              onClick={() => {
+                setInputDate(new Date(inputDate.getTime() - 3600000));
+                setHourOffset(0);
+              }}
+            >
+              <FaMinus style={{ fontSize: 11 }} />
+            </Button>
+            <Button
+              color="gray"
+              size="xs"
+              className="px-1 py-1"
+              onClick={() => {
+                setInputDate(new Date(inputDate.getTime() + 3600000));
+                setHourOffset(0);
+              }}
+            >
+              <FaPlus style={{ fontSize: 11 }} />
+            </Button>
+          </Button.Group>
+        </div>
         <RangeSlider
           className="flex-1"
           value={hourOffset}
           min={-12}
           max={12}
           onChange={(e) => setHourOffset(+e.target.value)}
-        ></RangeSlider>
-        {/* <Button onClick={() => setHourOffset(0)}>Reset</Button> */}
+        />
       </div>
       {params.map((param, i) => (
         <div key={i}>
           <div className="flex content-between m-2">
             <div className="flex-1">
               <Dropdown
-                label={mesoParamNames.get(param) || param || "Choose parameter"}
+                label={mesoParamNames.get(param) || param || 'Choose parameter'}
                 inline
               >
                 {/* <div style={{ maxHeight: "70vh" }} className="overflow-y-scroll"> */}
@@ -151,10 +233,9 @@ export default function Home() {
               </Dropdown>
             </div>
             <Button
-              outline
               color="gray"
               size="xs"
-              className="flex items-center p-0 py-1"
+              className="px-0 py-1"
               onClick={() => setParams(spliced(params, i, 1))}
             >
               <FaTimes style={{ fontSize: 11 }} />
@@ -163,8 +244,8 @@ export default function Home() {
           <MesoanalysisImage
             date={date}
             sector={sector}
-            layers={["cnty", "hiway"]}
-            params={param.split(" ").filter((param) => param)}
+            layers={['cnty', 'hiway']}
+            params={param.split(' ').filter((param) => param)}
           />
         </div>
       ))}
@@ -200,7 +281,7 @@ function MesoanalysisImage({
     ...params.map((param) => getMesoanalysisUrl(date, sector, param)),
   ];
   return (
-    <div style={{ position: "relative", background: "white" }}>
+    <div style={{ position: 'relative', background: 'white' }}>
       {urls.map((url, i) => (
         <Image
           key={i}
@@ -210,7 +291,7 @@ function MesoanalysisImage({
           quality={100}
           priority
           alt=""
-          style={i ? { position: "absolute", top: 0, left: 0 } : {}}
+          style={i ? { position: 'absolute', top: 0, left: 0 } : {}}
         ></Image>
       ))}
     </div>

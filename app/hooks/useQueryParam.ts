@@ -1,13 +1,13 @@
-import { usePathname, useSearchParams, useRouter } from "next/navigation";
+import { usePathname, useSearchParams, useRouter } from 'next/navigation';
 
 export function useQueryParam(
-  key: string
-): [string | null, (value: string | null | undefined) => void] {
+  key: string,
+): [string | undefined, (value: string | undefined) => void] {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
   return [
-    searchParams.get(key),
+    searchParams.get(key) ?? undefined,
     (value) => {
       const params = new URLSearchParams(searchParams.toString());
       if (value === null || value === undefined) {
@@ -15,13 +15,13 @@ export function useQueryParam(
       } else {
         params.set(key, value);
       }
-      router.push(pathname + "?" + params.toString());
+      router.push(pathname + '?' + params.toString());
     },
   ];
 }
 
 export function useQueryParams(
-  key: string
+  key: string,
 ): [string[], (values: string[]) => void] {
   const router = useRouter();
   const pathname = usePathname();
@@ -32,7 +32,7 @@ export function useQueryParams(
       const params = new URLSearchParams(searchParams.toString());
       params.delete(key);
       values.forEach((value) => params.append(key, value));
-      router.push(pathname + "?" + params.toString());
+      router.push(pathname + '?' + params.toString());
     },
   ];
 }

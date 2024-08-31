@@ -15,7 +15,7 @@ export function useQueryParam(
       } else {
         params.set(key, value);
       }
-      window.history.pushState({}, '', pathname + '?' + params.toString());
+      window.history.replaceState({}, '', pathname + '?' + params.toString());
     },
   ];
 }
@@ -34,7 +34,7 @@ export function useQueryParams(
       const params = new URLSearchParams(searchParams.toString());
       params.delete(key);
       values.forEach((value) => params.append(key, value));
-      window.history.pushState({}, '', pathname + '?' + params.toString());
+      window.history.replaceState({}, '', pathname + '?' + params.toString());
     },
   ];
 }

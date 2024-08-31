@@ -8,6 +8,7 @@ import { FaMinus, FaPlus, FaTimes } from 'react-icons/fa';
 import { useQueryParam, useQueryParams } from '../hooks/useQueryParam';
 
 import 'rc-slider/assets/index.css';
+import useListener from '../hooks/useListener';
 
 const mesoSectors: [number, string][] = [
   [19, 'Continental U.S.'],
@@ -104,6 +105,10 @@ function roundToNearestHour(date: Date) {
   return date;
 }
 
+function plusHours(date: Date, hours: number): Date {
+  return new Date(date.getTime() + 3600000 * hours);
+}
+
 function spliced<T>(
   array: T[],
   index: number,
@@ -159,6 +164,14 @@ export default function App() {
     },
     [setInputDateString],
   );
+
+  useListener(document, 'keydown', (event) => {
+    if (event.key === 'ArrowLeft') {
+      setInputDate(plusHours(inputDate, -1));
+    } else if (event.key === 'ArrowRight') {
+      setInputDate(plusHours(inputDate, 1));
+    }
+  });
 
   const date = new Date(inputDate.getTime() + 3600000 * hourOffset);
 
@@ -259,10 +272,7 @@ export default function App() {
                 color="gray"
                 size="xs"
                 className="px-1 py-1"
-                onClick={() => {
-                  setInputDate(new Date(date.getTime() - 3600000));
-                  setHourOffset(0);
-                }}
+                onClick={() => setInputDate(plusHours(inputDate, -1))}
               >
                 <FaMinus style={{ fontSize: 11 }} />
               </Button>
@@ -270,10 +280,7 @@ export default function App() {
                 color="gray"
                 size="xs"
                 className="px-1 py-1"
-                onClick={() => {
-                  setInputDate(new Date(date.getTime() + 3600000));
-                  setHourOffset(0);
-                }}
+                onClick={() => setInputDate(plusHours(inputDate, 1))}
               >
                 <FaPlus style={{ fontSize: 11 }} />
               </Button>
@@ -336,7 +343,6 @@ export default function App() {
                         ),
                       ),
                 );
-                setHourOffset(0);
                 setShowDatepicker(false);
               }}
             />

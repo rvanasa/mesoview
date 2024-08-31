@@ -279,8 +279,22 @@ export default function App() {
           min={-12}
           max={12}
           styles={{
-            handle: { borderColor: '#222', boxShadow: 'none' },
-            track: { backgroundColor: '#222' },
+            handle: {
+              borderColor: '#222',
+              boxShadow: 'none',
+              // transform: 'scale(1.5)',
+              width: 20,
+              height: 20,
+              borderWidth: 3,
+              top: 3,
+            },
+            track: {
+              backgroundColor: '#222',
+              height: 6,
+            },
+            rail: {
+              height: 6,
+            },
           }}
           startPoint={0}
           onChange={(value) => setHourOffset(value as number)}

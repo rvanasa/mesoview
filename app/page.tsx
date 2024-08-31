@@ -1,11 +1,11 @@
-import { Suspense } from 'react';
+// import { Suspense } from 'react';
 import App from './components/App';
-import PageLoading from './components/PageLoading';
+// import PageLoading from './components/PageLoading';
 
 export default function Page() {
   return (
-    <Suspense fallback={<PageLoading />}>
-      <App></App>
-    </Suspense>
+    // <Suspense fallback={<PageLoading />}>
+    <App></App>
+    // </Suspense>
   );
 }

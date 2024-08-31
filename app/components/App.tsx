@@ -286,31 +286,33 @@ export default function App() {
             color="gray"
             onClick={() => setShowDatepicker(!showDatepicker)}
           >
-            {date.toDateString()}
+            Set Day
           </Button>
         </div>
-        {!!showDatepicker && (
-          <Datepicker
-            value={inputDate.toDateString()}
-            style={{ maxWidth: 180 }}
-            showTodayButton={false}
-            labelClearButton="Reset"
-            inline
-            onSelectedDateChanged={(date) => {
-              setInputDate(
-                Math.abs(date.getTime() - Date.now()) < 1000
-                  ? date
-                  : new Date(
-                      date.getTime() +
-                        3600000 * 12 -
-                        60000 * date.getTimezoneOffset(),
-                    ),
-              );
-              setHourOffset(0);
-              setShowDatepicker(false);
-            }}
-          />
-        )}
+        <div className="flex justify-end">
+          {!!showDatepicker && (
+            <Datepicker
+              value={inputDate.toDateString()}
+              style={{ maxWidth: 180 }}
+              showTodayButton={false}
+              labelClearButton="Reset"
+              inline
+              onSelectedDateChanged={(date) => {
+                setInputDate(
+                  Math.abs(date.getTime() - Date.now()) < 1000
+                    ? date
+                    : new Date(
+                        date.getTime() +
+                          3600000 * 12 -
+                          60000 * date.getTimezoneOffset(),
+                      ),
+                );
+                setHourOffset(0);
+                setShowDatepicker(false);
+              }}
+            />
+          )}
+        </div>
       </div>
     </div>
   );

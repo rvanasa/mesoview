@@ -1,11 +1,11 @@
 'use client';
 
-import { Button, Datepicker, Dropdown } from 'flowbite-react';
+import { Button, Card, Datepicker, Dropdown } from 'flowbite-react';
 import Slider from 'rc-slider';
 import { useCallback, useEffect, useState } from 'react';
 import {
-  FaMinus,
-  FaPlus,
+  FaAngleLeft,
+  FaAngleRight,
   FaRegCalendarAlt,
   FaShareAlt,
   FaTimes,
@@ -13,6 +13,7 @@ import {
 import { useQueryParam, useQueryParams } from '../hooks/useQueryParam';
 
 import 'rc-slider/assets/index.css';
+import { FaGear } from 'react-icons/fa6';
 import useListener from '../hooks/useListener';
 
 const mesoSectors: [number, string][] = [
@@ -156,14 +157,15 @@ export default function App() {
   const [sectorString, setSectorString] = useQueryParam('sector');
   const [hourOffset, setHourOffset] = useState(0);
   const [inputDateString, setInputDateString] = useQueryParam('time');
-  const [showDatepicker, setShowDatepicker] = useState(false);
+  const [menu, setMenu] = useState<'calendar' | 'settings'>();
+  const [animationSteps, setAnimationSteps] = useState(12);
 
   const sectorNumber =
     sectorString === undefined || isNaN(+sectorString) ? 19 : +sectorString;
 
   const inputDate = inputDateString
     ? parseDate(inputDateString, 12)
-    : new Date();
+    : roundToNearestHour(new Date());
   const setInputDate = useCallback(
     (date: Date | undefined) => {
       setInputDateString(date && formatDate(date));
@@ -246,7 +248,9 @@ export default function App() {
           <div className="flex items-center justify-between gap-x-3">
             <Button
               color="gray"
-              onClick={() => setShowDatepicker(!showDatepicker)}
+              onClick={() =>
+                setMenu(menu !== 'calendar' ? 'calendar' : undefined)
+              }
             >
               <FaRegCalendarAlt />
             </Button>
@@ -264,13 +268,13 @@ export default function App() {
                 color="gray"
                 onClick={() => setInputDate(plusHours(inputDate, -1))}
               >
-                <FaMinus />
+                <FaAngleLeft />
               </Button>
               <Button
                 color="gray"
                 onClick={() => setInputDate(plusHours(inputDate, 1))}
               >
-                <FaPlus />
+                <FaAngleRight />
               </Button>
             </Button.Group>
           </div>
@@ -278,8 +282,8 @@ export default function App() {
         <Slider
           className="flex-1"
           value={hourOffset}
-          min={-12}
-          max={12}
+          min={-animationSteps}
+          max={animationSteps}
           styles={{
             handle: {
               borderColor: '#222',
@@ -302,8 +306,7 @@ export default function App() {
           onChange={(value) => setHourOffset(value as number)}
           onChangeComplete={() => setHourOffset(0)}
         />
-
-        {showDatepicker ? (
+        {menu === 'calendar' ? (
           <Datepicker
             value={inputDate.toDateString()}
             style={{ maxWidth: 180 }}
@@ -322,9 +325,25 @@ export default function App() {
                       ),
                     ),
               );
-              setShowDatepicker(false);
+              setMenu(undefined);
             }}
           />
+        ) : menu === 'settings' ? (
+          <Card>
+            <label>
+              Animation steps:
+              <input
+                type="number"
+                min={6}
+                step={6}
+                value={animationSteps}
+                onChange={(e) => setAnimationSteps(+e.target.value)}
+              />
+            </label>
+            <Button color="gray" onClick={() => setMenu(undefined)}>
+              Done
+            </Button>
+          </Card>
         ) : (
           <div className="flex justify-between p-3">
             <Dropdown
@@ -341,23 +360,33 @@ export default function App() {
                 </Dropdown.Item>
               ))}
             </Dropdown>
-            {!!navigator.share && (
+            <Button.Group>
+              {!!navigator.share && (
+                <Button
+                  color="gray"
+                  // className="text-blue-700"
+                  onClick={() =>
+                    navigator.share({
+                      title:
+                        params
+                          .map((param) => mesoParamMap.get(param))
+                          .join(', ') || 'Mesoanalysis',
+                      url: location.href,
+                    })
+                  }
+                >
+                  <FaShareAlt />
+                </Button>
+              )}
               <Button
                 color="gray"
-                className="text-blue-700"
                 onClick={() =>
-                  navigator.share({
-                    title:
-                      params
-                        .map((param) => mesoParamMap.get(param))
-                        .join(', ') || 'Mesoanalysis',
-                    url: location.href,
-                  })
+                  setMenu(menu !== 'settings' ? 'settings' : undefined)
                 }
               >
-                <FaShareAlt />
+                <FaGear />
               </Button>
-            )}
+            </Button.Group>
           </div>
         )}
       </div>

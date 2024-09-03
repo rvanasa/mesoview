@@ -5,7 +5,7 @@ import App from './components/App';
 export default function Page() {
   return (
     // <Suspense fallback={<PageLoading />}>
-    <App></App>
+    <App />
     // </Suspense>
   );
 }

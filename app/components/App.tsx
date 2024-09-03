@@ -171,11 +171,12 @@ export default function App() {
     [setInputDateString],
   );
 
-  useListener(document, 'keydown', (event) => {
+  useListener(document, 'keydown', (event: KeyboardEvent) => {
+    const hours = event.ctrlKey ? 6 : 1;
     if (event.key === 'ArrowLeft') {
-      setInputDate(plusHours(inputDate, -1));
+      setInputDate(plusHours(inputDate, -hours));
     } else if (event.key === 'ArrowRight') {
-      setInputDate(plusHours(inputDate, 1));
+      setInputDate(plusHours(inputDate, hours));
     }
   });
 

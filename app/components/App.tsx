@@ -74,7 +74,7 @@ function getMesoanalysisUrl(date: Date, sector: string, param: string) {
     return `${mesoBaseUrl}/${sector}/${param}/${param}.gif`;
   } else if (deltaHours > 0) {
     return `${mesoBaseUrl}/fcst/${sector}/${param}_${String(
-      date.getUTCHours(),
+      deltaHours,
     ).padStart(2, '0')}_trans.gif`;
   } else {
     return `${mesoBaseUrl}/${sector}/${param}/${param}_${date
@@ -92,9 +92,10 @@ function getRadarUrl(date: Date, sector: string) {
   if (deltaHours === 0) {
     return `${mesoBaseUrl}/${sector}/rgnlrad/rgnlrad.gif`;
   } else if (deltaHours > 0) {
-    return `${mesoBaseUrl}/fcst/${sector}/hrrr_${String(
-      date.getUTCHours(),
-    ).padStart(2, '0')}.gif`;
+    return `${mesoBaseUrl}/fcst/${sector}/hrrr_${String(deltaHours).padStart(
+      2,
+      '0',
+    )}.gif`;
   } else {
     return `${mesoBaseUrl}/${sector}/rgnlrad/rad_${date
       .toISOString()

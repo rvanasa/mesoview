@@ -66,7 +66,11 @@ function getLayerUrl(sector: string, param: string) {
   return `${mesoBaseUrl}/${sector}/${param}/${param}.gif`;
 }
 
-function getMesoanalysisUrl(date: Date, sector: string, param: string) {
+function getMesoanalysisUrl(
+  date: Date,
+  sector: string,
+  param: string,
+): string | undefined {
   date = roundToNearestHour(date);
   const now = new Date();
   const deltaHours = Math.round((date.getTime() - now.getTime()) / 3600000);
@@ -74,8 +78,11 @@ function getMesoanalysisUrl(date: Date, sector: string, param: string) {
   if (deltaHours === 0) {
     return `${mesoBaseUrl}/${sector}/${param}/${param}.gif`;
   } else if (deltaHours > 0) {
+    if (deltaHours > 6) {
+      return;
+    }
     return `${mesoBaseUrl}/fcst/${sector}/${param}_${String(
-      deltaHours,
+      date.getUTCHours(),
     ).padStart(2, '0')}_trans.gif`;
   } else {
     return `${mesoBaseUrl}/${sector}/${param}/${param}_${date
@@ -85,7 +92,7 @@ function getMesoanalysisUrl(date: Date, sector: string, param: string) {
   }
 }
 
-function getRadarUrl(date: Date, sector: string) {
+function getRadarUrl(date: Date, sector: string): string | undefined {
   date = roundToNearestHour(date);
   const now = new Date();
   const deltaHours = Math.round((date.getTime() - now.getTime()) / 3600000);
@@ -93,10 +100,12 @@ function getRadarUrl(date: Date, sector: string) {
   if (deltaHours === 0) {
     return `${mesoBaseUrl}/${sector}/rgnlrad/rgnlrad.gif`;
   } else if (deltaHours > 0) {
-    return `${mesoBaseUrl}/fcst/${sector}/hrrr_${String(deltaHours).padStart(
-      2,
-      '0',
-    )}.gif`;
+    if (deltaHours > 16) {
+      return;
+    }
+    return `${mesoBaseUrl}/fcst/${sector}/hrrr_${String(
+      date.getUTCHours(),
+    ).padStart(2, '0')}.gif`;
   } else {
     return `${mesoBaseUrl}/${sector}/rgnlrad/rad_${date
       .toISOString()
@@ -158,7 +167,7 @@ export default function App() {
   const [hourOffset, setHourOffset] = useState(0);
   const [inputDateString, setInputDateString] = useQueryParam('time');
   const [menu, setMenu] = useState<'calendar' | 'settings'>();
-  const [animationSteps, setAnimationSteps] = useState(12);
+  const [sliderRange, setSliderRange] = useState(12);
 
   const sectorNumber =
     sectorString === undefined || isNaN(+sectorString) ? 19 : +sectorString;
@@ -256,7 +265,7 @@ export default function App() {
             </Button>
             <code className="font-bold flex-1 text-left text-lg">
               {formatDate(date)}
-              {Math.abs(nowOffset) <= 12 && (
+              {nowOffset >= -12 && (
                 <span className="ml-3 opacity-70 text-green-700">
                   {nowOffset > 0 && '+'}
                   {nowOffset === 0 ? 'Now' : `${nowOffset}h`}
@@ -282,8 +291,8 @@ export default function App() {
         <Slider
           className="flex-1"
           value={hourOffset}
-          min={-animationSteps}
-          max={animationSteps}
+          min={-sliderRange}
+          max={sliderRange}
           styles={{
             handle: {
               borderColor: '#222',
@@ -330,14 +339,15 @@ export default function App() {
           />
         ) : menu === 'settings' ? (
           <Card>
-            <label>
-              Animation steps:
+            <label className="flex items-center justify-between">
+              <span className="font-bold">Slider range (hours):</span>
               <input
                 type="number"
                 min={6}
                 step={6}
-                value={animationSteps}
-                onChange={(e) => setAnimationSteps(+e.target.value)}
+                value={sliderRange}
+                className="ml-2 w-20"
+                onChange={(e) => setSliderRange(+e.target.value)}
               />
             </label>
             <Button color="gray" onClick={() => setMenu(undefined)}>
@@ -416,18 +426,21 @@ function MesoanalysisImage({
   const height = 750;
   return (
     <div style={{ position: 'relative', background: 'white' }}>
-      {urls.map((url, i) => (
-        <CachedImage
-          key={i}
-          src={url}
-          width={width}
-          height={height}
-          alt=""
-          style={i ? { position: 'absolute', top: 0, left: 0 } : {}}
-          onError={(e) => ((e.target as any).style.opacity = 0)}
-          onLoad={(e) => ((e.target as any).style.opacity = 1)}
-        />
-      ))}
+      {urls.map(
+        (url, i) =>
+          !!url && (
+            <CachedImage
+              key={i}
+              src={url}
+              width={width}
+              height={height}
+              alt=""
+              style={i ? { position: 'absolute', top: 0, left: 0 } : {}}
+              onError={(e) => ((e.target as any).style.opacity = 0)}
+              onLoad={(e) => ((e.target as any).style.opacity = 1)}
+            />
+          ),
+      )}
     </div>
   );
 }

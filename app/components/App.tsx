@@ -161,13 +161,19 @@ function parseDate(dateString: string, defaultHour?: number): Date | undefined {
   );
 }
 
+const defaultSliderRange = 12;
+
 export default function App() {
   const [params, setParams] = useQueryParams('param', ['500mb']);
   const [sectorString, setSectorString] = useQueryParam('sector');
   const [hourOffset, setHourOffset] = useState(0);
   const [inputDateString, setInputDateString] = useQueryParam('time');
   const [menu, setMenu] = useState<'calendar' | 'settings'>();
-  const [sliderRange, setSliderRange] = useState(12);
+  const [sliderRangeInput, setSliderRangeInput] = useState(
+    String(defaultSliderRange),
+  );
+
+  const sliderRange = +sliderRangeInput || 12;
 
   const sectorNumber =
     sectorString === undefined || isNaN(+sectorString) ? 19 : +sectorString;
@@ -345,12 +351,12 @@ export default function App() {
                 type="number"
                 min={6}
                 step={6}
-                value={sliderRange}
+                value={sliderRangeInput}
                 className="ml-2 w-20"
-                onChange={(e) => setSliderRange(+e.target.value)}
+                onChange={(e) => setSliderRangeInput(e.target.value)}
               />
             </label>
-            <Button color="gray" onClick={() => setMenu(undefined)}>
+            <Button outline color="blue" onClick={() => setMenu(undefined)}>
               Done
             </Button>
           </Card>

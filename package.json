@@ -1,13 +1,12 @@
 {
-  "name": "mesoview",
+  "name": "spc-mobile",
   "version": "0.1.0",
   "private": true,
   "type": "module",
   "scripts": {
     "start": "vite --port 3000",
     "preview": "vite preview",
-    "build": "vite build",
-    "lint": ""
+    "build": "vite build"
   },
   "dependencies": {
     "flowbite-react": "^0.10.1",

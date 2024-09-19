@@ -15,6 +15,7 @@ import { useQueryParam, useQueryParams } from '../hooks/useQueryParam';
 import 'rc-slider/assets/index.css';
 import { FaGear } from 'react-icons/fa6';
 import useListener from '../hooks/useListener';
+import 'twin.macro';
 
 const mesoSectors: [number, string][] = [
   [19, 'Continental U.S.'],

@@ -6,7 +6,7 @@
   "scripts": {
     "start": "vite --port 3000",
     "preview": "vite preview",
-    "build": "vite build"
+    "build": "vite build --base=/spc-mobile"
   },
   "dependencies": {
     "flowbite-react": "^0.10.1",

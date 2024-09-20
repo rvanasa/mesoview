@@ -206,16 +206,16 @@ export default function App() {
   const sectorName = mesoSectorMap.get(sectorNumber);
 
   return (
-    <div style={{ maxWidth: 1000 }} className="mx-auto">
+    <div style={{ maxWidth: 1000 }} tw="mx-auto">
       {params.map((param, i) => (
         <div key={i}>
-          <div className="flex justify-between p-2">
+          <div tw="flex justify-between p-2">
             <div>
               <Dropdown
                 label={mesoParamMap.get(param) || param || 'Choose parameter'}
                 inline
               >
-                {/* <div style={{ maxHeight: "70vh" }} className="overflow-y-scroll"> */}
+                {/* <div style={{ maxHeight: "70vh" }} tw="overflow-y-scroll"> */}
                 {mesoParams.map(([key, title], j) => (
                   <Dropdown.Item
                     key={j}
@@ -231,7 +231,7 @@ export default function App() {
               <Button
                 color="gray"
                 size="xs"
-                className="px-0 py-1 text-red-700"
+                tw="px-0 py-1 text-red-700"
                 onClick={() => setParams(spliced(params, i, 1))}
               >
                 <FaTimes style={{ fontSize: 11 }} />
@@ -246,7 +246,7 @@ export default function App() {
           />
         </div>
       ))}
-      <div className="p-3 flex justify-between">
+      <div tw="p-3 flex justify-between">
         <Dropdown label="Add parameter" inline>
           {mesoParams.map(([key, title], i) => (
             <Dropdown.Item key={i} onClick={() => setParams([...params, key])}>
@@ -257,11 +257,11 @@ export default function App() {
       </div>
       <div style={{ paddingBottom: 130 }}></div>
       <div
-        className="fixed bottom-0 rounded-t-lg w-full bg-white"
+        tw="fixed bottom-0 rounded-t-lg w-full bg-white"
         style={{ maxWidth: 1000 }}
       >
-        <div className="p-3">
-          <div className="flex items-center justify-between gap-x-3">
+        <div tw="p-3">
+          <div tw="flex items-center justify-between gap-x-3">
             <Button
               color="gray"
               onClick={() =>
@@ -270,10 +270,10 @@ export default function App() {
             >
               <FaRegCalendarAlt />
             </Button>
-            <code className="font-bold flex-1 text-left text-lg">
+            <code tw="font-bold flex-1 text-left text-lg">
               {formatDate(date)}
               {nowOffset >= -12 && (
-                <span className="ml-3 opacity-70 text-green-700">
+                <span tw="ml-3 opacity-70 text-green-700">
                   {nowOffset > 0 && '+'}
                   {nowOffset === 0 ? 'Now' : `${nowOffset}h`}
                 </span>
@@ -296,10 +296,7 @@ export default function App() {
           </div>
         </div>
         <Slider
-          className="flex-1"
-          value={hourOffset}
-          min={-sliderRange}
-          max={sliderRange}
+          tw="flex-1"
           styles={{
             handle: {
               borderColor: '#222',
@@ -318,6 +315,9 @@ export default function App() {
               height: 6,
             },
           }}
+          value={hourOffset}
+          min={-sliderRange}
+          max={sliderRange}
           startPoint={0}
           onChange={(value) => setHourOffset(value as number)}
           onChangeComplete={() => setHourOffset(0)}
@@ -346,14 +346,14 @@ export default function App() {
           />
         ) : menu === 'settings' ? (
           <Card>
-            <label className="flex items-center justify-between">
-              <span className="font-bold">Slider range (hours):</span>
+            <label tw="flex items-center justify-between">
+              <span tw="font-bold">Slider range (hours):</span>
               <input
                 type="number"
                 min={6}
                 step={6}
                 value={sliderRangeInput}
-                className="ml-2 w-20"
+                tw="ml-2 w-20"
                 onChange={(e) => setSliderRangeInput(e.target.value)}
               />
             </label>
@@ -362,9 +362,9 @@ export default function App() {
             </Button>
           </Card>
         ) : (
-          <div className="flex justify-between p-3">
+          <div tw="flex justify-between p-3">
             <Dropdown
-              className="flex-1"
+              tw="flex-1"
               inline
               label={sectorName || 'Choose region...'}
             >
@@ -381,7 +381,7 @@ export default function App() {
               {!!navigator.share && (
                 <Button
                   color="gray"
-                  // className="text-blue-700"
+                  // tw="text-blue-700"
                   onClick={() =>
                     navigator.share({
                       title:

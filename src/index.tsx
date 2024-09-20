@@ -1,8 +1,10 @@
-import { createRoot } from 'react-dom/client';
-import App from './components/App';
-import { createBrowserRouter, RouterProvider } from 'react-router-dom';
-import './styles/index.scss';
 import React from 'react';
+import { createRoot } from 'react-dom/client';
+import { createBrowserRouter, RouterProvider } from 'react-router-dom';
+import App from './components/App';
+
+import 'twin.macro';
+import './styles/index.scss';
 
 const router = createBrowserRouter(
   [

@@ -4,12 +4,17 @@ import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import './styles/index.scss';
 import React from 'react';
 
-const router = createBrowserRouter([
+const router = createBrowserRouter(
+  [
+    {
+      path: '/',
+      element: <App />,
+    },
+  ],
   {
-    path: '/',
-    element: <App />,
+    basename: import.meta.env.BASE_URL,
   },
-]);
+);
 
 const root = createRoot(document.getElementById('root')!);
 root.render(

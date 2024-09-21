@@ -203,7 +203,11 @@ export default function App() {
   const nowOffset = Math.round((date.getTime() - Date.now()) / 3600000);
 
   const sector = `s${sectorNumber}`;
-  const sectorName = mesoSectorMap.get(sectorNumber);
+  const sectorName = mesoSectorMap.get(sectorNumber) || '(Unknown Region)';
+
+  useEffect(() => {
+    document.title = `${inputDateString || 'Current time'} | ${sectorName} | Mesoview`;
+  }, [inputDateString, sectorName]);
 
   return (
     <div style={{ maxWidth: 1000 }} tw="mx-auto">

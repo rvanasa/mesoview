@@ -392,7 +392,7 @@ export default function App() {
                         params
                           .map((param) => mesoParamMap.get(param))
                           .join(', ') || 'Mesoanalysis',
-                      url: location.href,
+                      url: window.location.href,
                     })
                   }
                 >
@@ -520,6 +520,5 @@ function CachedImage({ src, alt, ...rest }: CachedImageProps) {
       cancelled = true;
     };
   }, [src]);
-  // eslint-disable-next-line @next/next/no-img-element
   return <img src={data ?? ''} alt={alt} {...rest} />;
 }

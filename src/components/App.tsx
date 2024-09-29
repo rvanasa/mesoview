@@ -168,9 +168,9 @@ export default function App() {
   const [hourOffset, setHourOffset] = useState(0);
   const [inputDateString, setInputDateString] = useQueryParam('time');
   const [menu, setMenu] = useState<'calendar' | 'settings'>();
-  const [sliderIntervalInput, setSliderIntervalInput] = useState('1');
+  const [sliderRangeInput, setSliderRangeInput] = useState('1');
 
-  const sliderInterval = +sliderIntervalInput;
+  const sliderRange = +sliderRangeInput;
 
   const sectorNumber =
     sectorString === undefined || isNaN(+sectorString) ? 19 : +sectorString;
@@ -316,8 +316,8 @@ export default function App() {
             },
           }}
           value={hourOffset}
-          min={-12 * sliderInterval}
-          max={12 * sliderInterval}
+          min={-12 * sliderRange}
+          max={12 * sliderRange}
           startPoint={0}
           onChange={(value) => setHourOffset(value as number)}
           onChangeComplete={() => setHourOffset(0)}
@@ -347,14 +347,14 @@ export default function App() {
         ) : menu === 'settings' ? (
           <Card>
             <label tw="flex items-center justify-between">
-              <span tw="font-bold">Slider interval (hours):</span>
+              <span tw="font-bold">Slider range (days):</span>
               <input
                 type="number"
                 min={1}
                 step={1}
-                value={sliderIntervalInput}
+                value={sliderRangeInput}
                 tw="ml-2 w-20"
-                onChange={(e) => setSliderIntervalInput(e.target.value)}
+                onChange={(e) => setSliderRangeInput(e.target.value)}
               />
             </label>
             <Button outline color="blue" onClick={() => setMenu(undefined)}>

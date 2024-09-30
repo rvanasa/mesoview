@@ -31,6 +31,7 @@ import {
   mesoSectorMap,
   mesoSectors,
 } from '../utils/mesoanalysis';
+import NumberInput from './NumberInput';
 
 export default function App() {
   const [params, setParams] = useQueryParams('param', ['500mb']);
@@ -38,11 +39,8 @@ export default function App() {
   const [hourOffset, setHourOffset] = useState(0);
   const [inputDateString, setInputDateString] = useQueryParam('time');
   const [menu, setMenu] = useState<'calendar' | 'settings'>();
-  const [sliderRangeInput, setSliderRangeInput] = useState('1');
-  const [sliderIntervalInput, setSliderIntervalInput] = useState('1');
-
-  const sliderRange = +sliderRangeInput;
-  const sliderInterval = +sliderIntervalInput;
+  const [sliderRange, setSliderRange] = useState(1);
+  const [sliderInterval, setSliderInterval] = useState(1);
 
   const sectorNumber =
     sectorString === undefined || isNaN(+sectorString) ? 19 : +sectorString;
@@ -218,27 +216,25 @@ export default function App() {
             }}
           />
         ) : menu === 'settings' ? (
-          <Card tw="font-[14px]">
+          <Card tw="text-lg">
             <label tw="flex items-center justify-between">
               <span>Slider range (days):</span>
-              <input
-                type="number"
+              <NumberInput
                 min={1}
                 step={1}
-                value={sliderRangeInput}
+                defaultValue={sliderRange}
                 tw="ml-2 w-20"
-                onChange={(e) => setSliderRangeInput(e.target.value)}
+                onChangeValue={setSliderRange}
               />
             </label>
             <label tw="flex items-center justify-between">
               <span>Slider interval (hours):</span>
-              <input
-                type="number"
+              <NumberInput
                 min={1}
                 step={1}
-                value={sliderIntervalInput}
+                defaultValue={sliderInterval}
                 tw="ml-2 w-20"
-                onChange={(e) => setSliderIntervalInput(e.target.value)}
+                onChangeValue={setSliderInterval}
               />
             </label>
             <PrimaryButton onClick={() => setMenu(undefined)}>

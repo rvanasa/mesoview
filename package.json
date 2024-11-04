@@ -6,7 +6,7 @@
   "scripts": {
     "start": "vite --port 3000",
     "preview": "vite preview",
-    "build": "vite build --base=/spc-mobile",
+    "build": "vite build",
     "lint": "eslint src"
   },
   "dependencies": {

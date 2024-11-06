@@ -13,7 +13,7 @@ import {
 import { useQueryParam, useQueryParams } from '../hooks/useQueryParam';
 
 import 'rc-slider/assets/index.css';
-import { FaGear } from 'react-icons/fa6';
+import { FaAnglesUp, FaArrowDownWideShort, FaGear } from 'react-icons/fa6';
 import 'twin.macro';
 import useListener from '../hooks/useListener';
 import spliced from '../utils/spliced';
@@ -97,16 +97,49 @@ export default function App() {
                 {/* </div> */}
               </Dropdown>
             </div>
-            {params.length > 1 && (
-              <Button
-                color="gray"
-                size="xs"
-                tw="px-0 py-1 text-red-700"
-                onClick={() => setParams(spliced(params, i, 1))}
-              >
-                <FaTimes style={{ fontSize: 11 }} />
-              </Button>
-            )}
+            <Button.Group tw="space-x-2">
+              {param.includes(' ') && (
+                <Button
+                  color="gray"
+                  size="xs"
+                  tw="px-0 py-1"
+                  onClick={() =>
+                    setParams(spliced(params, i, 1, ...param.split(' ')))
+                  }
+                >
+                  <FaArrowDownWideShort style={{ fontSize: 11 }} />
+                </Button>
+              )}
+              {i > 0 && (
+                <Button
+                  color="gray"
+                  size="xs"
+                  tw="px-0 py-1"
+                  onClick={() =>
+                    setParams(
+                      spliced(
+                        params,
+                        i - 1,
+                        2,
+                        `${params[i - 1]} ${params[i]}`,
+                      ),
+                    )
+                  }
+                >
+                  <FaAnglesUp style={{ fontSize: 11 }} />
+                </Button>
+              )}
+              {params.length > 1 && (
+                <Button
+                  color="gray"
+                  size="xs"
+                  tw="px-0 py-1 text-red-700"
+                  onClick={() => setParams(spliced(params, i, 1))}
+                >
+                  <FaTimes style={{ fontSize: 11 }} />
+                </Button>
+              )}
+            </Button.Group>
           </div>
           <MesoanalysisImage
             date={date}

@@ -34,7 +34,7 @@ import {
 import NumberInput from './NumberInput';
 
 export default function App() {
-  const [params, setParams] = useQueryParams('param', ['500mb']);
+  const [params, setParams] = useQueryParams('param', ['500mb', '3cvr']);
   const [sectorString, setSectorString] = useQueryParam('sector');
   const [hourOffset, setHourOffset] = useState(0);
   const [inputDateString, setInputDateString] = useQueryParam('time');

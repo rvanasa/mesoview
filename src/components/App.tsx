@@ -1,6 +1,6 @@
 'use client';
 
-import { ButtonGroup, Card, Datepicker, Dropdown } from 'flowbite-react';
+import { Card, Datepicker, Dropdown } from 'flowbite-react';
 import Slider from 'rc-slider';
 import { useCallback, useEffect, useState } from 'react';
 import {
@@ -35,6 +35,7 @@ import NumberInput from './NumberInput';
 import { PrimaryButton } from './PrimaryButton';
 import { ToolButton } from './ToolButton';
 import { Button } from './Button';
+import { ButtonGroup } from './ButtonGroup';
 
 export default function App() {
   const [params, setParams] = useQueryParams('param', ['500mb', '3cvr']);

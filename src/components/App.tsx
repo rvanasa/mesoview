@@ -1,11 +1,12 @@
 'use client';
 
-import { Button, Card, Datepicker, Dropdown } from 'flowbite-react';
+import { ButtonGroup, Card, Datepicker, Dropdown } from 'flowbite-react';
 import Slider from 'rc-slider';
 import { useCallback, useEffect, useState } from 'react';
 import {
   FaAngleLeft,
   FaAngleRight,
+  FaLayerGroup,
   FaRegCalendarAlt,
   FaShareAlt,
   FaTimes,
@@ -13,12 +14,9 @@ import {
 import { useQueryParam, useQueryParams } from '../hooks/useQueryParam';
 
 import 'rc-slider/assets/index.css';
-import { FaAnglesUp, FaArrowDownWideShort, FaGear } from 'react-icons/fa6';
+import { FaGear, FaTurnUp } from 'react-icons/fa6';
 import 'twin.macro';
 import useListener from '../hooks/useListener';
-import spliced from '../utils/spliced';
-import MesoanalysisImage from './MesoanalysisImage';
-import { PrimaryButton } from './PrimaryButton';
 import {
   formatDate,
   parseDate,
@@ -31,7 +29,12 @@ import {
   mesoSectorMap,
   mesoSectors,
 } from '../utils/mesoanalysis';
+import spliced from '../utils/spliced';
+import MesoanalysisImage from './MesoanalysisImage';
 import NumberInput from './NumberInput';
+import { PrimaryButton } from './PrimaryButton';
+import { ToolButton } from './ToolButton';
+import { Button } from './Button';
 
 export default function App() {
   const [params, setParams] = useQueryParams('param', ['500mb', '3cvr']);
@@ -97,24 +100,18 @@ export default function App() {
                 {/* </div> */}
               </Dropdown>
             </div>
-            <Button.Group tw="space-x-2">
+            <div tw="flex space-x-2">
               {param.includes(' ') && (
-                <Button
-                  color="gray"
-                  size="xs"
-                  tw="px-0 py-1"
+                <ToolButton
                   onClick={() =>
                     setParams(spliced(params, i, 1, ...param.split(' ')))
                   }
                 >
-                  <FaArrowDownWideShort style={{ fontSize: 11 }} />
-                </Button>
+                  <FaLayerGroup />
+                </ToolButton>
               )}
               {i > 0 && (
-                <Button
-                  color="gray"
-                  size="xs"
-                  tw="px-0 py-1"
+                <ToolButton
                   onClick={() =>
                     setParams(
                       spliced(
@@ -126,20 +123,15 @@ export default function App() {
                     )
                   }
                 >
-                  <FaAnglesUp style={{ fontSize: 11 }} />
-                </Button>
+                  <FaTurnUp />
+                </ToolButton>
               )}
               {params.length > 1 && (
-                <Button
-                  color="gray"
-                  size="xs"
-                  tw="px-0 py-1 text-red-700"
-                  onClick={() => setParams(spliced(params, i, 1))}
-                >
-                  <FaTimes style={{ fontSize: 11 }} />
-                </Button>
+                <ToolButton onClick={() => setParams(spliced(params, i, 1))}>
+                  <FaTimes tw="text-red-700" />
+                </ToolButton>
               )}
-            </Button.Group>
+            </div>
           </div>
           <MesoanalysisImage
             date={date}
@@ -166,7 +158,6 @@ export default function App() {
         <div tw="p-3">
           <div tw="flex items-center justify-between gap-x-3">
             <Button
-              color="gray"
               onClick={() =>
                 setMenu(menu !== 'calendar' ? 'calendar' : undefined)
               }
@@ -182,20 +173,14 @@ export default function App() {
                 </span>
               )}
             </code>
-            <Button.Group>
-              <Button
-                color="gray"
-                onClick={() => setInputDate(plusHours(inputDate, -1))}
-              >
+            <ButtonGroup>
+              <Button onClick={() => setInputDate(plusHours(inputDate, -1))}>
                 <FaAngleLeft />
               </Button>
-              <Button
-                color="gray"
-                onClick={() => setInputDate(plusHours(inputDate, 1))}
-              >
+              <Button onClick={() => setInputDate(plusHours(inputDate, 1))}>
                 <FaAngleRight />
               </Button>
-            </Button.Group>
+            </ButtonGroup>
           </div>
         </div>
         <Slider
@@ -290,11 +275,9 @@ export default function App() {
                 </Dropdown.Item>
               ))}
             </Dropdown>
-            <Button.Group>
+            <ButtonGroup>
               {!!navigator.share && (
                 <Button
-                  color="gray"
-                  // tw="text-blue-700"
                   onClick={() =>
                     navigator.share({
                       title:
@@ -309,14 +292,13 @@ export default function App() {
                 </Button>
               )}
               <Button
-                color="gray"
                 onClick={() =>
                   setMenu(menu !== 'settings' ? 'settings' : undefined)
                 }
               >
                 <FaGear />
               </Button>
-            </Button.Group>
+            </ButtonGroup>
           </div>
         )}
       </div>

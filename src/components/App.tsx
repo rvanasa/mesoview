@@ -231,7 +231,7 @@ export default function App() {
             >
               <FaRegCalendarAlt />
             </Button>
-            <code tw="font-bold flex-1 text-left text-lg">
+            <code tw="font-bold flex-1 text-left text-lg select-none">
               {formatDate(date)}
               {nowOffset >= -12 && (
                 <span tw="ml-3 opacity-70 text-green-700">

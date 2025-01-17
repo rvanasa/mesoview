@@ -2,7 +2,9 @@ import classNames from 'classnames';
 import React from 'react';
 import tw from 'twin.macro';
 
-export interface ButtonProps extends React.HTMLAttributes<HTMLDivElement> {}
+export interface ButtonProps extends React.HTMLAttributes<HTMLDivElement> {
+  type?: 'primary' | undefined;
+}
 
 const Container = tw.div`
   px-4
@@ -12,7 +14,7 @@ const Container = tw.div`
   text-lg
   text-[rgba(0,0,0,.9)]
   flex
-  items-center
+  justify-center
   rounded-lg
   shadow-sm
   [transition-duration: .1s]
@@ -21,10 +23,13 @@ const Container = tw.div`
   hover:(bg-gray-100)
 `;
 
-export function Button({ className, ...rest }: ButtonProps) {
+export function Button({ className, type, ...rest }: ButtonProps) {
   return (
     <Container
       className={classNames('button', className)}
+      css={[
+        type === 'primary' && tw`bg-blue-500 text-white hover:(bg-blue-600)`,
+      ]}
       {...rest}
     ></Container>
   );

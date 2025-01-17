@@ -1,6 +1,4 @@
-'use client';
-
-import { Card, Datepicker, Dropdown } from 'flowbite-react';
+import { Dropdown } from 'flowbite-react';
 import Slider from 'rc-slider';
 import { useCallback, useEffect, useState } from 'react';
 import {
@@ -11,12 +9,10 @@ import {
   FaShareAlt,
   FaTimes,
 } from 'react-icons/fa';
-import { useQueryParam, useQueryParams } from '../hooks/useQueryParam';
-
-import 'rc-slider/assets/index.css';
 import { FaGear, FaTurnUp } from 'react-icons/fa6';
 import 'twin.macro';
 import useListener from '../hooks/useListener';
+import { useQueryParam, useQueryParams } from '../hooks/useQueryParam';
 import {
   formatDate,
   parseDate,
@@ -30,19 +26,20 @@ import {
   mesoSectors,
 } from '../utils/mesoanalysis';
 import spliced from '../utils/spliced';
-import MesoanalysisImage from './MesoanalysisImage';
-import NumberInput from './NumberInput';
-import { PrimaryButton } from './PrimaryButton';
-import { ToolButton } from './ToolButton';
 import { Button } from './Button';
 import { ButtonGroup } from './ButtonGroup';
+import Calendar from './Calendar';
+import Card from './Card';
+import MesoanalysisImage from './MesoanalysisImage';
+import NumberInput from './NumberInput';
+import { ToolButton } from './ToolButton';
 
 export default function App() {
   const [params, setParams] = useQueryParams('param', ['500mb', '3cvr']);
   const [sectorString, setSectorString] = useQueryParam('sector');
   const [hourOffset, setHourOffset] = useState(0);
   const [inputDateString, setInputDateString] = useQueryParam('time');
-  const [menu, setMenu] = useState<'calendar' | 'settings'>();
+  const [modal, setModal] = useState<'calendar' | 'settings'>();
   const [sliderRange, setSliderRange] = useState(1);
   const [sliderInterval, setSliderInterval] = useState(1);
 
@@ -81,6 +78,75 @@ export default function App() {
 
   return (
     <div style={{ maxWidth: 1000 }} tw="mx-auto">
+      {!!modal && (
+        <div
+          tw="flex justify-center items-center bg-[#0005] absolute top-0 bottom-0 left-0 right-0 z-10"
+          onClick={() => setModal(undefined)}
+        >
+          <div onClick={(e) => e.stopPropagation()}>
+            {modal === 'calendar' ? (
+              <Card tw="text-lg flex flex-col gap-4 w-full">
+                <Calendar
+                  value={inputDate}
+                  onChange={(date) => {
+                    setInputDate(
+                      date
+                        ? Math.abs(date.getTime() - Date.now()) < 1000
+                          ? undefined
+                          : roundToNearestHour(
+                              new Date(
+                                date.getTime() +
+                                  3600000 * 12 -
+                                  60000 * date.getTimezoneOffset(),
+                              ),
+                            )
+                        : undefined,
+                    );
+                    setModal(undefined);
+                  }}
+                />
+                <Button
+                  onClick={() => {
+                    setInputDate(undefined);
+                    setModal(undefined);
+                  }}
+                >
+                  Reset
+                </Button>
+                {/* <Button type="primary" onClick={() => setModal(undefined)}>
+                  Done
+                </Button> */}
+              </Card>
+            ) : modal === 'settings' ? (
+              <Card tw="text-lg flex flex-col gap-4 w-full">
+                <label tw="flex items-center justify-between">
+                  <span>Slider range (days):</span>
+                  <NumberInput
+                    min={1}
+                    step={1}
+                    defaultValue={sliderRange}
+                    tw="ml-2 w-20"
+                    onChangeValue={setSliderRange}
+                  />
+                </label>
+                <label tw="flex items-center justify-between">
+                  <span>Slider interval (hours):</span>
+                  <NumberInput
+                    min={1}
+                    step={1}
+                    defaultValue={sliderInterval}
+                    tw="ml-2 w-20"
+                    onChangeValue={setSliderInterval}
+                  />
+                </label>
+                <Button type="primary" onClick={() => setModal(undefined)}>
+                  Done
+                </Button>
+              </Card>
+            ) : null}
+          </div>
+        </div>
+      )}
       {params.map((param, i) => (
         <div key={i}>
           <div tw="flex justify-between p-2">
@@ -160,7 +226,7 @@ export default function App() {
           <div tw="flex items-center justify-between gap-x-3">
             <Button
               onClick={() =>
-                setMenu(menu !== 'calendar' ? 'calendar' : undefined)
+                setModal(modal !== 'calendar' ? 'calendar' : undefined)
               }
             >
               <FaRegCalendarAlt />
@@ -212,96 +278,42 @@ export default function App() {
           onChange={(value) => setHourOffset(value as number)}
           onChangeComplete={() => setHourOffset(0)}
         />
-        {menu === 'calendar' ? (
-          <Datepicker
-            value={inputDate.toDateString()}
-            style={{ maxWidth: 180 }}
-            showTodayButton={false}
-            labelClearButton="Reset"
-            inline
-            onSelectedDateChanged={(date) => {
-              setInputDate(
-                Math.abs(date.getTime() - Date.now()) < 1000
-                  ? undefined
-                  : roundToNearestHour(
-                      new Date(
-                        date.getTime() +
-                          3600000 * 12 -
-                          60000 * date.getTimezoneOffset(),
-                      ),
-                    ),
-              );
-              setMenu(undefined);
-            }}
-          />
-        ) : menu === 'settings' ? (
-          <Card tw="text-lg">
-            <label tw="flex items-center justify-between">
-              <span>Slider range (days):</span>
-              <NumberInput
-                min={1}
-                step={1}
-                defaultValue={sliderRange}
-                tw="ml-2 w-20"
-                onChangeValue={setSliderRange}
-              />
-            </label>
-            <label tw="flex items-center justify-between">
-              <span>Slider interval (hours):</span>
-              <NumberInput
-                min={1}
-                step={1}
-                defaultValue={sliderInterval}
-                tw="ml-2 w-20"
-                onChangeValue={setSliderInterval}
-              />
-            </label>
-            <PrimaryButton onClick={() => setMenu(undefined)}>
-              Done
-            </PrimaryButton>
-          </Card>
-        ) : (
-          <div tw="flex justify-between p-3">
-            <Dropdown
-              tw="flex-1"
-              inline
-              label={sectorName || 'Choose region...'}
-            >
-              {mesoSectors.map(([number, name], i) => (
-                <Dropdown.Item
-                  key={i}
-                  onClick={() => setSectorString(String(number))}
-                >
-                  {name}
-                </Dropdown.Item>
-              ))}
-            </Dropdown>
-            <ButtonGroup>
-              {!!navigator.share && (
-                <Button
-                  onClick={() =>
-                    navigator.share({
-                      title:
-                        params
-                          .map((param) => mesoParamMap.get(param))
-                          .join(', ') || 'Mesoanalysis',
-                      url: window.location.href,
-                    })
-                  }
-                >
-                  <FaShareAlt />
-                </Button>
-              )}
+        <div tw="flex justify-between p-3">
+          <Dropdown tw="flex-1" inline label={sectorName || 'Choose region...'}>
+            {mesoSectors.map(([number, name], i) => (
+              <Dropdown.Item
+                key={i}
+                onClick={() => setSectorString(String(number))}
+              >
+                {name}
+              </Dropdown.Item>
+            ))}
+          </Dropdown>
+          <ButtonGroup>
+            {!!navigator.share && (
               <Button
                 onClick={() =>
-                  setMenu(menu !== 'settings' ? 'settings' : undefined)
+                  navigator.share({
+                    title:
+                      params
+                        .map((param) => mesoParamMap.get(param))
+                        .join(', ') || 'Mesoanalysis',
+                    url: window.location.href,
+                  })
                 }
               >
-                <FaGear />
+                <FaShareAlt />
               </Button>
-            </ButtonGroup>
-          </div>
-        )}
+            )}
+            <Button
+              onClick={() =>
+                setModal(modal !== 'settings' ? 'settings' : undefined)
+              }
+            >
+              <FaGear />
+            </Button>
+          </ButtonGroup>
+        </div>
       </div>
     </div>
   );

@@ -5,6 +5,7 @@ import App from './components/App';
 
 import 'twin.macro';
 import './styles/index.scss';
+import 'rc-slider/assets/index.css';
 
 const router = createBrowserRouter(
   [

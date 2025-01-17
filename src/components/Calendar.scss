@@ -5,3 +5,7 @@
 .react-calendar__month-view__days__day--weekend {
   color: inherit;
 }
+
+.react-calendar__tile {
+    @apply rounded-xl;
+}

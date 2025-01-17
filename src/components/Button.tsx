@@ -15,6 +15,7 @@ const Container = tw.div`
   text-[rgba(0,0,0,.9)]
   flex
   justify-center
+  items-center
   rounded-lg
   shadow-sm
   [transition-duration: .1s]

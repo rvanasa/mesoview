@@ -1,4 +1,3 @@
-import { Dropdown } from 'flowbite-react';
 import Slider from 'rc-slider';
 import { useCallback, useEffect, useState } from 'react';
 import {
@@ -33,6 +32,7 @@ import Card from './Card';
 import MesoanalysisImage from './MesoanalysisImage';
 import NumberInput from './NumberInput';
 import { ToolButton } from './ToolButton';
+import Dropdown from './Dropdown';
 
 export default function App() {
   const [params, setParams] = useQueryParams('param', ['500mb', '3cvr']);
@@ -153,16 +153,16 @@ export default function App() {
             <div>
               <Dropdown
                 label={mesoParamMap.get(param) || param || 'Choose parameter'}
-                inline
+                anchor="bottom"
               >
                 {/* <div style={{ maxHeight: "70vh" }} tw="overflow-y-scroll"> */}
                 {mesoParams.map(([key, title], j) => (
-                  <Dropdown.Item
+                  <div
                     key={j}
                     onClick={() => setParams(spliced(params, i, 1, key))}
                   >
                     {title}
-                  </Dropdown.Item>
+                  </div>
                 ))}
                 {/* </div> */}
               </Dropdown>
@@ -209,11 +209,11 @@ export default function App() {
         </div>
       ))}
       <div tw="p-3 flex justify-between">
-        <Dropdown label="Add parameter" inline>
+        <Dropdown label="Add parameter" anchor="top">
           {mesoParams.map(([key, title], i) => (
-            <Dropdown.Item key={i} onClick={() => setParams([...params, key])}>
+            <div key={i} onClick={() => setParams([...params, key])}>
               {title}
-            </Dropdown.Item>
+            </div>
           ))}
         </Dropdown>
       </div>
@@ -279,14 +279,15 @@ export default function App() {
           onChangeComplete={() => setHourOffset(0)}
         />
         <div tw="flex justify-between p-3">
-          <Dropdown tw="flex-1" inline label={sectorName || 'Choose region...'}>
+          <Dropdown
+            label={sectorName || 'Choose region...'}
+            anchor="top"
+            tw="flex-1"
+          >
             {mesoSectors.map(([number, name], i) => (
-              <Dropdown.Item
-                key={i}
-                onClick={() => setSectorString(String(number))}
-              >
+              <div key={i} onClick={() => setSectorString(String(number))}>
                 {name}
-              </Dropdown.Item>
+              </div>
             ))}
           </Dropdown>
           <ButtonGroup>

@@ -118,7 +118,7 @@ export default function App() {
                 </Button> */}
               </Card>
             ) : modal === 'settings' ? (
-              <Card tw="text-lg flex flex-col gap-4 w-full">
+              <Card tw="text-lg flex flex-col gap-4 w-full [min-width:350px]">
                 <label tw="flex items-center justify-between">
                   <span>Slider range (days):</span>
                   <NumberInput

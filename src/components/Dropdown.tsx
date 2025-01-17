@@ -11,21 +11,21 @@ export interface DropdownProps {
 
 export default function Dropdown({ label, anchor, children }: DropdownProps) {
   return (
-      <Menu>
-        <MenuButton tw="flex items-center gap-2">
-          {label}
-          {anchor === 'top' ? <FaCaretUp /> : <FaCaretDown />}
-        </MenuButton>
-        <MenuItems tw="border-2 rounded-xl bg-[#fffe]" anchor={anchor}>
-          {children.map((item, i) => (
-            <MenuItem
-              key={i}
-              tw="cursor-pointer px-4 py-2 select-none hover:bg-[#0001] [transition-duration: .1s]"
-            >
-              {item}
-            </MenuItem>
-          ))}
-        </MenuItems>
-      </Menu>
+    <Menu>
+      <MenuButton tw="flex items-center gap-2">
+        {label}
+        {anchor === 'top' ? <FaCaretUp /> : <FaCaretDown />}
+      </MenuButton>
+      <MenuItems tw="border-2 rounded-xl bg-[#fffe]" anchor={anchor}>
+        {children.map((item, i) => (
+          <MenuItem
+            key={i}
+            tw="cursor-pointer px-4 py-2 select-none hover:bg-[#0001] [transition-duration: .1s]"
+          >
+            {item}
+          </MenuItem>
+        ))}
+      </MenuItems>
+    </Menu>
   );
 }

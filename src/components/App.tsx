@@ -19,6 +19,7 @@ import {
   roundToNearestHour,
 } from '../utils/date';
 import {
+  continentalMesoSector,
   mesoParamMap,
   mesoParams,
   mesoSectorMap,
@@ -33,18 +34,27 @@ import MesoanalysisImage from './MesoanalysisImage';
 import NumberInput from './NumberInput';
 import { ToolButton } from './ToolButton';
 import Dropdown from './Dropdown';
+import { useLocalStorage } from 'usehooks-ts';
+
+const defaultMesoSector = 13; // Central U.S.
 
 export default function App() {
   const [params, setParams] = useQueryParams('param', ['500mb', '3cvr']);
-  const [sectorString, setSectorString] = useQueryParam('sector');
+  const [sectorQueryParam, setSectorQueryParam] = useQueryParam('sector');
   const [hourOffset, setHourOffset] = useState(0);
   const [inputDateString, setInputDateString] = useQueryParam('time');
   const [modal, setModal] = useState<'calendar' | 'settings'>();
   const [sliderRange, setSliderRange] = useState(1);
   const [sliderInterval, setSliderInterval] = useState(1);
+  const [toggleSector, setToggleSector] = useLocalStorage<number>(
+    'mesoview.toggleMesoSector',
+    continentalMesoSector,
+  );
 
   const sectorNumber =
-    sectorString === undefined || isNaN(+sectorString) ? 19 : +sectorString;
+    sectorQueryParam === undefined || isNaN(+sectorQueryParam)
+      ? 19
+      : +sectorQueryParam;
 
   const inputDate = inputDateString
     ? parseDate(inputDateString, 12)
@@ -71,6 +81,20 @@ export default function App() {
 
   const sector = `s${sectorNumber}`;
   const sectorName = mesoSectorMap.get(sectorNumber) || '(Unknown region)';
+
+  const onClickMesoanalysisImage = useCallback(() => {
+    if (sectorNumber === continentalMesoSector) {
+      setSectorQueryParam(
+        String(
+          toggleSector === continentalMesoSector
+            ? defaultMesoSector
+            : toggleSector,
+        ),
+      );
+    } else {
+      setSectorQueryParam(String(continentalMesoSector));
+    }
+  }, [sectorNumber, setSectorQueryParam, toggleSector]);
 
   useEffect(() => {
     document.title = `${inputDateString ? (inputDateString.toLowerCase().endsWith('z') ? inputDateString : `${inputDateString}z`) : 'Current time'} | ${sectorName} | Mesoview`;
@@ -205,6 +229,7 @@ export default function App() {
             sector={sector}
             layers={['cnty', 'hiway']}
             params={param.split(' ').filter((param) => param)}
+            onClick={onClickMesoanalysisImage}
           />
         </div>
       ))}
@@ -285,7 +310,15 @@ export default function App() {
             tw="flex-1"
           >
             {mesoSectors.map(([number, name], i) => (
-              <div key={i} onClick={() => setSectorString(String(number))}>
+              <div
+                key={i}
+                onClick={() => {
+                  setSectorQueryParam(String(number));
+                  if (number !== continentalMesoSector) {
+                    setToggleSector(number);
+                  }
+                }}
+              >
                 {name}
               </div>
             ))}

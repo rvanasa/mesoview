@@ -60,6 +60,7 @@ export interface MesoanalysisImageProps {
   sector: string;
   layers: string[];
   params: string[];
+  onClick?(event: React.MouseEvent<HTMLDivElement>): void;
 }
 
 export default function MesoanalysisImage({
@@ -67,6 +68,7 @@ export default function MesoanalysisImage({
   sector,
   layers,
   params,
+  onClick,
 }: MesoanalysisImageProps) {
   const urls = [
     ...layers.map((param) => getLayerUrl(sector, param)),
@@ -76,7 +78,10 @@ export default function MesoanalysisImage({
   const width = 1000;
   const height = 750;
   return (
-    <div style={{ position: 'relative', background: 'white' }}>
+    <div
+      style={{ position: 'relative', background: 'white' }}
+      onClick={onClick}
+    >
       {urls.map(
         (url, i) =>
           !!url && (

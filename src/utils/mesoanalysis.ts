@@ -1,3 +1,5 @@
+export const continentalMesoSector = 19;
+
 export const mesoSectors: [number, string][] = [
   [19, 'Continental U.S.'],
   [11, 'Northwest'],

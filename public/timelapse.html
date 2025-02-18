@@ -63,7 +63,10 @@
         const rect = canvas.getBoundingClientRect();
         const relativeX = event.clientX - rect.left;
         const buffer = rect.width * 0.05;
-        const clampedX = Math.max(buffer, Math.min(rect.width - buffer, relativeX));
+        const clampedX = Math.max(
+          buffer,
+          Math.min(rect.width - buffer, relativeX),
+        );
         const index = Math.floor(
           ((clampedX - buffer) / (rect.width - 2 * buffer)) *
             (frames.length - 1),
@@ -82,13 +85,19 @@
       document.body.addEventListener('mousemove', drawFrameFromCursor);
       document.body.addEventListener('mouseup', () => {
         scrubbing = false;
-        ctx.drawImage(
-          frames[frames.length - 1],
-          0,
-          0,
-          canvas.width,
-          canvas.height,
-        );
+        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+      });
+
+      document.body.addEventListener('touchstart', (event) => {
+        scrubbing = true;
+        drawFrameFromCursor(event.touches[0]);
+      });
+      document.body.addEventListener('touchmove', (event) =>
+        drawFrameFromCursor(event.touches[0]),
+      );
+      document.body.addEventListener('touchend', () => {
+        scrubbing = false;
+        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
       });
     </script>
   </body>

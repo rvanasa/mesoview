@@ -66,8 +66,8 @@
 
       function drawFrameFromCursor(event) {
         if (!scrubbingFrames || scrubbingFrames.length === 0) return;
-        const screenWidth = window.screen.width;
-        const relativeX = event.screenX - screenWidth;
+        const screenWidth = window.innerWidth;
+        const relativeX = event.clientX;
         const buffer = screenWidth * 0.05;
         const clampedX = Math.max(
           buffer,

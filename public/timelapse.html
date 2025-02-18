@@ -25,21 +25,18 @@
   <body>
     <video id="video" autoplay playsinline></video>
     <canvas id="canvas"></canvas>
-    <canvas id="playback"></canvas>
 
     <script>
       const video = document.getElementById('video');
       const canvas = document.getElementById('canvas');
-      const playbackCanvas = document.getElementById('playback');
       const ctx = canvas.getContext('2d');
-      const playbackCtx = playbackCanvas.getContext('2d');
       const frames = [];
 
       const captureFps = 2;
       const playbackFps = 30;
       const playbackSeconds = 5;
 
-      let scrubbingFrames = null;
+      const scrubbingFrames = [];
       endScrubbing();
 
       navigator.mediaDevices
@@ -77,19 +74,20 @@
         );
         const img = scrubbingFrames[index];
         if (img && img.complete && img.naturalHeight !== 0) {
-          playbackCtx.drawImage(img, 0, 0, canvas.width, canvas.height);
+          ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
         }
       }
 
       function startScrubbing(event) {
-        scrubbingFrames = [...frames];
+        canvas.hidden = false;
+        scrubbingFrames.length = 0;
+        scrubbingFrames.push(...frames);
         drawFrameFromCursor(event);
-        playbackCanvas.hidden = false;
       }
 
       function endScrubbing() {
-        scrubbingFrames = null;
-        playbackCanvas.hidden = true;
+        canvas.hidden = true;
+        scrubbingFrames.length = 0;
       }
 
       document.body.addEventListener('mousedown', startScrubbing);

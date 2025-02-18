@@ -1,17 +1,28 @@
 import React from 'react';
 import { createRoot } from 'react-dom/client';
-import { createBrowserRouter, RouterProvider } from 'react-router-dom';
+import {
+  createBrowserRouter,
+  RouterProvider,
+  useRouteError,
+} from 'react-router-dom';
 import App from './components/App';
 
+import 'rc-slider/assets/index.css';
 import 'twin.macro';
 import './styles/index.scss';
-import 'rc-slider/assets/index.css';
+
+function ErrorBoundary() {
+  const error = useRouteError();
+  console.error(error);
+  return <div>Unexpected error!</div>;
+}
 
 const router = createBrowserRouter(
   [
     {
       path: '/',
       element: <App />,
+      errorElement: <ErrorBoundary />,
     },
   ],
   {

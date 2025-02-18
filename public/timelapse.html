@@ -63,7 +63,7 @@
       setInterval(captureFrame, 1000 / captureFps);
 
       function drawFrameFromCursor(event) {
-        if (!scrubbingFrames || frames.length === 0) return;
+        if (!scrubbingFrames || scrubbingFrames.length === 0) return;
         const rect = canvas.getBoundingClientRect();
         const relativeX = event.clientX - rect.left;
         const buffer = rect.width * 0.05;
@@ -73,9 +73,9 @@
         );
         const index = Math.floor(
           ((clampedX - buffer) / (rect.width - 2 * buffer)) *
-            (frames.length - 1),
+            (scrubbingFrames.length - 1),
         );
-        const img = frames[index];
+        const img = scrubbingFrames[index];
         if (img && img.complete && img.naturalHeight !== 0) {
           playbackCtx.drawImage(img, 0, 0, canvas.width, canvas.height);
         }

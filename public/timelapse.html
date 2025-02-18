@@ -66,14 +66,15 @@
 
       function drawFrameFromCursor(event) {
         if (!scrubbingFrames || scrubbingFrames.length === 0) return;
-        const relativeX = event.screenX - window.screen.width;
-        const buffer = rect.width * 0.05;
+        const screenWidth = window.screen.width;
+        const relativeX = event.screenX - screenWidth;
+        const buffer = screenWidth * 0.05;
         const clampedX = Math.max(
           buffer,
-          Math.min(rect.width - buffer, relativeX),
+          Math.min(screenWidth - buffer, relativeX),
         );
         const index = Math.floor(
-          ((clampedX - buffer) / (rect.width - 2 * buffer)) *
+          ((clampedX - buffer) / (screenWidth - 2 * buffer)) *
             (scrubbingFrames.length - 1),
         );
         const img = scrubbingFrames[index];

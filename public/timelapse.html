@@ -25,18 +25,22 @@
   <body>
     <video id="video" autoplay playsinline></video>
     <canvas id="canvas"></canvas>
+    <canvas id="playback"></canvas>
 
     <script>
       const video = document.getElementById('video');
       const canvas = document.getElementById('canvas');
+      const playbackCanvas = document.getElementById('playback');
       const ctx = canvas.getContext('2d');
+      const playbackCtx = canvas.getContext('2d');
       const frames = [];
 
       const captureFps = 2;
       const playbackFps = 30;
       const playbackSeconds = 5;
 
-      let scrubbing = false;
+      let scrubbingFrames = null;
+      endScrubbing();
 
       navigator.mediaDevices
         .getUserMedia({ video: { facingMode: 'environment' } })
@@ -59,7 +63,7 @@
       setInterval(captureFrame, 1000 / captureFps);
 
       function drawFrameFromCursor(event) {
-        if (!scrubbing || frames.length === 0) return;
+        if (!scrubbingFrames || frames.length === 0) return;
         const rect = canvas.getBoundingClientRect();
         const relativeX = event.clientX - rect.left;
         const buffer = rect.width * 0.05;
@@ -73,32 +77,32 @@
         );
         const img = frames[index];
         if (img && img.complete && img.naturalHeight !== 0) {
-          ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+          playbackCtx.drawImage(img, 0, 0, canvas.width, canvas.height);
         }
-        console.log(index, frames.length);
       }
 
-      document.body.addEventListener('mousedown', (event) => {
-        scrubbing = true;
+      function startScrubbing(event) {
+        scrubbingFrames = [...frames];
         drawFrameFromCursor(event);
-      });
+        playbackCanvas.hidden = false;
+      }
+
+      function endScrubbing() {
+        scrubbingFrames = null;
+        playbackCanvas.hidden = true;
+      }
+
+      document.body.addEventListener('mousedown', startScrubbing);
       document.body.addEventListener('mousemove', drawFrameFromCursor);
-      document.body.addEventListener('mouseup', () => {
-        scrubbing = false;
-        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-      });
+      document.body.addEventListener('mouseup', endScrubbing);
 
       document.body.addEventListener('touchstart', (event) => {
-        scrubbing = true;
-        drawFrameFromCursor(event.touches[0]);
+        startScrubbing(event.touches[0]);
       });
       document.body.addEventListener('touchmove', (event) =>
         drawFrameFromCursor(event.touches[0]),
       );
-      document.body.addEventListener('touchend', () => {
-        scrubbing = false;
-        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-      });
+      document.body.addEventListener('touchend', endScrubbing);
     </script>
   </body>
 </html>

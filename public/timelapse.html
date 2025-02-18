@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Timelapse Recorder</title>
+    <style>
+      body {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        background-color: black;
+        overflow: hidden;
+        margin: 0;
+      }
+      video,
+      canvas {
+        position: absolute;
+        max-width: 100%;
+        max-height: 100%;
+      }
+    </style>
+  </head>
+  <body>
+    <video id="video" autoplay playsinline></video>
+    <canvas id="canvas"></canvas>
+
+    <script>
+      const video = document.getElementById('video');
+      const canvas = document.getElementById('canvas');
+      const ctx = canvas.getContext('2d');
+      const frames = [];
+
+      const captureFps = 2;
+      const playbackFps = 30;
+      const playbackSeconds = 5;
+
+      let scrubbing = false;
+
+      navigator.mediaDevices
+        .getUserMedia({ video: { facingMode: 'environment' } })
+        .then((stream) => {
+          video.srcObject = stream;
+        });
+
+      function captureFrame() {
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+        if (frames.length >= playbackSeconds * playbackFps) {
+          frames.shift();
+        }
+        const img = new Image();
+        img.src = canvas.toDataURL();
+        frames.push(img);
+      }
+      captureFrame();
+      setInterval(captureFrame, 1000 / captureFps);
+
+      function drawFrameFromCursor(event) {
+        if (!scrubbing || frames.length === 0) return;
+        const rect = canvas.getBoundingClientRect();
+        const relativeX = event.clientX - rect.left;
+        const buffer = rect.width * 0.05;
+        const clampedX = Math.max(buffer, Math.min(rect.width - buffer, relativeX));
+        const index = Math.floor(
+          ((clampedX - buffer) / (rect.width - 2 * buffer)) *
+            (frames.length - 1),
+        );
+        const img = frames[index];
+        if (img && img.complete && img.naturalHeight !== 0) {
+          ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+        }
+        console.log(index, frames.length);
+      }
+
+      document.body.addEventListener('mousedown', (event) => {
+        scrubbing = true;
+        drawFrameFromCursor(event);
+      });
+      document.body.addEventListener('mousemove', drawFrameFromCursor);
+      document.body.addEventListener('mouseup', () => {
+        scrubbing = false;
+        ctx.drawImage(
+          frames[frames.length - 1],
+          0,
+          0,
+          canvas.width,
+          canvas.height,
+        );
+      });
+    </script>
+  </body>
+</html>

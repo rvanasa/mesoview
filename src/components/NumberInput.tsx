@@ -14,8 +14,8 @@ export default function NumberInput({
   const [input, setInput] = useState(() => String(defaultValue));
 
   const handleChange = useCallback(
-    (e: ChangeEvent<HTMLInputElement>) => {
-      const newInput = e.target.value;
+    (event: ChangeEvent<HTMLInputElement>) => {
+      const newInput = event.target.value;
       setInput(newInput);
       onChangeValue(+newInput);
     },
@@ -23,6 +23,12 @@ export default function NumberInput({
   );
 
   return (
-    <input type="number" value={input} onChange={handleChange} {...rest} />
+    <input
+      type="number"
+      value={input}
+      onChange={handleChange}
+      tw="p-1 rounded border text-center"
+      {...rest}
+    />
   );
 }

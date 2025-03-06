@@ -20,6 +20,7 @@ const Container = tw.div`
   shadow-sm
   [transition-duration: .1s]
   cursor-pointer
+  select-none
   
   hover:(bg-gray-100)
 `;

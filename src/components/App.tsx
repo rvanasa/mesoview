@@ -173,7 +173,6 @@ export default function App() {
                     min={1}
                     step={1}
                     defaultValue={sliderRange}
-                    tw="ml-2 w-20"
                     onChangeValue={setSliderRange}
                   />
                 </label>
@@ -183,7 +182,6 @@ export default function App() {
                     min={1}
                     step={1}
                     defaultValue={sliderInterval}
-                    tw="ml-2 w-20"
                     onChangeValue={setSliderInterval}
                   />
                 </label>

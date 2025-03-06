@@ -32,25 +32,27 @@ export default function NumberInput({
     [onChangeValue],
   );
 
+  const update = (newInput: number) => {
+    setInput(String(newInput));
+    onChangeValue(newInput);
+  };
+
   return (
     <div tw="flex text-sm" {...rest}>
       {step !== undefined && (
-        <ToolButton tw="p-2 rounded-r-none">
-          <FaMinus
-            onClick={() =>
-              setInput(
-                String(
-                  min !== undefined
-                    ? Math.max(+input - step, min)
-                    : +input - step,
-                ),
-              )
-            }
-          />
+        <ToolButton
+          tw="p-2 rounded-r-none sm:hidden"
+          onClick={() =>
+            update(
+              min !== undefined ? Math.max(+input - step, min) : +input - step,
+            )
+          }
+        >
+          <FaMinus />
         </ToolButton>
       )}
       <input
-        tw="w-10 p-1 rounded-none border text-center"
+        tw="w-10 p-1 rounded-none border text-center sm:(rounded w-12)"
         type="number"
         min={min}
         max={max}
@@ -59,18 +61,15 @@ export default function NumberInput({
         onChange={handleChange}
       />
       {step !== undefined && (
-        <ToolButton tw="p-2 rounded-l-none">
-          <FaPlus
-            onClick={() =>
-              setInput(
-                String(
-                  max !== undefined
-                    ? Math.min(+input + step, max)
-                    : +input + step,
-                ),
-              )
-            }
-          />
+        <ToolButton
+          tw="p-2 rounded-l-none sm:hidden"
+          onClick={() =>
+            update(
+              max !== undefined ? Math.min(+input + step, max) : +input + step,
+            )
+          }
+        >
+          <FaPlus />
         </ToolButton>
       )}
     </div>

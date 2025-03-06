@@ -7,7 +7,7 @@ import {
   FaRegCalendarAlt,
   FaShareAlt,
   FaTimes,
-  FaUndoAlt
+  FaUndoAlt,
 } from 'react-icons/fa';
 import { FaGear, FaTurnUp } from 'react-icons/fa6';
 import 'twin.macro';
@@ -398,14 +398,26 @@ export default function App() {
                 <FaUndoAlt />
               </Button>
             ) : (
-              <ButtonGroup>
-                <Button onClick={() => setInputDate(plusHours(inputDate, -1))}>
-                  <FaAngleLeft />
-                </Button>
-                <Button onClick={() => setInputDate(plusHours(inputDate, 1))}>
-                  <FaAngleRight />
-                </Button>
-              </ButtonGroup>
+              !!inputDateString && (
+                <ButtonGroup>
+                  <Button
+                    onClick={(event) =>
+                      setInputDate(
+                        plusHours(inputDate, event.ctrlKey ? -6 : -1),
+                      )
+                    }
+                  >
+                    <FaAngleLeft />
+                  </Button>
+                  <Button
+                    onClick={(event) =>
+                      setInputDate(plusHours(inputDate, event.ctrlKey ? 6 : 1))
+                    }
+                  >
+                    <FaAngleRight />
+                  </Button>
+                </ButtonGroup>
+              )
             )}
           </div>
         </div>

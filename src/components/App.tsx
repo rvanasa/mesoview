@@ -8,8 +8,9 @@ import {
   FaShareAlt,
   FaTimes,
 } from 'react-icons/fa';
-import { FaGear, FaTurnUp } from 'react-icons/fa6';
+import { FaDownLong, FaGear, FaTurnUp, FaUpLong } from 'react-icons/fa6';
 import 'twin.macro';
+import { useLocalStorage } from 'usehooks-ts';
 import useListener from '../hooks/useListener';
 import { useQueryParam, useQueryParams } from '../hooks/useQueryParam';
 import {
@@ -30,11 +31,10 @@ import { Button } from './Button';
 import { ButtonGroup } from './ButtonGroup';
 import Calendar from './Calendar';
 import Card from './Card';
+import Dropdown from './Dropdown';
 import MesoanalysisImage from './MesoanalysisImage';
 import NumberInput from './NumberInput';
 import { ToolButton } from './ToolButton';
-import Dropdown from './Dropdown';
-import { useLocalStorage } from 'usehooks-ts';
 
 const defaultMesoSector = 13; // Central U.S.
 
@@ -267,10 +267,42 @@ export default function App() {
                           ),
                         )
                       }
-                      onChangeComplete={() => setHourOffset(0)}
                     />
                   </div>
                 );
+                // return (
+                //   <div tw="flex space-x-2">
+                //     <ToolButton
+                //       onClick={() =>
+                //         setParams(
+                //           spliced(
+                //             params,
+                //             i,
+                //             1,
+                //             category[Math.max(entryIndex - 1, 0)].param,
+                //           ),
+                //         )
+                //       }
+                //     >
+                //       <FaDownLong />
+                //     </ToolButton>
+                //     <ToolButton
+                //       onClick={() =>
+                //         setParams(
+                //           spliced(
+                //             params,
+                //             i,
+                //             1,
+                //             category[Math.min(entryIndex + 1, category.length - 1)]
+                //               .param,
+                //           ),
+                //         )
+                //       }
+                //     >
+                //       <FaUpLong />
+                //     </ToolButton>
+                //   </div>
+                // );
                 // return (
                 //     <ButtonGroup>
                 //     {category?.map((entry) => (
@@ -349,7 +381,9 @@ export default function App() {
               {nowOffset >= -12 && (
                 <span tw="ml-3 opacity-70 text-green-700">
                   {nowOffset > 0 && '+'}
-                  {nowOffset === 0 ? 'Now' : `${nowOffset}h`}
+                  {nowOffset === 0
+                    ? 'Now'
+                    : `${nowOffset}${Math.abs(nowOffset) < 10 ? 'h' : ''}`}
                 </span>
               )}
             </code>

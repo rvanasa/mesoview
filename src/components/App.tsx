@@ -49,7 +49,9 @@ const categories: { param: string; label: string }[][] = [
 ];
 
 const categoryParamLabelMap = new Map(
-  categories.flatMap((category) => category.map(({ param,label }) => [param,label])),
+  categories.flatMap((category) =>
+    category.map(({ param, label }) => [param, label]),
+  ),
 );
 
 export default function App() {
@@ -124,25 +126,27 @@ export default function App() {
           <div onClick={(e) => e.stopPropagation()}>
             {modal === 'calendar' ? (
               <Card tw="text-lg flex flex-col gap-4 w-full">
-                <Calendar
-                  value={inputDate}
-                  onChange={(date) => {
-                    setInputDate(
-                      date
-                        ? Math.abs(date.getTime() - Date.now()) < 1000
-                          ? undefined
-                          : roundToNearestHour(
-                              new Date(
-                                date.getTime() +
-                                  3600000 * 12 -
-                                  60000 * date.getTimezoneOffset(),
-                              ),
-                            )
-                        : undefined,
-                    );
-                    setModal(undefined);
-                  }}
-                />
+                <div tw="min-h-[300px]">
+                  <Calendar
+                    value={inputDate}
+                    onChange={(date) => {
+                      setInputDate(
+                        date
+                          ? Math.abs(date.getTime() - Date.now()) < 1000
+                            ? undefined
+                            : roundToNearestHour(
+                                new Date(
+                                  date.getTime() +
+                                    3600000 * 12 -
+                                    60000 * date.getTimezoneOffset(),
+                                ),
+                              )
+                          : undefined,
+                      );
+                      setModal(undefined);
+                    }}
+                  />
+                </div>
                 <Button
                   onClick={() => {
                     setInputDate(undefined);
@@ -191,9 +195,13 @@ export default function App() {
             <div>
               <Dropdown
                 label={
-                  categoryParamLabelMap.has(param)
-                    ? <div tw='text-left min-w-[4rem]'>{categoryParamLabelMap.get(param)}</div>
-                    : mesoParamMap.get(param) || param || 'Choose parameter'
+                  categoryParamLabelMap.has(param) ? (
+                    <div tw="text-left min-w-[4rem]">
+                      {categoryParamLabelMap.get(param)}
+                    </div>
+                  ) : (
+                    mesoParamMap.get(param) || param || 'Choose parameter'
+                  )
                 }
                 anchor="bottom"
               >

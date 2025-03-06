@@ -7,6 +7,7 @@ import {
   FaRegCalendarAlt,
   FaShareAlt,
   FaTimes,
+  FaUndoAlt
 } from 'react-icons/fa';
 import { FaGear, FaTurnUp } from 'react-icons/fa6';
 import 'twin.macro';
@@ -84,10 +85,15 @@ export default function App() {
 
   useListener(document, 'keydown', (event: KeyboardEvent) => {
     const hours = event.ctrlKey ? 6 : 1;
+    // if (event.key === 'ArrowLeft') {
+    //   setInputDate(plusHours(inputDate, -hours));
+    // } else if (event.key === 'ArrowRight') {
+    //   setInputDate(plusHours(inputDate, hours));
+    // }
     if (event.key === 'ArrowLeft') {
-      setInputDate(plusHours(inputDate, -hours));
+      setHourOffset(hourOffset - hours);
     } else if (event.key === 'ArrowRight') {
-      setInputDate(plusHours(inputDate, hours));
+      setHourOffset(hourOffset + hours);
     }
   });
 
@@ -387,14 +393,20 @@ export default function App() {
                 </span>
               )}
             </code>
-            <ButtonGroup>
-              <Button onClick={() => setInputDate(plusHours(inputDate, -1))}>
-                <FaAngleLeft />
+            {hourOffset ? (
+              <Button onClick={() => setHourOffset(0)}>
+                <FaUndoAlt />
               </Button>
-              <Button onClick={() => setInputDate(plusHours(inputDate, 1))}>
-                <FaAngleRight />
-              </Button>
-            </ButtonGroup>
+            ) : (
+              <ButtonGroup>
+                <Button onClick={() => setInputDate(plusHours(inputDate, -1))}>
+                  <FaAngleLeft />
+                </Button>
+                <Button onClick={() => setInputDate(plusHours(inputDate, 1))}>
+                  <FaAngleRight />
+                </Button>
+              </ButtonGroup>
+            )}
           </div>
         </div>
         <Slider
@@ -423,7 +435,6 @@ export default function App() {
           step={sliderInterval}
           startPoint={0}
           onChange={(value) => setHourOffset(value as number)}
-          onChangeComplete={() => setHourOffset(0)}
         />
         <div tw="flex justify-between p-3">
           <Dropdown

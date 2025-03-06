@@ -259,8 +259,8 @@ export default function App() {
                       value={entryIndex}
                       min={0}
                       max={category.length - 1}
-                      step={sliderInterval}
-                      startPoint={0}
+                      step={1}
+                      // startPoint={0}
                       onChange={(value) =>
                         setParams(
                           spliced(

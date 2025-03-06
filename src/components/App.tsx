@@ -38,6 +38,20 @@ import { useLocalStorage } from 'usehooks-ts';
 
 const defaultMesoSector = 13; // Central U.S.
 
+const categories: { param: string; label: string }[][] = [
+  [
+    { param: 'pmsl', label: 'Surface' },
+    { param: '850mb', label: '850 mb' },
+    { param: '700mb', label: '700 mb' },
+    { param: '500mb', label: '500 mb' },
+    { param: '300mb', label: '300 mb' },
+  ],
+];
+
+const categoryParamLabelMap = new Map(
+  categories.flatMap((category) => category.map(({ param,label }) => [param,label])),
+);
+
 export default function App() {
   const [params, setParams] = useQueryParams('param', ['500mb', '3cvr']);
   const [sectorQueryParam, setSectorQueryParam] = useQueryParam('sector');
@@ -173,10 +187,14 @@ export default function App() {
       )}
       {params.map((param, i) => (
         <div key={i}>
-          <div tw="flex justify-between p-2">
+          <div tw="flex items-center justify-between p-2">
             <div>
               <Dropdown
-                label={mesoParamMap.get(param) || param || 'Choose parameter'}
+                label={
+                  categoryParamLabelMap.has(param)
+                    ? <div tw='text-left min-w-[4rem]'>{categoryParamLabelMap.get(param)}</div>
+                    : mesoParamMap.get(param) || param || 'Choose parameter'
+                }
                 anchor="bottom"
               >
                 {/* <div style={{ maxHeight: "70vh" }} tw="overflow-y-scroll"> */}
@@ -191,6 +209,68 @@ export default function App() {
                 {/* </div> */}
               </Dropdown>
             </div>
+            {categoryParamLabelMap.has(param) &&
+              (() => {
+                let category!: { param: string; label: string }[];
+                let entryIndex = 0;
+                outer: for (category of categories) {
+                  for (
+                    entryIndex = 0;
+                    entryIndex < category.length;
+                    entryIndex++
+                  ) {
+                    if (category[entryIndex].param === param) {
+                      break outer;
+                    }
+                  }
+                }
+                return (
+                  <div tw="w-full flex justify-end mx-5">
+                    <Slider
+                      styles={{
+                        handle: {
+                          borderColor: '#605f60',
+                          boxShadow: 'none',
+                          width: 20,
+                          height: 20,
+                          borderWidth: 3,
+                          top: 3,
+                        },
+                        rail: {
+                          height: 6,
+                        },
+                        track: {
+                          backgroundColor: '#605f60',
+                          height: 6,
+                        },
+                      }}
+                      value={entryIndex}
+                      min={0}
+                      max={category.length - 1}
+                      step={sliderInterval}
+                      startPoint={0}
+                      onChange={(value) =>
+                        setParams(
+                          spliced(
+                            params,
+                            i,
+                            1,
+                            category[value as number].param,
+                          ),
+                        )
+                      }
+                      onChangeComplete={() => setHourOffset(0)}
+                    />
+                  </div>
+                );
+                // return (
+                //     <ButtonGroup>
+                //     {category?.map((entry) => (
+                //       <Button tw="text-sm" key={entry.param}>{entry.label}</Button>
+                //     ))}
+                //   </ButtonGroup>
+                // );
+              })()}
             <div tw="flex space-x-2">
               {param.includes(' ') && (
                 <ToolButton

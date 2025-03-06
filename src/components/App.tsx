@@ -70,7 +70,7 @@ export default function App() {
 
   const sectorNumber =
     sectorQueryParam === undefined || isNaN(+sectorQueryParam)
-      ? 19
+      ? continentalMesoSector
       : +sectorQueryParam;
 
   const inputDate = inputDateString
@@ -114,7 +114,7 @@ export default function App() {
         ),
       );
     } else {
-      setSectorQueryParam(String(continentalMesoSector));
+      setSectorQueryParam(undefined);
     }
   }, [sectorNumber, setSectorQueryParam, toggleSector]);
 
@@ -372,7 +372,7 @@ export default function App() {
       </div>
       <div style={{ paddingBottom: 130 }}></div>
       <div
-        tw="fixed bottom-0 rounded-t-lg w-full bg-white"
+        tw="fixed bottom-0 rounded-t-lg w-full bg-[#fffe]"
         style={{ maxWidth: 1000 }}
       >
         <div tw="p-3">

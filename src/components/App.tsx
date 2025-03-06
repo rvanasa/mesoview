@@ -8,7 +8,7 @@ import {
   FaShareAlt,
   FaTimes,
 } from 'react-icons/fa';
-import { FaDownLong, FaGear, FaTurnUp, FaUpLong } from 'react-icons/fa6';
+import { FaGear, FaTurnUp } from 'react-icons/fa6';
 import 'twin.macro';
 import { useLocalStorage } from 'usehooks-ts';
 import useListener from '../hooks/useListener';

@@ -123,7 +123,11 @@ export default function App() {
   }, [inputDateString, sectorName]);
 
   return (
-    <div style={{ maxWidth: 1000 }} tw="mx-auto">
+    <div
+      style={{ maxWidth: 1000 }}
+      tw="mx-auto"
+      onKeyDown={(e) => e.stopPropagation()}
+    >
       {!!modal && (
         <div
           tw="flex justify-center items-center bg-[#0005] absolute top-0 bottom-0 left-0 right-0 z-10"

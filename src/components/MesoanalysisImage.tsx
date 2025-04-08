@@ -60,6 +60,7 @@ export interface MesoanalysisImageProps {
   sector: string;
   layers: string[];
   params: string[];
+  radar: boolean;
   onClick?(event: React.MouseEvent<HTMLDivElement>): void;
 }
 
@@ -68,13 +69,17 @@ export default function MesoanalysisImage({
   sector,
   layers,
   params,
+  radar,
   onClick,
 }: MesoanalysisImageProps) {
-  const urls = [
-    ...layers.map((param) => getLayerUrl(sector, param)),
-    getRadarUrl(date, sector),
-    ...params.map((param) => getMesoanalysisUrl(date, sector, param)),
-  ];
+  const urls: (string | undefined)[] = layers.map((param) =>
+    getLayerUrl(sector, param),
+  );
+  if (radar) {
+    urls.push(getRadarUrl(date, sector));
+  }
+  urls.push(...params.map((param) => getMesoanalysisUrl(date, sector, param)));
+
   const width = 1000;
   const height = 750;
   return (

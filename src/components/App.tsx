@@ -1,5 +1,5 @@
 import Slider from 'rc-slider';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   FaAngleLeft,
   FaAngleRight,
@@ -48,12 +48,32 @@ const categories: { param: string; label: string }[][] = [
     { param: '300mb', label: '300 mb' },
   ],
 ];
-
 const categoryParamLabelMap = new Map(
   categories.flatMap((category) =>
     category.map(({ param, label }) => [param, label]),
   ),
 );
+
+type CheckboxKey =
+  | 'counties'
+  | 'highways'
+  | 'radar' /*  | 'spcday1' */
+  | 'location';
+const checkboxLabels: Record<CheckboxKey, string> = {
+  counties: 'Counties',
+  highways: 'Highways',
+  radar: 'Radar',
+  // spcday1: 'SPC day 1 outlook',
+  location: 'Device location',
+};
+const checkboxKeys = Object.keys(checkboxLabels) as CheckboxKey[];
+const defaultCheckboxes: CheckboxKey[] = ['counties', 'highways', 'radar'];
+
+const checkboxLayers: Partial<Record<CheckboxKey, string>> = {
+  counties: 'cnty',
+  highways: 'hiway',
+  // spcday1: 'otlk',
+};
 
 export default function App() {
   const [params, setParams] = useQueryParams('param', ['500mb', '3cvr']);
@@ -66,6 +86,36 @@ export default function App() {
   const [toggleSector, setToggleSector] = useLocalStorage<number>(
     'mesoview.toggleMesoSector',
     continentalMesoSector,
+  );
+
+  // const [showKeys, setShowKeys] = useQueryParams('show');
+  // const [hideKeys, setHideKeys] = useQueryParams('hide');
+  const [checkboxes, setCheckboxes] = useState(() => {
+    const checkboxes: Partial<Record<CheckboxKey, boolean>> = {};
+    defaultCheckboxes.forEach((key) => (checkboxes[key] = true));
+    // showKeys.forEach((key) => (checkboxes[key] = true));
+    // hideKeys.forEach((key) => (checkboxes[key] = false));
+    return checkboxes;
+  });
+
+  const setCheckbox = useCallback(
+    (key: CheckboxKey, checked: boolean) => {
+      checked = !!checked;
+      if (checkboxes[key] !== checked) {
+        setCheckboxes({ ...checkboxes, [key]: checked });
+      }
+    },
+    [checkboxes],
+  );
+
+  const layers: string[] = useMemo(
+    () =>
+      Object.entries(checkboxes)
+        .map(([key, value]) =>
+          value ? checkboxLayers[key as CheckboxKey] : undefined,
+        )
+        .filter((layer) => layer) as string[],
+    [checkboxes],
   );
 
   const sectorNumber =
@@ -189,6 +239,16 @@ export default function App() {
                     onChangeValue={setSliderInterval}
                   />
                 </label>
+                {checkboxKeys.map((key) => (
+                  <label key={key} tw="flex items-center justify-between">
+                    <span>{checkboxLabels[key]}</span>
+                    <input
+                      type="checkbox"
+                      checked={!!checkboxes[key]}
+                      onChange={() => setCheckbox(key, !checkboxes[key])}
+                    />
+                  </label>
+                ))}
                 <Button type="primary" onClick={() => setModal(undefined)}>
                   Done
                 </Button>
@@ -355,7 +415,8 @@ export default function App() {
           <MesoanalysisImage
             date={date}
             sector={sector}
-            layers={['cnty', 'hiway']}
+            layers={layers}
+            radar={!!checkboxes['radar']}
             params={param.split(' ').filter((param) => param)}
             onClick={onClickMesoanalysisImage}
           />

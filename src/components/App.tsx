@@ -54,25 +54,23 @@ const categoryParamLabelMap = new Map(
   ),
 );
 
-type CheckboxKey =
-  | 'counties'
-  | 'highways'
-  | 'radar' /*  | 'spcday1' */
-  | 'location';
+type CheckboxKey = 'counties' | 'highways' | 'radar' | 'warnings' | 'spcday1';
 const checkboxLabels: Record<CheckboxKey, string> = {
   counties: 'Counties',
   highways: 'Highways',
   radar: 'Radar',
-  // spcday1: 'SPC day 1 outlook',
-  location: 'Device location',
+  warnings: 'Watches, warnings',
+  spcday1: 'SPC day 1 outlook',
+  // location: 'Device location',
 };
 const checkboxKeys = Object.keys(checkboxLabels) as CheckboxKey[];
-const defaultCheckboxes: CheckboxKey[] = ['counties', 'highways', 'radar'];
+const defaultCheckboxes: CheckboxKey[] = ['counties', 'radar', 'warnings'];
 
 const checkboxLayers: Partial<Record<CheckboxKey, string>> = {
   counties: 'cnty',
   highways: 'hiway',
-  // spcday1: 'otlk',
+  warnings: 'warns',
+  spcday1: 'otlk',
 };
 
 export default function App() {
@@ -108,16 +106,6 @@ export default function App() {
     [checkboxes],
   );
 
-  const layers: string[] = useMemo(
-    () =>
-      Object.entries(checkboxes)
-        .map(([key, value]) =>
-          value ? checkboxLayers[key as CheckboxKey] : undefined,
-        )
-        .filter((layer) => layer) as string[],
-    [checkboxes],
-  );
-
   const sectorNumber =
     sectorQueryParam === undefined || isNaN(+sectorQueryParam)
       ? continentalMesoSector
@@ -150,6 +138,24 @@ export default function App() {
   const date = new Date(inputDate.getTime() + 3600000 * hourOffset);
 
   const nowOffset = Math.round((date.getTime() - Date.now()) / 3600000);
+
+  const layers: string[] = useMemo(
+    () =>
+      Object.entries(checkboxes)
+        .map(([key_, value]) => {
+          const key = key_ as CheckboxKey;
+          if (
+            value &&
+            (key !== 'warnings' || nowOffset === 0) &&
+            (key !== 'spcday1' || nowOffset >= -24)
+          ) {
+            return checkboxLayers[key];
+          }
+          return undefined;
+        })
+        .filter((layer) => layer) as string[],
+    [checkboxes, nowOffset],
+  );
 
   const sector = `s${sectorNumber}`;
   const sectorName = mesoSectorMap.get(sectorNumber) || '(Unknown region)';
@@ -221,6 +227,16 @@ export default function App() {
               </Card>
             ) : modal === 'settings' ? (
               <Card tw="text-lg flex flex-col gap-4 w-full [min-width:350px]">
+                {checkboxKeys.map((key) => (
+                  <label key={key} tw="flex items-center justify-between">
+                    <span>{checkboxLabels[key]}</span>
+                    <input
+                      type="checkbox"
+                      checked={!!checkboxes[key]}
+                      onChange={() => setCheckbox(key, !checkboxes[key])}
+                    />
+                  </label>
+                ))}
                 <label tw="flex items-center justify-between">
                   <span>Slider range (days):</span>
                   <NumberInput
@@ -239,16 +255,6 @@ export default function App() {
                     onChangeValue={setSliderInterval}
                   />
                 </label>
-                {checkboxKeys.map((key) => (
-                  <label key={key} tw="flex items-center justify-between">
-                    <span>{checkboxLabels[key]}</span>
-                    <input
-                      type="checkbox"
-                      checked={!!checkboxes[key]}
-                      onChange={() => setCheckbox(key, !checkboxes[key])}
-                    />
-                  </label>
-                ))}
                 <Button type="primary" onClick={() => setModal(undefined)}>
                   Done
                 </Button>

@@ -3,11 +3,12 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   FaAngleLeft,
   FaAngleRight,
+  FaGlobe,
   FaLayerGroup,
   FaRegCalendarAlt,
   FaShareAlt,
   FaTimes,
-  FaUndoAlt,
+  FaUndoAlt
 } from 'react-icons/fa';
 import { FaGear, FaTurnUp } from 'react-icons/fa6';
 import 'twin.macro';
@@ -519,7 +520,7 @@ export default function App() {
         />
         <div tw="flex justify-between p-3">
           <Dropdown
-            label={<>🌎 {sectorName || 'Choose region...'}</>}
+            label={<><FaGlobe css={{color:'#222'}}/> {sectorName || 'Choose region...'}</>}
             anchor="top"
             tw="flex-1"
           >

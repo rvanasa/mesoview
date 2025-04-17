@@ -519,7 +519,7 @@ export default function App() {
         />
         <div tw="flex justify-between p-3">
           <Dropdown
-            label={sectorName || 'Choose region...'}
+            label={sectorName ? <>🌎 {sectorName}</> :'Choose region...'}
             anchor="top"
             tw="flex-1"
           >

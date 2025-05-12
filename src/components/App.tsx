@@ -8,9 +8,10 @@ import {
   FaRegCalendarAlt,
   FaShareAlt,
   FaTimes,
-  FaUndoAlt
+  FaUndoAlt,
 } from 'react-icons/fa';
 import { FaGear, FaTurnUp } from 'react-icons/fa6';
+import { useSearchParams } from 'react-router-dom';
 import 'twin.macro';
 import { useLocalStorage } from 'usehooks-ts';
 import useListener from '../hooks/useListener';
@@ -80,8 +81,13 @@ export default function App() {
   const [hourOffset, setHourOffset] = useState(0);
   const [inputDateString, setInputDateString] = useQueryParam('time');
   const [modal, setModal] = useState<'calendar' | 'settings'>();
-  const [sliderRange, setSliderRange] = useState(1);
-  const [sliderInterval, setSliderInterval] = useState(1);
+  const [queryParams] = useSearchParams();
+  const [sliderRange, setSliderRange] = useState(
+    +queryParams.get('range')! || 1,
+  );
+  const [sliderInterval, setSliderInterval] = useState(
+    +queryParams.get('interval')! || 1,
+  );
   const [toggleSector, setToggleSector] = useLocalStorage<number>(
     'mesoview.toggleMesoSector',
     continentalMesoSector,
@@ -520,7 +526,12 @@ export default function App() {
         />
         <div tw="flex justify-between p-3">
           <Dropdown
-            label={<><FaGlobe css={{color:'#222'}}/> {sectorName || 'Choose region...'}</>}
+            label={
+              <>
+                <FaGlobe css={{ color: '#222' }} />{' '}
+                {sectorName || 'Choose region...'}
+              </>
+            }
             anchor="top"
             tw="flex-1"
           >

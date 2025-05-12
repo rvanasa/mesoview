@@ -193,7 +193,7 @@ export default function App() {
     >
       {!!modal && (
         <div
-          tw="flex justify-center items-center bg-[#0005] absolute top-0 bottom-0 left-0 right-0 z-10"
+          tw="flex justify-center items-center bg-[#0005] fixed top-0 bottom-0 left-0 right-0 z-10"
           onClick={() => setModal(undefined)}
         >
           <div onClick={(e) => e.stopPropagation()}>

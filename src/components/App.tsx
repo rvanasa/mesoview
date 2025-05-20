@@ -40,6 +40,7 @@ import NumberInput from './NumberInput';
 import { ToolButton } from './ToolButton';
 
 const defaultMesoSector = 13; // Central U.S.
+const defaultHour = 23;
 
 const categories: { param: string; label: string }[][] = [
   [
@@ -119,7 +120,7 @@ export default function App() {
       : +sectorQueryParam;
 
   const inputDate = inputDateString
-    ? parseDate(inputDateString, 12)
+    ? parseDate(inputDateString, defaultHour)
     : roundToNearestHour(new Date());
   const setInputDate = useCallback(
     (date: Date | undefined) => {
@@ -210,7 +211,7 @@ export default function App() {
                             : roundToNearestHour(
                                 new Date(
                                   date.getTime() +
-                                    3600000 * 12 -
+                                    3600000 * defaultHour -
                                     60000 * date.getTimezoneOffset(),
                                 ),
                               )

@@ -124,6 +124,7 @@ export default function App() {
   const setInputDate = useCallback(
     (date: Date | undefined) => {
       setInputDateString(date && formatDate(date));
+      setHourOffset(0);
     },
     [setInputDateString],
   );

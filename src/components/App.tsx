@@ -79,7 +79,6 @@ const checkboxLayers: Partial<Record<CheckboxKey, string>> = {
 export default function App() {
   const [params, setParams] = useQueryParams('param', ['500mb', '3cvr']);
   const [sectorQueryParam, setSectorQueryParam] = useQueryParam('sector');
-  const [hourOffset, setHourOffset] = useState(0);
   const [inputDateString, setInputDateString] = useQueryParam('time');
   const [modal, setModal] = useState<'calendar' | 'settings'>();
   const [queryParams] = useSearchParams();
@@ -127,6 +126,9 @@ export default function App() {
       setInputDateString(date && formatDate(date));
     },
     [setInputDateString],
+  );
+  const [hourOffset, setHourOffset] = useState(
+    inputDateString ? 0 : 1 /* +1 hour by default */,
   );
 
   useListener(document, 'keydown', (event: KeyboardEvent) => {

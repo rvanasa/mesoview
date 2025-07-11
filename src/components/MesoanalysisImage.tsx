@@ -72,13 +72,18 @@ export default function MesoanalysisImage({
   radar,
   onClick,
 }: MesoanalysisImageProps) {
-  const urls: (string | undefined)[] = layers.map((param) =>
-    getLayerUrl(sector, param),
+  const urls: [string | undefined, 'layer' | 'radar' | 'param'][] = layers.map(
+    (param) => [getLayerUrl(sector, param), 'layer'],
   );
   if (radar) {
-    urls.push(getRadarUrl(date, sector));
+    urls.push([getRadarUrl(date, sector), 'radar']);
   }
-  urls.push(...params.map((param) => getMesoanalysisUrl(date, sector, param)));
+  urls.push(
+    ...params.map<[string | undefined, 'param']>((param) => [
+      getMesoanalysisUrl(date, sector, param),
+      'param',
+    ]),
+  );
 
   const width = 1000;
   const height = 750;
@@ -88,10 +93,10 @@ export default function MesoanalysisImage({
       onClick={onClick}
     >
       {urls.map(
-        (url, i) =>
+        ([url, type], i) =>
           !!url && (
             <CachedImage
-              key={i}
+              key={type === 'layer' ? url : i}
               src={url}
               width={width}
               height={height}

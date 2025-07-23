@@ -30,6 +30,7 @@ export const mesoParams: [string, string][] = [
   ['dvvr', 'Sfc Convergence & Vorticity'],
   ['scp', 'Supercell Composite'],
   ['lr3c', '0-3km Lapse Rate & ML3CAPE'],
+  ['lclh', 'Cloud Base Height'],
   ['nstp', 'Non-supercell Tornado'],
   ['desp', 'Enhanced Stretching Potential'],
   ['effh', 'Eff. inflow base + ESRH'],

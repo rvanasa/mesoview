@@ -1,8 +1,12 @@
 import Slider from 'rc-slider';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import {
+  FaAngleDoubleUp,
   FaAngleLeft,
   FaAngleRight,
+  FaArrowDown,
+  FaArrowUp,
+  FaCodeBranch,
   FaGlobe,
   FaLayerGroup,
   FaRegCalendarAlt,
@@ -10,7 +14,7 @@ import {
   FaTimes,
   FaUndoAlt,
 } from 'react-icons/fa';
-import { FaGear, FaTurnUp } from 'react-icons/fa6';
+import { FaArrowsUpToLine, FaGear, FaTurnUp } from 'react-icons/fa6';
 import { useSearchParams } from 'react-router-dom';
 import 'twin.macro';
 import { useLocalStorage } from 'usehooks-ts';
@@ -281,6 +285,7 @@ export default function App() {
         </div>
       )}
       {params.map((param, i) => {
+        const isStandardParameter = (p: string) => !p.startsWith('sounding-');
         const soundingMatch = param.match(/^sounding-([^-]+)-([^-]+)$/);
         const isSounding = !!soundingMatch;
         const soundingModel = soundingMatch?.[1] as ForecastModel | undefined;
@@ -431,46 +436,6 @@ export default function App() {
                       />
                     </div>
                   );
-                  // return (
-                  //   <div tw="flex space-x-2">
-                  //     <ToolButton
-                  //       onClick={() =>
-                  //         setParams(
-                  //           spliced(
-                  //             params,
-                  //             i,
-                  //             1,
-                  //             category[Math.max(entryIndex - 1, 0)].param,
-                  //           ),
-                  //         )
-                  //       }
-                  //     >
-                  //       <FaDownLong />
-                  //     </ToolButton>
-                  //     <ToolButton
-                  //       onClick={() =>
-                  //         setParams(
-                  //           spliced(
-                  //             params,
-                  //             i,
-                  //             1,
-                  //             category[Math.min(entryIndex + 1, category.length - 1)]
-                  //               .param,
-                  //           ),
-                  //         )
-                  //       }
-                  //     >
-                  //       <FaUpLong />
-                  //     </ToolButton>
-                  //   </div>
-                  // );
-                  // return (
-                  //     <ButtonGroup>
-                  //     {category?.map((entry) => (
-                  //       <Button tw="text-sm" key={entry.param}>{entry.label}</Button>
-                  //     ))}
-                  //   </ButtonGroup>
-                  // );
                 })()}
               <div tw="flex space-x-2">
                 {!isSounding && param.includes(' ') && (
@@ -482,7 +447,7 @@ export default function App() {
                     <FaLayerGroup />
                   </ToolButton>
                 )}
-                {!isSounding && i > 0 && (
+                {!isSounding && i > 0 && isStandardParameter(params[i - 1]) && (
                   <ToolButton
                     onClick={() =>
                       setParams(
@@ -495,7 +460,27 @@ export default function App() {
                       )
                     }
                   >
-                    <FaTurnUp />
+                    <FaAngleDoubleUp />
+                  </ToolButton>
+                )}
+                {i > 0 && (
+                  <ToolButton
+                    onClick={() =>
+                      setParams(
+                        spliced(params, i - 1, 2, params[i], params[i - 1]),
+                      )
+                    }
+                  >
+                    <FaArrowUp />
+                  </ToolButton>
+                )}
+                {i < params.length - 1 && (
+                  <ToolButton
+                    onClick={() =>
+                      setParams(spliced(params, i, 2, params[i + 1], params[i]))
+                    }
+                  >
+                    <FaArrowDown />
                   </ToolButton>
                 )}
                 {params.length > 1 && (

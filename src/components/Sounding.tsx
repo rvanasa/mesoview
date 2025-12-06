@@ -131,7 +131,6 @@ const Sounding: React.FC<SoundingProps> = ({ profile, aspectRatio = 0.75 }) => {
     ];
 
     heightLevels.forEach(({ height, label, color }) => {
-      // Find the pressure level corresponding to this height AGL
       const targetHeightMSL = surfaceHeight + height;
       const pressure = getPressureForHeight(profile, targetHeightMSL);
 

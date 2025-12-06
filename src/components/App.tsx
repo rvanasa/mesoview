@@ -277,7 +277,7 @@ export default function App() {
         </div>
       )}
       {params.map((param, i) => {
-        const soundingMatch = param.match(/^sounding:([^:]+):([^:]+)$/);
+        const soundingMatch = param.match(/^sounding-([^-]+)-([^-]+)$/);
         const isSounding = !!soundingMatch;
         const soundingModel = soundingMatch?.[1] as ForecastModel | undefined;
         const soundingStation = soundingMatch?.[2];

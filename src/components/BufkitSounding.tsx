@@ -48,7 +48,7 @@ const BufkitSounding: React.FC<BufkitSoundingProps> = ({
 
   return (
     <div tw="relative">
-      <Sounding profile={profile} />
+      {!!profile && <Sounding profile={profile} />}
       <div
         tw="absolute inset-0 flex items-center justify-center bg-white bg-opacity-75 pointer-events-none"
         style={{

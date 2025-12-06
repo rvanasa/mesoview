@@ -1,3 +1,4 @@
+import { MINUTE } from './date';
 import { Profile, ForecastModel } from './profile';
 import { proxy } from './proxy';
 
@@ -245,8 +246,8 @@ export function bufkitSoundingToProfile(
     elevationM: [sounding.elevation], // Array for consistency with other fields
     omega: omegaMicrobar,
     thetaE: sounding.sounding.thetaE,
-    uKt: uKt,
-    vKt: vKt,
+    uKt,
+    vKt,
   };
 }
 
@@ -301,7 +302,7 @@ export function getSoundingAtTimeIndex(
 export function findClosestSounding(
   soundings: BufkitSounding[],
   date: Date,
-  toleranceMs = 30 * 60 * 1000,
+  toleranceMs = 30 * MINUTE,
 ): BufkitSounding | null {
   if (soundings.length === 0) return null;
 

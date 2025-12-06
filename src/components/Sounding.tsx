@@ -2,24 +2,24 @@ import React, { useEffect, useRef, useState } from 'react';
 import * as d3 from 'd3';
 import 'twin.macro';
 import { Profile } from '../utils/profile';
+import { formatDate } from '../utils/date';
 
 interface SoundingProps {
   profile: Profile | undefined;
   aspectRatio?: number;
 }
 
-const Sounding: React.FC<SoundingProps> = ({ profile, aspectRatio = 0.5 }) => {
+const Sounding: React.FC<SoundingProps> = ({ profile, aspectRatio = 1 }) => {
   const svgRef = useRef<SVGSVGElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const [width, setWidth] = useState(600);
-  const [height, setHeight] = useState(width * aspectRatio);
+  const height = width * aspectRatio;
 
   useEffect(() => {
     const updateSize = () => {
       if (containerRef.current) {
         const newWidth = containerRef.current.offsetWidth;
         setWidth(newWidth);
-        setHeight(newWidth * aspectRatio);
       }
     };
 
@@ -34,7 +34,7 @@ const Sounding: React.FC<SoundingProps> = ({ profile, aspectRatio = 0.5 }) => {
     const svg = d3.select(svgRef.current);
     svg.selectAll('*').remove(); // Clear previous content
 
-    const margin = { top: 20, right: 40, bottom: 40, left: 60 };
+    const margin = { top: 20, right: 55, bottom: 45, left: 55 };
     const chartWidth = width - margin.left - margin.right;
     const chartHeight = height - margin.top - margin.bottom;
 
@@ -65,21 +65,21 @@ const Sounding: React.FC<SoundingProps> = ({ profile, aspectRatio = 0.5 }) => {
     const pressureLevels = [
       100, 150, 200, 250, 300, 400, 500, 600, 700, 850, 925, 1000,
     ];
-    g.selectAll('.pressure-line')
-      .data(
-        pressureLevels.filter(
-          (p) => p >= pressureExtent[0] && p <= pressureExtent[1],
-        ),
-      )
-      .enter()
-      .append('line')
-      .attr('class', 'pressure-line')
-      .attr('x1', 0)
-      .attr('x2', chartWidth)
-      .attr('y1', (d) => yScale(d))
-      .attr('y2', (d) => yScale(d))
-      .attr('stroke', '#e0e0e0')
-      .attr('stroke-width', 0.5);
+    // g.selectAll('.pressure-line')
+    //   .data(
+    //     pressureLevels.filter(
+    //       (p) => p >= pressureExtent[0] && p <= pressureExtent[1],
+    //     ),
+    //   )
+    //   .enter()
+    //   .append('line')
+    //   .attr('class', 'pressure-line')
+    //   .attr('x1', 0)
+    //   .attr('x2', chartWidth)
+    //   .attr('y1', (d) => yScale(d))
+    //   .attr('y2', (d) => yScale(d))
+    //   .attr('stroke', '#e0e0e0')
+    //   .attr('stroke-width', 0.5);
 
     // Draw skewed temperature lines
     const tempLevels = [-40, -20, 0, 20, 40];
@@ -90,7 +90,7 @@ const Sounding: React.FC<SoundingProps> = ({ profile, aspectRatio = 0.5 }) => {
         .y((p) => yScale(p));
 
       g.append('path')
-        .datum(pressureLevels.filter((p) => p >= 100 && p <= 1000))
+        .datum([1000, 100])
         .attr('class', 'temp-line')
         .attr('d', line)
         .attr('stroke', temp === -20 || temp === 0 ? '#1662ac' : '#888')
@@ -143,10 +143,7 @@ const Sounding: React.FC<SoundingProps> = ({ profile, aspectRatio = 0.5 }) => {
     g.append('g').attr('class', 'y-axis').call(yAxis);
 
     // Temperature axis (bottom)
-    const xAxis = d3
-      .axisBottom(xScale)
-      .ticks(10)
-      .tickFormat((d) => `${d}°C`);
+    const xAxis = d3.axisBottom(xScale).ticks(10);
 
     g.append('g')
       .attr('class', 'x-axis')
@@ -180,7 +177,9 @@ const Sounding: React.FC<SoundingProps> = ({ profile, aspectRatio = 0.5 }) => {
       .attr('text-anchor', 'start')
       .attr('font-size', '14px')
       .attr('font-weight', 'bold')
-      .text(`${profile.model.toUpperCase()} ${profile.station.toUpperCase()}`);
+      .text(
+        `${formatDate(new Date(profile.time))} ${profile.model.toUpperCase()} ${profile.station.toUpperCase()}`,
+      );
 
     // Add surface temperature and dewpoint labels in Fahrenheit
     if (profile.tempC.length > 0 && profile.dewC.length > 0) {
@@ -196,7 +195,7 @@ const Sounding: React.FC<SoundingProps> = ({ profile, aspectRatio = 0.5 }) => {
 
       g.append('text')
         .attr('x', tempX)
-        .attr('y', tempY + 18)
+        .attr('y', tempY + 12)
         .attr('font-size', '12px')
         .attr('font-weight', 'bold')
         .attr('fill', '#ff0000')
@@ -209,14 +208,117 @@ const Sounding: React.FC<SoundingProps> = ({ profile, aspectRatio = 0.5 }) => {
 
       g.append('text')
         .attr('x', dewX)
-        .attr('y', dewY + 18)
+        .attr('y', dewY + 12)
         .attr('font-size', '12px')
         .attr('font-weight', 'bold')
         .attr('fill', '#00aa00')
         .attr('text-anchor', 'end')
         .text(`${surfaceDewF.toFixed(0)}°F`);
     }
-  }, [profile, width, height]);
+
+    // Draw hodograph in top right
+    const hodoSize = Math.min(chartWidth * 0.4, 200);
+    const hodoMargin = 0;
+    const hodoX = chartWidth - hodoSize - hodoMargin;
+    const hodoY = hodoMargin;
+
+    const hodoG = g
+      .append('g')
+      .attr('transform', `translate(${hodoX},${hodoY})`);
+
+    // Find max wind speed for scaling
+    const maxWindKt = 60;
+    const windScale = Math.max(maxWindKt, 30); // At least 30kt scale for better spacing
+
+    const center = hodoSize / 2;
+
+    // Draw concentric circles for wind speed rings
+    const speedRings = [10, 20, 30, 40, 50, 60, 70].filter(
+      (s) => s <= windScale,
+    );
+    speedRings.forEach((speed, i) => {
+      const radius = (speed / windScale) * (hodoSize / 2);
+      hodoG
+        .append('circle')
+        .attr('cx', center)
+        .attr('cy', center)
+        .attr('r', radius)
+        .attr('fill', 'none')
+        .attr('stroke', i % 2 === 0 ? '#888' : '#ccc')
+        .attr('stroke-width', 0.5)
+        .attr('stroke-dasharray', '2,2');
+
+      if (i % 2 === 1) {
+        // Add speed label
+        hodoG
+          .append('text')
+          .attr('x', center + radius)
+          .attr('y', center - 2)
+          .attr('font-size', '8px')
+          .attr('fill', '#666')
+          .attr('text-anchor', 'middle')
+          .text(`${speed}`);
+      }
+    });
+
+    // Draw crosshairs
+    hodoG
+      .append('line')
+      .attr('x1', center)
+      .attr('x2', center)
+      .attr('y1', 0)
+      .attr('y2', hodoSize)
+      .attr('stroke', '#ccc')
+      .attr('stroke-width', 0.5);
+
+    hodoG
+      .append('line')
+      .attr('x1', 0)
+      .attr('x2', hodoSize)
+      .attr('y1', center)
+      .attr('y2', center)
+      .attr('stroke', '#ccc')
+      .attr('stroke-width', 0.5);
+
+    // Draw hodograph line
+    const hodoLine = d3
+      .line<number>()
+      .x((d, i) => center + (profile.uKt[i] / windScale) * (hodoSize / 2))
+      .y((d, i) => center - (profile.vKt[i] / windScale) * (hodoSize / 2))
+      .curve(d3.curveLinear);
+
+    hodoG
+      .append('path')
+      .datum(profile.pressureHPa)
+      .attr('d', hodoLine)
+      .attr('stroke', '#0066cc')
+      .attr('stroke-width', 2)
+      .attr('fill', 'none');
+
+    // Add pressure markers at key levels
+    const hodoMarkers = [1000, 850, 700, 500, 300].filter(
+      (p) =>
+        p >= profile.pressureHPa[profile.pressureHPa.length - 1] &&
+        p <= profile.pressureHPa[0],
+    );
+
+    hodoMarkers.forEach((pressureLevel) => {
+      const idx = profile.pressureHPa.findIndex((p) => p <= pressureLevel);
+      if (idx > 0) {
+        const u = profile.uKt[idx];
+        const v = profile.vKt[idx];
+        const x = center + (u / windScale) * (hodoSize / 2);
+        const y = center - (v / windScale) * (hodoSize / 2);
+
+        hodoG
+          .append('circle')
+          .attr('cx', x)
+          .attr('cy', y)
+          .attr('r', 2.5)
+          .attr('fill', '#0066cc');
+      }
+    });
+  }, [width, height, profile]);
 
   if (!profile || !profile.tempC?.length) {
     return (

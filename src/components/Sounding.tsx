@@ -375,30 +375,6 @@ const Sounding: React.FC<SoundingProps> = ({ profile, aspectRatio = 0.75 }) => {
         .attr('stroke-width', 2.5)
         .attr('stroke-linecap', 'round');
     }
-
-    // Add pressure markers at key levels
-    const hodoMarkers = [1000, 850, 700, 500, 300].filter(
-      (p) =>
-        p >= profile.pressureHPa[profile.pressureHPa.length - 1] &&
-        p <= profile.pressureHPa[0],
-    );
-
-    hodoMarkers.forEach((pressureLevel) => {
-      const idx = profile.pressureHPa.findIndex((p) => p <= pressureLevel);
-      if (idx > 0) {
-        const u = profile.uKt[idx];
-        const v = profile.vKt[idx];
-        const x = center + (u / windScale) * (hodoSize / 2);
-        const y = center - (v / windScale) * (hodoSize / 2);
-
-        hodoG
-          .append('circle')
-          .attr('cx', x)
-          .attr('cy', y)
-          .attr('r', 2.5)
-          .attr('fill', '#0066cc');
-      }
-    });
   }, [width, height, profile]);
 
   if (!profile || !profile.tempC?.length) {

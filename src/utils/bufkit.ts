@@ -361,7 +361,7 @@ export async function fetchLatestBufkit(
   const response = await fetch(proxy(url));
   if (!response.ok) {
     throw new Error(
-      `Failed to fetch Bufkit data: ${response.status} ${response.statusText}`,
+      `Unable to fetch Bufkit data: ${response.status} ${response.statusText}`,
     );
   }
 
@@ -394,7 +394,7 @@ export async function fetchArchiveBufkit(
   const response = await fetch(proxy(url));
   if (!response.ok) {
     throw new Error(
-      `Failed to fetch archived Bufkit data: ${response.status} ${response.statusText}`,
+      `Unable to fetch archived Bufkit data: ${response.status} ${response.statusText}`,
     );
   }
 

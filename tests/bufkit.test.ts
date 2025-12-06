@@ -74,8 +74,12 @@ describe('Bufkit Parser', () => {
     expect(profile.dewC).toHaveLength(profile.tempC.length);
     expect(profile.pressureHPa).toHaveLength(profile.tempC.length);
 
-    expect(profile.time).toContain('2025-12-05');
-    expect(profile.time).toContain('22:00');
+    const date = new Date(profile.time);
+    expect(date.getUTCFullYear()).toBe(2025);
+    expect(date.getUTCMonth()).toBe(11);
+    expect(date.getUTCDate()).toBe(5);
+    expect(date.getUTCHours()).toBe(22);
+    expect(date.getUTCMinutes()).toBe(0);
 
     expect(profile.uKt[0]).toBeCloseTo(-2.33, 1);
     expect(profile.vKt[0]).toBeCloseTo(-4.67, 1);
@@ -131,7 +135,7 @@ describe('Bufkit Parser', () => {
       globalThis.fetch = vi.fn().mockResolvedValue(mockResponse);
 
       await expect(fetchLatestBufkit('rap', 'tbl')).rejects.toThrow(
-        'Failed to fetch Bufkit data: 404 Not Found',
+        'Unable to fetch Bufkit data: 404 Not Found',
       );
     });
 

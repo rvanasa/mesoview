@@ -39,7 +39,11 @@ import Dropdown from './Dropdown';
 import MesoanalysisImage from './MesoanalysisImage';
 import NumberInput from './NumberInput';
 import { ToolButton } from './ToolButton';
-import { ForecastModel } from '../utils/profile';
+import {
+  ForecastModel,
+  soundingModels,
+  soundingStations,
+} from '../utils/profile';
 
 const defaultMesoSector = 13; // Central U.S.
 const defaultHour = 23;
@@ -284,35 +288,94 @@ export default function App() {
         return (
           <div key={i}>
             <div tw="flex items-center justify-between p-2">
-              <div>
-                <Dropdown
-                  label={
-                    isSounding ? (
-                      <div tw="text-left min-w-[4rem]">
-                        {soundingModel?.toUpperCase()} -{' '}
-                        {soundingStation?.toUpperCase()}
-                      </div>
-                    ) : categoryParamLabelMap.has(param) ? (
-                      <div tw="text-left min-w-[4rem]">
-                        {categoryParamLabelMap.get(param)}
-                      </div>
-                    ) : (
-                      mesoParamMap.get(param) || param || 'Choose parameter'
-                    )
-                  }
-                  anchor="bottom"
-                >
-                  {/* <div style={{ maxHeight: "70vh" }} tw="overflow-y-scroll"> */}
-                  {mesoParams.map(([key, title], j) => (
-                    <div
-                      key={j}
-                      onClick={() => setParams(spliced(params, i, 1, key))}
+              <div tw="flex gap-4">
+                {isSounding ? (
+                  <>
+                    <Dropdown
+                      label={
+                        <div tw="text-left min-w-[3rem]">
+                          {soundingModels.find((m) => m.key === soundingModel)
+                            ?.label ||
+                            soundingModel?.toUpperCase() ||
+                            'Model'}
+                        </div>
+                      }
+                      anchor="bottom"
                     >
-                      {title}
-                    </div>
-                  ))}
-                  {/* </div> */}
-                </Dropdown>
+                      {soundingModels.map((model) => (
+                        <div
+                          key={model.key}
+                          onClick={() =>
+                            setParams(
+                              spliced(
+                                params,
+                                i,
+                                1,
+                                `sounding-${model.key}-${soundingStation || 'tbl'}`,
+                              ),
+                            )
+                          }
+                        >
+                          {model.label}
+                        </div>
+                      ))}
+                    </Dropdown>
+                    <Dropdown
+                      label={
+                        <div tw="text-left min-w-[3rem]">
+                          {soundingStations.find(
+                            (s) => s.key === soundingStation,
+                          )?.label ||
+                            soundingStation?.toUpperCase() ||
+                            'Station'}
+                        </div>
+                      }
+                      anchor="bottom"
+                    >
+                      {soundingStations.map((station) => (
+                        <div
+                          key={station.key}
+                          onClick={() =>
+                            setParams(
+                              spliced(
+                                params,
+                                i,
+                                1,
+                                `sounding-${soundingModel || 'rap'}-${station.key}`,
+                              ),
+                            )
+                          }
+                        >
+                          {station.label}
+                        </div>
+                      ))}
+                    </Dropdown>
+                  </>
+                ) : (
+                  <Dropdown
+                    label={
+                      categoryParamLabelMap.has(param) ? (
+                        <div tw="text-left min-w-[4rem]">
+                          {categoryParamLabelMap.get(param)}
+                        </div>
+                      ) : (
+                        mesoParamMap.get(param) || param || 'Choose parameter'
+                      )
+                    }
+                    anchor="bottom"
+                  >
+                    {/* <div style={{ maxHeight: "70vh" }} tw="overflow-y-scroll"> */}
+                    {mesoParams.map(([key, title], j) => (
+                      <div
+                        key={j}
+                        onClick={() => setParams(spliced(params, i, 1, key))}
+                      >
+                        {title}
+                      </div>
+                    ))}
+                    {/* </div> */}
+                  </Dropdown>
+                )}
               </div>
               {!isSounding &&
                 categoryParamLabelMap.has(param) &&

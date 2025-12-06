@@ -8,7 +8,20 @@ import {
 } from './bufkit';
 import { MINUTE, roundToNearestHour } from './date';
 
-export type ForecastModel = 'rap' | 'hrrr';
+export const soundingModels = [
+  { key: 'rap', label: 'RAP' },
+  { key: 'hrrr', label: 'HRRR' },
+] as const;
+export type ForecastModel = (typeof soundingModels)[number]['key'];
+
+// TODO: fetch
+export const soundingStations: { key: string; label: string }[] = [
+  { key: 'tbl', label: 'TBL' },
+  { key: 'kbjc', label: 'KBJC' },
+  { key: 'den', label: 'DEN' },
+  { key: 'kcef', label: 'KCEF' },
+  { key: 'korh', label: 'KORH' },
+];
 
 export interface Profile {
   time: number;

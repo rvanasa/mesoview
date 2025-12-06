@@ -29,10 +29,10 @@ export interface Profile {
   station: string;
   latitude: number;
   longitude: number;
+  elevationM: number;
   tempC: number[];
   dewC: number[];
   pressureHPa: number[];
-  elevationM: number[];
   heightM: number[];
   omega: number[];
   thetaE: number[];
@@ -107,4 +107,45 @@ export async function fetchProfileAtDate(
     }
   }
   return bufkitSoundingToProfile(sounding, model);
+}
+
+export function getPressureForHeight(
+  profile: Profile,
+  targetHeightMSL: number,
+): number | undefined {
+  let lowerIdx = -1;
+  let upperIdx = -1;
+  for (let i = 0; i < profile.heightM.length - 1; i++) {
+    const h1 = profile.heightM[i];
+    const h2 = profile.heightM[i + 1];
+    if (
+      (h1 <= targetHeightMSL && h2 >= targetHeightMSL) ||
+      (h1 >= targetHeightMSL && h2 <= targetHeightMSL)
+    ) {
+      lowerIdx = i;
+      upperIdx = i + 1;
+      break;
+    }
+  }
+  if (lowerIdx === -1) {
+    let closestIdx = 0;
+    let minDiff = Infinity;
+    for (let i = 0; i < profile.heightM.length; i++) {
+      const diff = Math.abs(profile.heightM[i] - targetHeightMSL);
+      if (diff < minDiff) {
+        minDiff = diff;
+        closestIdx = i;
+      }
+    }
+    // Only return if within 500m
+    if (minDiff < 500) {
+      return profile.pressureHPa[closestIdx];
+    }
+  }
+  const h1 = profile.heightM[lowerIdx];
+  const h2 = profile.heightM[upperIdx];
+  const p1 = profile.pressureHPa[lowerIdx];
+  const p2 = profile.pressureHPa[upperIdx];
+  const t = (targetHeightMSL - h1) / (h2 - h1);
+  return p1 + t * (p2 - p1);
 }

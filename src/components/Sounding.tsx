@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import * as d3 from 'd3';
 import 'twin.macro';
-import { Profile } from '../utils/profile';
+import { getPressureForHeight, Profile } from '../utils/profile';
 import { formatDate } from '../utils/date';
 
 interface SoundingProps {
@@ -62,7 +62,7 @@ const Sounding: React.FC<SoundingProps> = ({ profile, aspectRatio = 0.75 }) => {
       .attr('transform', `translate(${margin.left},${margin.top})`);
 
     // Calculate surface elevation for height AGL calculations
-    const surfaceElevation = profile.elevationM[0];
+    const surfaceHeight = profile.heightM[0];
 
     // Pressure scale (vertical, logarithmic)
     const pressureExtent = d3.extent(profile.pressureHPa) as [number, number];
@@ -132,22 +132,10 @@ const Sounding: React.FC<SoundingProps> = ({ profile, aspectRatio = 0.75 }) => {
 
     heightLevels.forEach(({ height, label, color }) => {
       // Find the pressure level corresponding to this height AGL
-      const targetHeightMSL = surfaceElevation + height;
+      const targetHeightMSL = surfaceHeight + height;
+      const pressure = getPressureForHeight(profile, targetHeightMSL);
 
-      // Find closest index in heightM array
-      let closestIdx = 0;
-      let minDiff = Infinity;
-      for (let i = 0; i < profile.heightM.length; i++) {
-        const diff = Math.abs(profile.heightM[i] - targetHeightMSL);
-        if (diff < minDiff) {
-          minDiff = diff;
-          closestIdx = i;
-        }
-      }
-
-      // Only draw if we found a reasonable match (within 500m)
-      if (minDiff < 500) {
-        const pressure = profile.pressureHPa[closestIdx];
+      if (pressure !== undefined) {
         const y = yScale(pressure);
 
         g.append('line')
@@ -353,10 +341,7 @@ const Sounding: React.FC<SoundingProps> = ({ profile, aspectRatio = 0.75 }) => {
 
     // Draw hodograph as colored segments
     for (let i = 0; i < profile.pressureHPa.length - 1; i++) {
-      // Calculate height AGL: heightMSL - surfaceElevation
-      const heightAGL = profile.heightM[i] - surfaceElevation;
-
-      // Skip if above 12km AGL
+      const heightAGL = profile.heightM[i] - surfaceHeight;
       if (heightAGL >= 12000) continue;
 
       const color = getColorForHeight(heightAGL);

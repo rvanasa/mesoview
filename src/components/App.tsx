@@ -205,7 +205,7 @@ export default function App() {
           <div onClick={(e) => e.stopPropagation()}>
             {modal === 'calendar' ? (
               <Card tw="text-lg flex flex-col gap-4 w-full">
-                <div tw="min-h-[300px]">
+                <div tw="min-h-[340px]">
                   <Calendar
                     value={inputDate}
                     onChange={(date) => {

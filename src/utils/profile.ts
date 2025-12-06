@@ -20,6 +20,7 @@ export interface Profile {
   dewC: number[];
   pressureHPa: number[];
   elevationM: number[];
+  heightM: number[];
   omega: number[];
   thetaE: number[];
   uKt: number[];

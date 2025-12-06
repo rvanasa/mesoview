@@ -244,6 +244,7 @@ export function bufkitSoundingToProfile(
     dewC: sounding.sounding.dewC,
     pressureHPa: sounding.sounding.pressure,
     elevationM: [sounding.elevation], // Array for consistency with other fields
+    heightM: sounding.sounding.height, // Geopotential height MSL
     omega: omegaMicrobar,
     thetaE: sounding.sounding.thetaE,
     uKt,

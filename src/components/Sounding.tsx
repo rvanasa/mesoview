@@ -9,7 +9,7 @@ interface SoundingProps {
   aspectRatio?: number;
 }
 
-const Sounding: React.FC<SoundingProps> = ({ profile, aspectRatio = 1 }) => {
+const Sounding: React.FC<SoundingProps> = ({ profile, aspectRatio = 0.75 }) => {
   const svgRef = useRef<SVGSVGElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const [width, setWidth] = useState(600);
@@ -38,10 +38,31 @@ const Sounding: React.FC<SoundingProps> = ({ profile, aspectRatio = 1 }) => {
     const chartWidth = width - margin.left - margin.right;
     const chartHeight = height - margin.top - margin.bottom;
 
+    const heightColors = {
+      surface: '#888888', // grey
+      '1km': '#9333ea', // purple
+      '3km': '#dc2626', // red
+      '6km': '#16a34a', // green
+      '9km': '#eab308', // yellow
+      '12km': '#14b8a6', // teal
+    };
+
+    const getColorForHeight = (heightAGL: number): string => {
+      if (heightAGL < 1000) return heightColors['1km'];
+      if (heightAGL < 3000) return heightColors['3km'];
+      if (heightAGL < 6000) return heightColors['6km'];
+      if (heightAGL < 9000) return heightColors['9km'];
+      if (heightAGL < 12000) return heightColors['12km'];
+      return 'none'; // hide above 12km
+    };
+
     // Create main group
     const g = svg
       .append('g')
       .attr('transform', `translate(${margin.left},${margin.top})`);
+
+    // Calculate surface elevation for height AGL calculations
+    const surfaceElevation = profile.elevationM[0];
 
     // Pressure scale (vertical, logarithmic)
     const pressureExtent = d3.extent(profile.pressureHPa) as [number, number];
@@ -97,6 +118,56 @@ const Sounding: React.FC<SoundingProps> = ({ profile, aspectRatio = 1 }) => {
         .attr('stroke-width', 1)
         .attr('stroke-dasharray', '2,2')
         .attr('fill', 'none');
+    });
+
+    // Draw height AGL lines
+    const heightLevels = [
+      { height: 0, label: 'Surface', color: heightColors.surface },
+      { height: 1000, label: '1km', color: heightColors['1km'] },
+      { height: 3000, label: '3km', color: heightColors['3km'] },
+      { height: 6000, label: '6km', color: heightColors['6km'] },
+      { height: 9000, label: '9km', color: heightColors['9km'] },
+      { height: 12000, label: '12km', color: heightColors['12km'] },
+    ];
+
+    heightLevels.forEach(({ height, label, color }) => {
+      // Find the pressure level corresponding to this height AGL
+      const targetHeightMSL = surfaceElevation + height;
+
+      // Find closest index in heightM array
+      let closestIdx = 0;
+      let minDiff = Infinity;
+      for (let i = 0; i < profile.heightM.length; i++) {
+        const diff = Math.abs(profile.heightM[i] - targetHeightMSL);
+        if (diff < minDiff) {
+          minDiff = diff;
+          closestIdx = i;
+        }
+      }
+
+      // Only draw if we found a reasonable match (within 500m)
+      if (minDiff < 500) {
+        const pressure = profile.pressureHPa[closestIdx];
+        const y = yScale(pressure);
+
+        g.append('line')
+          .attr('x1', 0)
+          .attr('x2', chartWidth)
+          .attr('y1', y)
+          .attr('y2', y)
+          .attr('stroke', color)
+          .attr('stroke-width', 1)
+          .attr('stroke-dasharray', '3,3');
+
+        // Add label on the left side (to the right of y-axis)
+        g.append('text')
+          .attr('x', 5)
+          .attr('y', y + 10)
+          .attr('font-size', '9px')
+          .attr('fill', color)
+          .attr('font-weight', 'bold')
+          .text(label);
+      }
     });
 
     // Create line generators
@@ -280,20 +351,30 @@ const Sounding: React.FC<SoundingProps> = ({ profile, aspectRatio = 1 }) => {
       .attr('stroke', '#ccc')
       .attr('stroke-width', 0.5);
 
-    // Draw hodograph line
-    const hodoLine = d3
-      .line<number>()
-      .x((d, i) => center + (profile.uKt[i] / windScale) * (hodoSize / 2))
-      .y((d, i) => center - (profile.vKt[i] / windScale) * (hodoSize / 2))
-      .curve(d3.curveLinear);
+    // Draw hodograph as colored segments
+    for (let i = 0; i < profile.pressureHPa.length - 1; i++) {
+      // Calculate height AGL: heightMSL - surfaceElevation
+      const heightAGL = profile.heightM[i] - surfaceElevation;
 
-    hodoG
-      .append('path')
-      .datum(profile.pressureHPa)
-      .attr('d', hodoLine)
-      .attr('stroke', '#0066cc')
-      .attr('stroke-width', 2)
-      .attr('fill', 'none');
+      // Skip if above 12km AGL
+      if (heightAGL >= 12000) continue;
+
+      const color = getColorForHeight(heightAGL);
+      const x1 = center + (profile.uKt[i] / windScale) * (hodoSize / 2);
+      const y1 = center - (profile.vKt[i] / windScale) * (hodoSize / 2);
+      const x2 = center + (profile.uKt[i + 1] / windScale) * (hodoSize / 2);
+      const y2 = center - (profile.vKt[i + 1] / windScale) * (hodoSize / 2);
+
+      hodoG
+        .append('line')
+        .attr('x1', x1)
+        .attr('y1', y1)
+        .attr('x2', x2)
+        .attr('y2', y2)
+        .attr('stroke', color)
+        .attr('stroke-width', 2.5)
+        .attr('stroke-linecap', 'round');
+    }
 
     // Add pressure markers at key levels
     const hodoMarkers = [1000, 850, 700, 500, 300].filter(

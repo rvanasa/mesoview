@@ -1,11 +1,12 @@
 import {
   BufkitSounding,
   bufkitSoundingToProfile,
+  fetchArchiveBufkit,
   fetchLatestBufkit,
   findClosestSounding,
   parseBufkitFile,
 } from './bufkit';
-import { MINUTE } from './date';
+import { MINUTE, roundToNearestHour } from './date';
 
 export type ForecastModel = 'rap' | 'hrrr';
 
@@ -29,28 +30,54 @@ const cache = new Map<
   string,
   {
     promise: Promise<BufkitSounding[]>;
-    timestamp: number;
+    expiry: number;
   }
 >();
-const cacheDuration = 10 * MINUTE;
 
-async function requestBufkitSoundings(
+async function requestLatestSounding(
   model: ForecastModel,
   station: string,
-): Promise<BufkitSounding[]> {
-  const cacheKey = `${model}:${station}`;
+  date: Date,
+): Promise<BufkitSounding | undefined> {
+  const cacheKey = `latest:${model}:${station}`;
   const cached = cache.get(cacheKey);
   const now = Date.now();
-  if (cached && now - cached.timestamp < cacheDuration) {
-    return cached.promise;
+  let promise: Promise<BufkitSounding[]>;
+  if (cached && now < cached.expiry) {
+    promise = cached.promise;
+  } else {
+    promise = (async () =>
+      parseBufkitFile(await fetchLatestBufkit(model, station)))();
+    cache.set(cacheKey, {
+      promise,
+      expiry: now + 10 * MINUTE,
+    });
   }
-  const promise = (async () =>
-    parseBufkitFile(await fetchLatestBufkit(model, station)))();
-  cache.set(cacheKey, {
-    promise,
-    timestamp: now,
-  });
-  return promise;
+  return findClosestSounding(await promise, date);
+}
+
+async function requestArchivedSounding(
+  model: ForecastModel,
+  station: string,
+  date: Date,
+): Promise<BufkitSounding | undefined> {
+  const roundedDate = roundToNearestHour(date);
+  const cacheKey = `archive:${model}:${station}:${roundedDate.getTime()}`;
+
+  const cached = cache.get(cacheKey);
+  const now = Date.now();
+  let promise: Promise<BufkitSounding[]>;
+  if (cached && now < cached.expiry) {
+    promise = cached.promise;
+  } else {
+    promise = (async () =>
+      parseBufkitFile(await fetchArchiveBufkit(roundedDate, model, station)))();
+    cache.set(cacheKey, {
+      promise,
+      expiry: Infinity,
+    });
+  }
+  return findClosestSounding(await promise, date);
 }
 
 export async function fetchProfileAtDate(
@@ -58,13 +85,12 @@ export async function fetchProfileAtDate(
   station: string,
   date: Date,
 ): Promise<Profile | undefined> {
-  const soundings = await requestBufkitSoundings(model, station);
-  if (soundings.length === 0) {
-    throw new Error('No soundings found in Bufkit file');
+  let sounding = await requestLatestSounding(model, station, date);
+  if (!sounding) {
+    sounding = await requestArchivedSounding(model, station, date);
+    if (!sounding) {
+      return;
+    }
   }
-  const closestSounding = findClosestSounding(soundings, date);
-  if (!closestSounding) {
-    throw new Error('Failed to find sounding for the specified date');
-  }
-  return bufkitSoundingToProfile(closestSounding, model);
+  return bufkitSoundingToProfile(sounding, model);
 }

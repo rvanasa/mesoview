@@ -56,9 +56,9 @@ const BufkitSounding: React.FC<BufkitSoundingProps> = ({
           transition: 'opacity 100ms ease-in-out',
         }}
       >
-        <div tw="text-gray-600 font-semibold">
+        {/* <div tw="text-gray-600 font-semibold">
           Loading {model} sounding for {station.toUpperCase()}...
-        </div>
+        </div> */}
       </div>
       <div
         tw="absolute inset-0 flex items-center justify-center bg-white bg-opacity-75 pointer-events-none"

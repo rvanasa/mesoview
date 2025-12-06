@@ -303,11 +303,11 @@ export function findClosestSounding(
   soundings: BufkitSounding[],
   date: Date,
   toleranceMs = 30 * MINUTE,
-): BufkitSounding | null {
-  if (soundings.length === 0) return null;
+): BufkitSounding | undefined {
+  if (soundings.length === 0) return;
 
   const targetTime = date.getTime();
-  let closestSounding: BufkitSounding | null = null;
+  let closestSounding: BufkitSounding | undefined;
   let minDiff = Infinity;
 
   for (let i = 0; i < soundings.length; i++) {
@@ -361,6 +361,39 @@ export async function fetchLatestBufkit(
   if (!response.ok) {
     throw new Error(
       `Failed to fetch Bufkit data: ${response.status} ${response.statusText}`,
+    );
+  }
+
+  return await response.text();
+}
+
+/**
+ * Fetch archived Bufkit file from IEM archive
+ * @param time Date object for the archive time
+ * @param model Model name (e.g. "rap" or "hrrr")
+ * @param station Station identifier (e.g. "tbl" or "den")
+ * @returns The raw file content
+ */
+export async function fetchArchiveBufkit(
+  time: Date,
+  model: ForecastModel,
+  station: string,
+): Promise<string> {
+  const modelLower = model.toLowerCase();
+  const stationLower = station.toLowerCase();
+
+  const year = time.getUTCFullYear();
+  const month = String(time.getUTCMonth() + 1).padStart(2, '0');
+  const day = String(time.getUTCDate()).padStart(2, '0');
+  const hour = String(time.getUTCHours()).padStart(2, '0');
+
+  const url = `https://mtarchive.geol.iastate.edu/${year}/${month}/${day}/bufkit/${hour}/${modelLower}/${modelLower}_${stationLower}.buf`;
+
+  console.log('GET sounding', url);
+  const response = await fetch(proxy(url));
+  if (!response.ok) {
+    throw new Error(
+      `Failed to fetch archived Bufkit data: ${response.status} ${response.statusText}`,
     );
   }
 

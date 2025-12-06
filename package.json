@@ -7,12 +7,15 @@
     "start": "vite --port 3000",
     "preview": "vite preview",
     "build": "vite build",
-    "lint": "eslint src"
+    "lint": "eslint src",
+    "test": "vitest run"
   },
   "dependencies": {
     "@emotion/styled": "^11.14.0",
     "@headlessui/react": "^2.2.0",
+    "@types/d3": "^7.4.3",
     "classnames": "^2.5.1",
+    "d3": "^7.9.0",
     "rc-slider": "^11.1.8",
     "react": "^18",
     "react-calendar": "^5.1.0",
@@ -23,6 +26,8 @@
   },
   "devDependencies": {
     "@emotion/react": "^11.13.3",
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/react": "^16.3.0",
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",
@@ -32,6 +37,7 @@
     "babel-plugin-twin": "^1.1.0",
     "eslint": "8.20",
     "eslint-config-react-app": "^7.0.1",
+    "jsdom": "^27.2.0",
     "postcss": "^8",
     "prettier": "^3.3.3",
     "sass": "^1.79.3",
@@ -39,7 +45,8 @@
     "twin.macro": "^3.4.1",
     "typescript": "^5",
     "vite": "^5.4.6",
-    "vite-plugin-radar": "^0.10.0"
+    "vite-plugin-radar": "^0.10.0",
+    "vitest": "^4.0.15"
   },
   "eslintConfig": {
     "extends": [

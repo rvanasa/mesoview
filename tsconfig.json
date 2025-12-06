@@ -18,5 +18,5 @@
     "types": ["vite/client"],
     "jsxImportSource": "@emotion/react"
   },
-  "include": ["src", "types"]
+  "include": ["src"]
 }

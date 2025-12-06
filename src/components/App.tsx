@@ -30,6 +30,7 @@ import {
   mesoSectors,
 } from '../utils/mesoanalysis';
 import spliced from '../utils/spliced';
+import BufkitSounding from './BufkitSounding';
 import { Button } from './Button';
 import { ButtonGroup } from './ButtonGroup';
 import Calendar from './Calendar';
@@ -38,6 +39,7 @@ import Dropdown from './Dropdown';
 import MesoanalysisImage from './MesoanalysisImage';
 import NumberInput from './NumberInput';
 import { ToolButton } from './ToolButton';
+import { ForecastModel } from '../utils/profile';
 
 const defaultMesoSector = 13; // Central U.S.
 const defaultHour = 23;
@@ -274,171 +276,192 @@ export default function App() {
           </div>
         </div>
       )}
-      {params.map((param, i) => (
-        <div key={i}>
-          <div tw="flex items-center justify-between p-2">
-            <div>
-              <Dropdown
-                label={
-                  categoryParamLabelMap.has(param) ? (
-                    <div tw="text-left min-w-[4rem]">
-                      {categoryParamLabelMap.get(param)}
-                    </div>
-                  ) : (
-                    mesoParamMap.get(param) || param || 'Choose parameter'
-                  )
-                }
-                anchor="bottom"
-              >
-                {/* <div style={{ maxHeight: "70vh" }} tw="overflow-y-scroll"> */}
-                {mesoParams.map(([key, title], j) => (
-                  <div
-                    key={j}
-                    onClick={() => setParams(spliced(params, i, 1, key))}
-                  >
-                    {title}
-                  </div>
-                ))}
-                {/* </div> */}
-              </Dropdown>
-            </div>
-            {categoryParamLabelMap.has(param) &&
-              (() => {
-                let category!: { param: string; label: string }[];
-                let entryIndex = 0;
-                outer: for (category of categories) {
-                  for (
-                    entryIndex = 0;
-                    entryIndex < category.length;
-                    entryIndex++
-                  ) {
-                    if (category[entryIndex].param === param) {
-                      break outer;
-                    }
-                  }
-                }
-                return (
-                  <div tw="w-full flex justify-end mx-5">
-                    <Slider
-                      styles={{
-                        handle: {
-                          borderColor: '#605f60',
-                          boxShadow: 'none',
-                          width: 20,
-                          height: 20,
-                          borderWidth: 3,
-                          top: 3,
-                        },
-                        rail: {
-                          height: 6,
-                        },
-                        track: {
-                          backgroundColor: '#605f60',
-                          height: 6,
-                        },
-                      }}
-                      value={entryIndex}
-                      min={0}
-                      max={category.length - 1}
-                      step={1}
-                      // startPoint={0}
-                      onChange={(value) =>
-                        setParams(
-                          spliced(
-                            params,
-                            i,
-                            1,
-                            category[value as number].param,
-                          ),
-                        )
-                      }
-                    />
-                  </div>
-                );
-                // return (
-                //   <div tw="flex space-x-2">
-                //     <ToolButton
-                //       onClick={() =>
-                //         setParams(
-                //           spliced(
-                //             params,
-                //             i,
-                //             1,
-                //             category[Math.max(entryIndex - 1, 0)].param,
-                //           ),
-                //         )
-                //       }
-                //     >
-                //       <FaDownLong />
-                //     </ToolButton>
-                //     <ToolButton
-                //       onClick={() =>
-                //         setParams(
-                //           spliced(
-                //             params,
-                //             i,
-                //             1,
-                //             category[Math.min(entryIndex + 1, category.length - 1)]
-                //               .param,
-                //           ),
-                //         )
-                //       }
-                //     >
-                //       <FaUpLong />
-                //     </ToolButton>
-                //   </div>
-                // );
-                // return (
-                //     <ButtonGroup>
-                //     {category?.map((entry) => (
-                //       <Button tw="text-sm" key={entry.param}>{entry.label}</Button>
-                //     ))}
-                //   </ButtonGroup>
-                // );
-              })()}
-            <div tw="flex space-x-2">
-              {param.includes(' ') && (
-                <ToolButton
-                  onClick={() =>
-                    setParams(spliced(params, i, 1, ...param.split(' ')))
-                  }
-                >
-                  <FaLayerGroup />
-                </ToolButton>
-              )}
-              {i > 0 && (
-                <ToolButton
-                  onClick={() =>
-                    setParams(
-                      spliced(
-                        params,
-                        i - 1,
-                        2,
-                        `${params[i - 1]} ${params[i]}`,
-                      ),
+      {params.map((param, i) => {
+        const soundingMatch = param.match(/^sounding:([^:]+):([^:]+)$/);
+        const isSounding = !!soundingMatch;
+        const soundingModel = soundingMatch?.[1] as ForecastModel | undefined;
+        const soundingStation = soundingMatch?.[2];
+
+        return (
+          <div key={i}>
+            <div tw="flex items-center justify-between p-2">
+              <div>
+                <Dropdown
+                  label={
+                    isSounding ? (
+                      <div tw="text-left min-w-[4rem]">
+                        {soundingModel?.toUpperCase()} -{' '}
+                        {soundingStation?.toUpperCase()}
+                      </div>
+                    ) : categoryParamLabelMap.has(param) ? (
+                      <div tw="text-left min-w-[4rem]">
+                        {categoryParamLabelMap.get(param)}
+                      </div>
+                    ) : (
+                      mesoParamMap.get(param) || param || 'Choose parameter'
                     )
                   }
+                  anchor="bottom"
                 >
-                  <FaTurnUp />
-                </ToolButton>
-              )}
-              {params.length > 1 && (
-                <ToolButton onClick={() => setParams(spliced(params, i, 1))}>
-                  <FaTimes tw="text-red-700" />
-                </ToolButton>
-              )}
+                  {/* <div style={{ maxHeight: "70vh" }} tw="overflow-y-scroll"> */}
+                  {mesoParams.map(([key, title], j) => (
+                    <div
+                      key={j}
+                      onClick={() => setParams(spliced(params, i, 1, key))}
+                    >
+                      {title}
+                    </div>
+                  ))}
+                  {/* </div> */}
+                </Dropdown>
+              </div>
+              {!isSounding &&
+                categoryParamLabelMap.has(param) &&
+                (() => {
+                  let category!: { param: string; label: string }[];
+                  let entryIndex = 0;
+                  outer: for (category of categories) {
+                    for (
+                      entryIndex = 0;
+                      entryIndex < category.length;
+                      entryIndex++
+                    ) {
+                      if (category[entryIndex].param === param) {
+                        break outer;
+                      }
+                    }
+                  }
+                  return (
+                    <div tw="w-full flex justify-end mx-5">
+                      <Slider
+                        styles={{
+                          handle: {
+                            borderColor: '#605f60',
+                            boxShadow: 'none',
+                            width: 20,
+                            height: 20,
+                            borderWidth: 3,
+                            top: 3,
+                          },
+                          rail: {
+                            height: 6,
+                          },
+                          track: {
+                            backgroundColor: '#605f60',
+                            height: 6,
+                          },
+                        }}
+                        value={entryIndex}
+                        min={0}
+                        max={category.length - 1}
+                        step={1}
+                        // startPoint={0}
+                        onChange={(value) =>
+                          setParams(
+                            spliced(
+                              params,
+                              i,
+                              1,
+                              category[value as number].param,
+                            ),
+                          )
+                        }
+                      />
+                    </div>
+                  );
+                  // return (
+                  //   <div tw="flex space-x-2">
+                  //     <ToolButton
+                  //       onClick={() =>
+                  //         setParams(
+                  //           spliced(
+                  //             params,
+                  //             i,
+                  //             1,
+                  //             category[Math.max(entryIndex - 1, 0)].param,
+                  //           ),
+                  //         )
+                  //       }
+                  //     >
+                  //       <FaDownLong />
+                  //     </ToolButton>
+                  //     <ToolButton
+                  //       onClick={() =>
+                  //         setParams(
+                  //           spliced(
+                  //             params,
+                  //             i,
+                  //             1,
+                  //             category[Math.min(entryIndex + 1, category.length - 1)]
+                  //               .param,
+                  //           ),
+                  //         )
+                  //       }
+                  //     >
+                  //       <FaUpLong />
+                  //     </ToolButton>
+                  //   </div>
+                  // );
+                  // return (
+                  //     <ButtonGroup>
+                  //     {category?.map((entry) => (
+                  //       <Button tw="text-sm" key={entry.param}>{entry.label}</Button>
+                  //     ))}
+                  //   </ButtonGroup>
+                  // );
+                })()}
+              <div tw="flex space-x-2">
+                {!isSounding && param.includes(' ') && (
+                  <ToolButton
+                    onClick={() =>
+                      setParams(spliced(params, i, 1, ...param.split(' ')))
+                    }
+                  >
+                    <FaLayerGroup />
+                  </ToolButton>
+                )}
+                {!isSounding && i > 0 && (
+                  <ToolButton
+                    onClick={() =>
+                      setParams(
+                        spliced(
+                          params,
+                          i - 1,
+                          2,
+                          `${params[i - 1]} ${params[i]}`,
+                        ),
+                      )
+                    }
+                  >
+                    <FaTurnUp />
+                  </ToolButton>
+                )}
+                {params.length > 1 && (
+                  <ToolButton onClick={() => setParams(spliced(params, i, 1))}>
+                    <FaTimes tw="text-red-700" />
+                  </ToolButton>
+                )}
+              </div>
             </div>
+            {isSounding && soundingModel && soundingStation ? (
+              <BufkitSounding
+                model={soundingModel}
+                station={soundingStation}
+                date={date}
+              />
+            ) : (
+              <MesoanalysisImage
+                date={date}
+                sector={sector}
+                layers={layers}
+                radar={!!checkboxes['radar']}
+                params={param.split(' ').filter((param) => param)}
+                onClick={onClickMesoanalysisImage}
+              />
+            )}
           </div>
-          <MesoanalysisImage
-            date={date}
-            sector={sector}
-            layers={layers}
-            radar={!!checkboxes['radar']}
-            params={param.split(' ').filter((param) => param)}
-            onClick={onClickMesoanalysisImage}
-          />
-        </div>
-      ))}
+        );
+      })}
       <div tw="p-3 flex justify-between">
         <Dropdown label="Add parameter" anchor="top">
           {mesoParams.map(([key, title], i) => (
@@ -448,6 +471,7 @@ export default function App() {
           ))}
         </Dropdown>
       </div>
+
       <div style={{ paddingBottom: 130 }}></div>
       <div
         tw="fixed bottom-0 rounded-t-lg w-full bg-[#fffe]"

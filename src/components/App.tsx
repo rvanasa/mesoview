@@ -6,15 +6,14 @@ import {
   FaAngleRight,
   FaArrowDown,
   FaArrowUp,
-  FaCodeBranch,
   FaGlobe,
   FaLayerGroup,
   FaRegCalendarAlt,
   FaShareAlt,
   FaTimes,
-  FaUndoAlt,
+  FaUndoAlt
 } from 'react-icons/fa';
-import { FaArrowsUpToLine, FaGear, FaTurnUp } from 'react-icons/fa6';
+import { FaGear } from 'react-icons/fa6';
 import { useSearchParams } from 'react-router-dom';
 import 'twin.macro';
 import { useLocalStorage } from 'usehooks-ts';
@@ -33,6 +32,11 @@ import {
   mesoSectorMap,
   mesoSectors,
 } from '../utils/mesoanalysis';
+import {
+  ForecastModel,
+  soundingModels,
+  soundingStations,
+} from '../utils/profile';
 import spliced from '../utils/spliced';
 import BufkitSounding from './BufkitSounding';
 import { Button } from './Button';
@@ -43,11 +47,6 @@ import Dropdown from './Dropdown';
 import MesoanalysisImage from './MesoanalysisImage';
 import NumberInput from './NumberInput';
 import { ToolButton } from './ToolButton';
-import {
-  ForecastModel,
-  soundingModels,
-  soundingStations,
-} from '../utils/profile';
 
 const defaultMesoSector = 13; // Central U.S.
 const defaultHour = 23;

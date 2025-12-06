@@ -4,18 +4,15 @@ import 'twin.macro';
 import { Profile } from '../utils/profile';
 
 interface SoundingProps {
-  profile: Profile;
+  profile: Profile | undefined;
   aspectRatio?: number;
 }
 
-const Sounding: React.FC<SoundingProps> = ({
-  profile,
-  aspectRatio = 0.85, // height/width ratio (default: height is 85% of width)
-}) => {
+const Sounding: React.FC<SoundingProps> = ({ profile, aspectRatio = 0.5 }) => {
   const svgRef = useRef<SVGSVGElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const [width, setWidth] = useState(600);
-  const [height, setHeight] = useState(510);
+  const [height, setHeight] = useState(width * aspectRatio);
 
   useEffect(() => {
     const updateSize = () => {

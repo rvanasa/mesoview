@@ -11,7 +11,7 @@ import {
   FaRegCalendarAlt,
   FaShareAlt,
   FaTimes,
-  FaUndoAlt
+  FaUndoAlt,
 } from 'react-icons/fa';
 import { FaGear } from 'react-icons/fa6';
 import { useSearchParams } from 'react-router-dom';
@@ -285,15 +285,41 @@ export default function App() {
       )}
       {params.map((param, i) => {
         const isStandardParameter = (p: string) => !p.startsWith('sounding-');
-        const soundingMatch = param.match(/^sounding-([^-]+)-([^-]+)$/);
+        const soundingMatch = param.match(/^sounding(?:-([^-]+)-([^-]+))?$/);
         const isSounding = !!soundingMatch;
-        const soundingModel = soundingMatch?.[1] as ForecastModel | undefined;
-        const soundingStation = soundingMatch?.[2];
+        const soundingModel =
+          (soundingMatch?.[1] as ForecastModel | undefined) || 'rap';
+        const soundingStation = soundingMatch?.[2] || 'tbl';
         return (
           <div key={i}>
             <div tw="flex items-center justify-between p-2">
               <div tw="flex gap-4">
-                {isSounding ? (
+                <Dropdown
+                  label={
+                    isSounding ? (
+                      'Sounding'
+                    ) : categoryParamLabelMap.has(param) ? (
+                      <div tw="text-left min-w-[4rem]">
+                        {categoryParamLabelMap.get(param)}
+                      </div>
+                    ) : (
+                      mesoParamMap.get(param) || param || 'Choose parameter'
+                    )
+                  }
+                  anchor="bottom"
+                >
+                  {/* <div style={{ maxHeight: "70vh" }} tw="overflow-y-scroll"> */}
+                  {mesoParams.map(([key, title], j) => (
+                    <div
+                      key={j}
+                      onClick={() => setParams(spliced(params, i, 1, key))}
+                    >
+                      {title}
+                    </div>
+                  ))}
+                  {/* </div> */}
+                </Dropdown>
+                {isSounding && (
                   <>
                     <Dropdown
                       label={
@@ -315,7 +341,7 @@ export default function App() {
                                 params,
                                 i,
                                 1,
-                                `sounding-${model.key}-${soundingStation || 'tbl'}`,
+                                `sounding-${model.key}-${soundingStation}`,
                               ),
                             )
                           }
@@ -345,7 +371,7 @@ export default function App() {
                                 params,
                                 i,
                                 1,
-                                `sounding-${soundingModel || 'rap'}-${station.key}`,
+                                `sounding-${soundingModel}-${station.key}`,
                               ),
                             )
                           }
@@ -355,30 +381,6 @@ export default function App() {
                       ))}
                     </Dropdown>
                   </>
-                ) : (
-                  <Dropdown
-                    label={
-                      categoryParamLabelMap.has(param) ? (
-                        <div tw="text-left min-w-[4rem]">
-                          {categoryParamLabelMap.get(param)}
-                        </div>
-                      ) : (
-                        mesoParamMap.get(param) || param || 'Choose parameter'
-                      )
-                    }
-                    anchor="bottom"
-                  >
-                    {/* <div style={{ maxHeight: "70vh" }} tw="overflow-y-scroll"> */}
-                    {mesoParams.map(([key, title], j) => (
-                      <div
-                        key={j}
-                        onClick={() => setParams(spliced(params, i, 1, key))}
-                      >
-                        {title}
-                      </div>
-                    ))}
-                    {/* </div> */}
-                  </Dropdown>
                 )}
               </div>
               {!isSounding &&

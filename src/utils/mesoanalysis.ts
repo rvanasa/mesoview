@@ -16,6 +16,7 @@ export const mesoSectors: [number, string][] = [
 ];
 
 export const mesoParams: [string, string][] = [
+  ['sounding', 'Sounding'],
   ['300mb', '300 mb Analysis'],
   ['500mb', '500 mb Analysis'],
   ['700mb', '700 mb Analysis'],

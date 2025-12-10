@@ -2,7 +2,12 @@ import * as d3 from 'd3';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import 'twin.macro';
 import { formatDate } from '../utils/date';
-import { getParcel } from '../utils/parcel';
+import {
+  getParcel,
+  mixingRatio,
+  saturationVaporPressure,
+  virtualTemperature,
+} from '../utils/parcel';
 import { getPressureForHeight, Profile } from '../utils/profile';
 
 interface SoundingProps {
@@ -183,6 +188,34 @@ const Sounding: React.FC<SoundingProps> = ({ profile, aspectRatio = 0.75 }) => {
       .attr('d', tempLine)
       .attr('stroke', '#ff0000')
       .attr('stroke-width', 2)
+      .attr('fill', 'none');
+
+    // Calculate and draw virtual temperature profile
+    const virtualTempC = profile.tempC.map((temp, i) => {
+      const tempK = temp + 273.15;
+      const dewC = profile.dewC[i];
+      const pressure = profile.pressureHPa[i];
+
+      const es = saturationVaporPressure(dewC);
+      const mr = mixingRatio(pressure, es);
+      const virtTempK = virtualTemperature(tempK, mr);
+
+      return virtTempK - 273.15;
+    });
+
+    const virtTempLine = d3
+      .line<number>()
+      .x((d, i) => skewX(virtualTempC[i], profile.pressureHPa[i]))
+      .y((d, i) => yScale(profile.pressureHPa[i]))
+      .curve(d3.curveLinear);
+
+    g.append('path')
+      .datum(virtualTempC)
+      .attr('class', 'virt-temp-profile')
+      .attr('d', virtTempLine)
+      .attr('stroke', '#ff0000')
+      .attr('stroke-width', 1.5)
+      .attr('stroke-dasharray', '4,4')
       .attr('fill', 'none');
 
     // Draw dewpoint profile

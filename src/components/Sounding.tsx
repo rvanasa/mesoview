@@ -1,8 +1,9 @@
-import React, { useEffect, useRef, useState } from 'react';
 import * as d3 from 'd3';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import 'twin.macro';
-import { getPressureForHeight, Profile } from '../utils/profile';
 import { formatDate } from '../utils/date';
+import { getParcel } from '../utils/parcel';
+import { getPressureForHeight, Profile } from '../utils/profile';
 
 interface SoundingProps {
   profile: Profile | undefined;
@@ -14,6 +15,11 @@ const Sounding: React.FC<SoundingProps> = ({ profile, aspectRatio = 0.75 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [width, setWidth] = useState(600);
   const height = width * aspectRatio;
+
+  const parcel = useMemo(
+    () => (profile ? getParcel(profile, 0) : undefined),
+    [profile],
+  );
 
   useEffect(() => {
     const updateSize = () => {
@@ -188,6 +194,25 @@ const Sounding: React.FC<SoundingProps> = ({ profile, aspectRatio = 0.75 }) => {
       .attr('stroke-width', 2)
       .attr('fill', 'none');
 
+    // Draw parcel trace
+    if (parcel && parcel.tempC.length > 0) {
+      const parcelLine = d3
+        .line<number>()
+        .x((d, i) => skewX(parcel.tempC[i], parcel.pressureHPa[i]))
+        .y((d, i) => yScale(parcel.pressureHPa[i]))
+        .curve(d3.curveLinear);
+
+      g.append('path')
+        .datum(parcel.tempC.slice(0, -1)) // Remove last point to avoid dangling line
+        .attr('class', 'parcel-profile')
+        .attr('d', parcelLine)
+        .attr('stroke', 'black')
+        .attr('opacity', 0.25)
+        .attr('stroke-width', 1)
+        .attr('stroke-dasharray', '5,3')
+        .attr('fill', 'none');
+    }
+
     // Add axes
     const yAxis = d3
       .axisLeft(yScale)
@@ -238,6 +263,52 @@ const Sounding: React.FC<SoundingProps> = ({ profile, aspectRatio = 0.75 }) => {
       .text(
         `${formatDate(new Date(profile.time))} ${profile.model.toUpperCase()} ${profile.station.toUpperCase()}`,
       );
+
+    // // Add CAPE/CIN display
+    // if (parcel) {
+    //   const thermBox = g
+    //     .append('g')
+    //     .attr('class', 'thermo-indices')
+    //     .attr('transform', `translate(10, 10)`);
+
+    //   // Background box
+    //   thermBox
+    //     .append('rect')
+    //     .attr('x', 0)
+    //     .attr('y', 0)
+    //     .attr('width', 110)
+    //     .attr('height', 40)
+    //     .attr('fill', 'white')
+    //     .attr('fill-opacity', 0.8)
+    //     .attr('rx', 4);
+
+    //   let yOffset = 16;
+
+    //   // CAPE
+    //   if (parcel.cape !== undefined) {
+    //     thermBox
+    //       .append('text')
+    //       .attr('x', 8)
+    //       .attr('y', yOffset)
+    //       .attr('font-size', '12px')
+    //       .attr('font-weight', 'bold')
+    //       .attr('fill', '#cc0000')
+    //       .text(`CAPE: ${Math.round(parcel.cape)} J/kg`);
+    //     yOffset += 18;
+    //   }
+
+    //   // CIN
+    //   if (parcel.cin !== undefined) {
+    //     thermBox
+    //       .append('text')
+    //       .attr('x', 8)
+    //       .attr('y', yOffset)
+    //       .attr('font-size', '12px')
+    //       .attr('font-weight', 'bold')
+    //       .attr('fill', '#0066cc')
+    //       .text(`CIN: ${Math.round(parcel.cin)} J/kg`);
+    //   }
+    // }
 
     // Add surface temperature and dewpoint labels in Fahrenheit
     if (profile.tempC.length > 0 && profile.dewC.length > 0) {
@@ -359,7 +430,7 @@ const Sounding: React.FC<SoundingProps> = ({ profile, aspectRatio = 0.75 }) => {
         .attr('stroke-width', 2.5)
         .attr('stroke-linecap', 'round');
     }
-  }, [width, height, profile]);
+  }, [width, height, profile, parcel]);
 
   if (!profile || !profile.tempC?.length) {
     return (

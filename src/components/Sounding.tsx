@@ -203,7 +203,7 @@ const Sounding: React.FC<SoundingProps> = ({ profile, aspectRatio = 0.75 }) => {
         .curve(d3.curveLinear);
 
       g.append('path')
-        .datum(parcel.tempC.slice(0, -1)) // Remove last point to avoid dangling line
+        .datum(parcel.tempC)
         .attr('class', 'parcel-profile')
         .attr('d', parcelLine)
         .attr('stroke', 'black')

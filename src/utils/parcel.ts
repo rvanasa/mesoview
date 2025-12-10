@@ -175,11 +175,6 @@ export function getParcel(profile: Profile, startIndex: number): Parcel {
       } else if (buoyancy < 0 && !lfc) {
         cin += Math.abs(buoyancy);
       }
-
-      // Stop if we found EL
-      if (el) {
-        break;
-      }
     }
   }
 

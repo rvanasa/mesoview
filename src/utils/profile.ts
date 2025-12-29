@@ -20,7 +20,7 @@ export const soundingStations: { key: string; label: string }[] = [
   { key: 'kbjc', label: 'KBJC' },
   { key: 'den', label: 'DEN' },
   { key: 'kbaf', label: 'KBAF - Westfield' },
-  { key: 'kcef', label: 'KCEF - Ludlow' },
+  { key: 'kcef', label: 'KCEF - Holyoke' },
   { key: 'kore', label: 'KORE - Orange' },
   { key: 'korh', label: 'KORH - Worcester' },
   { key: 'kbed', label: 'KBED - Bedford' },

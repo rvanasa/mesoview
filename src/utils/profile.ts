@@ -11,14 +11,15 @@ import { MINUTE, roundToNearestHour } from './date';
 export const soundingModels = [
   { key: 'rap', label: 'RAP' },
   { key: 'hrrr', label: 'HRRR' },
+  { key: 'nam', label: 'NAM' },
 ] as const;
 export type ForecastModel = (typeof soundingModels)[number]['key'];
 
 // TODO: fetch
 export const soundingStations: { key: string; label: string }[] = [
-  { key: 'tbl', label: 'TBL' },
-  { key: 'kbjc', label: 'KBJC' },
-  { key: 'den', label: 'DEN' },
+  { key: 'tbl', label: 'TBL - Boulder' },
+  { key: 'kbjc', label: 'KBJC - Broomfield' },
+  { key: 'den', label: 'DEN - Denver Airport' },
   { key: 'kbaf', label: 'KBAF - Westfield' },
   { key: 'kcef', label: 'KCEF - Holyoke' },
   { key: 'kore', label: 'KORE - Orange' },

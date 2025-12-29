@@ -19,8 +19,12 @@ export const soundingStations: { key: string; label: string }[] = [
   { key: 'tbl', label: 'TBL' },
   { key: 'kbjc', label: 'KBJC' },
   { key: 'den', label: 'DEN' },
-  { key: 'kcef', label: 'KCEF' },
-  { key: 'korh', label: 'KORH' },
+  { key: 'kbaf', label: 'KBAF - Westfield' },
+  { key: 'kcef', label: 'KCEF - Ludlow' },
+  { key: 'kore', label: 'KORE - Orange' },
+  { key: 'korh', label: 'KORH - Worcester' },
+  { key: 'kbed', label: 'KBED - Bedford' },
+  { key: 'kbos', label: 'KBOS - Boston' },
 ];
 
 export interface Profile {

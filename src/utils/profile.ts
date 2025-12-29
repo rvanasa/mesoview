@@ -11,7 +11,6 @@ import { MINUTE, roundToNearestHour } from './date';
 export const soundingModels = [
   { key: 'rap', label: 'RAP' },
   { key: 'hrrr', label: 'HRRR' },
-  { key: 'nam', label: 'NAM' },
 ] as const;
 export type ForecastModel = (typeof soundingModels)[number]['key'];
 

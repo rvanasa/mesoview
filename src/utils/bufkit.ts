@@ -2,6 +2,8 @@ import { MINUTE } from './date';
 import { Profile, ForecastModel } from './profile';
 import { proxy } from './proxy';
 
+const MISSING_VALUE = -9999;
+
 export interface BufkitSounding {
   stationId: string;
   stationNumber: number;
@@ -148,6 +150,17 @@ export function parseBufkitFile(fileContent: string): BufkitSounding[] {
         } else {
           continue; // Skip if line doesn't have expected format
         }
+
+        // Replace missing value with NaN
+        if (pressure === MISSING_VALUE) pressure = NaN;
+        if (temp === MISSING_VALUE) temp = NaN;
+        if (wetBulb === MISSING_VALUE) wetBulb = NaN;
+        if (dew === MISSING_VALUE) dew = NaN;
+        if (thetaE === MISSING_VALUE) thetaE = NaN;
+        if (windDir === MISSING_VALUE) windDir = NaN;
+        if (windSpeedKt === MISSING_VALUE) windSpeedKt = NaN;
+        if (omega === MISSING_VALUE) omega = NaN;
+        if (height === MISSING_VALUE) height = NaN;
 
         // Only include valid data points
         if (

@@ -39,7 +39,6 @@ function liftParcel(
   initialDewC: number,
   initialPressureHPa: number,
   targetPressureHPa: number,
-  initialMixingRatio: number,
   lclPressureHPa?: number,
 ): number {
   const Rd = 287.05; // Gas constant for dry air (J/kg/K)
@@ -149,7 +148,6 @@ export function getParcel(profile: Profile, startIndex: number): Parcel {
       initialDew,
       initialPressure,
       pressure,
-      initialMixingRatio,
       lcl.pressureHPa,
     );
 

@@ -115,13 +115,18 @@ export function getParcel(profile: Profile, startIndex: number): Parcel {
     return { pressureHPa: [], tempC: [] };
   }
 
-  const initialTemp = profile.tempC[startIndex];
+  const temp = profile.tempC[startIndex];
   const initialDew = profile.dewC[startIndex];
   const initialPressure = profile.pressureHPa[startIndex];
 
   // Calculate initial mixing ratio (conserved during dry adiabatic lift)
   const es0 = saturationVaporPressure(initialDew);
   const initialMixingRatio = mixingRatio(initialPressure, es0);
+
+  // Start parcel from virtual temperature
+  const tempK = temp + 273.15;
+  const initialVirtTempK = virtualTemperature(tempK, initialMixingRatio);
+  const initialTemp = initialVirtTempK - 273.15;
 
   // Calculate LCL
   const lcl = calculateLCL(initialTemp, initialDew, initialPressure);

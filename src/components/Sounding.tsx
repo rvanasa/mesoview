@@ -87,10 +87,11 @@ const Sounding: React.FC<SoundingProps> = ({ profile, aspectRatio = 0.75 }) => {
 
     // Skew function for temperature lines
     const skewFactor = 1.5; // Controls the skew amount
+    const skewScaling = chartWidth * 0.2; // Scale skew based on chart width
     const skewX = (temp: number, pressure: number) => {
       const logP = Math.log(pressure);
       const skew = skewFactor * (Math.log(1000) - logP);
-      return xScale(temp) + skew * 50; // 30 is a scaling factor
+      return xScale(temp) + skew * skewScaling;
     };
 
     // Draw pressure grid lines (horizontal)

@@ -75,9 +75,11 @@ async function requestArchivedSounding(
   station: string,
   date: Date,
 ): Promise<BufkitSounding | undefined> {
+  if (date.getTime() > Date.now()) {
+    return;
+  }
   const roundedDate = roundToNearestHour(date);
   const cacheKey = `archive:${model}:${station}:${roundedDate.getTime()}`;
-
   const cached = cache.get(cacheKey);
   const now = Date.now();
   let promise: Promise<BufkitSounding[]>;

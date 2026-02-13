@@ -28,14 +28,14 @@ const BufkitSounding: React.FC<BufkitSoundingProps> = ({
         if (profile && isMounted) {
           setProfile(profile);
           setHasError(false);
+          setLoading(false);
         }
       } catch (err) {
         if (isMounted) {
           setErrorMessage(err instanceof Error ? err.message : undefined);
           setHasError(true);
+          setLoading(false);
         }
-      } finally {
-        setLoading(false);
       }
     };
 

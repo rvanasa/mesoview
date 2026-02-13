@@ -289,7 +289,7 @@ export default function App() {
         const isSounding = !!soundingMatch;
         const soundingModel =
           (soundingMatch?.[1] as ForecastModel | undefined) || 'rap';
-        const soundingStation = soundingMatch?.[2] || 'tbl';
+        const soundingStation = soundingMatch?.[2] || 'kcef';
         return (
           <div key={i}>
             <div tw="flex items-center justify-between p-2">

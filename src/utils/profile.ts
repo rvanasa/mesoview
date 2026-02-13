@@ -16,11 +16,15 @@ export type ForecastModel = (typeof soundingModels)[number]['key'];
 
 // TODO: fetch
 export const soundingStations: { key: string; label: string }[] = [
-  { key: 'tbl', label: 'TBL' },
-  { key: 'kbjc', label: 'KBJC' },
-  { key: 'den', label: 'DEN' },
-  { key: 'kcef', label: 'KCEF' },
-  { key: 'korh', label: 'KORH' },
+  { key: 'tbl', label: 'TBL - Boulder' },
+  { key: 'kbjc', label: 'KBJC - Broomfield' },
+  { key: 'den', label: 'DEN - Denver Airport' },
+  { key: 'kbaf', label: 'KBAF - Westfield' },
+  { key: 'kcef', label: 'KCEF - Holyoke' },
+  { key: 'kore', label: 'KORE - Orange' },
+  { key: 'korh', label: 'KORH - Worcester' },
+  { key: 'kbed', label: 'KBED - Bedford' },
+  { key: 'kbos', label: 'KBOS - Boston' },
 ];
 
 export interface Profile {

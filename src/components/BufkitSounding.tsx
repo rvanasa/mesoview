@@ -6,12 +6,14 @@ interface BufkitSoundingProps {
   model: ForecastModel;
   station: string;
   date: Date;
+  detailed?: boolean;
 }
 
 const BufkitSounding: React.FC<BufkitSoundingProps> = ({
   model,
   station,
   date,
+  detailed,
 }) => {
   const [profile, setProfile] = useState<Profile>();
   const [loading, setLoading] = useState(true);
@@ -48,7 +50,7 @@ const BufkitSounding: React.FC<BufkitSoundingProps> = ({
 
   return (
     <div tw="relative">
-      {!!profile && <Sounding profile={profile} />}
+      {!!profile && <Sounding profile={profile} detailed={detailed} />}
       <div
         tw="absolute inset-0 flex items-center justify-center bg-white bg-opacity-75 pointer-events-none"
         style={{

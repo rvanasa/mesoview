@@ -101,6 +101,7 @@ export default function App() {
     'mesoview.toggleMesoSector',
     continentalMesoSector,
   );
+  const [detailedSoundings, setDetailedSoundings] = useState(false);
 
   // const [showKeys, setShowKeys] = useQueryParams('show');
   // const [hideKeys, setHideKeys] = useQueryParams('hide');
@@ -246,7 +247,7 @@ export default function App() {
                 </Button> */}
               </Card>
             ) : modal === 'settings' ? (
-              <Card tw="text-lg flex flex-col gap-4 w-full [min-width:350px]">
+              <Card tw="text-lg flex flex-col gap-4 w-full min-w-[350px]">
                 {checkboxKeys.map((key) => (
                   <label key={key} tw="flex items-center justify-between">
                     <span>{checkboxLabels[key]}</span>
@@ -257,6 +258,14 @@ export default function App() {
                     />
                   </label>
                 ))}
+                <label tw="flex items-center justify-between">
+                  <span>Detailed soundings</span>
+                  <input
+                    type="checkbox"
+                    checked={detailedSoundings}
+                    onChange={(e) => setDetailedSoundings(e.target.checked)}
+                  />
+                </label>
                 <label tw="flex items-center justify-between">
                   <span>Slider range (days):</span>
                   <NumberInput
@@ -496,6 +505,7 @@ export default function App() {
                 model={soundingModel}
                 station={soundingStation}
                 date={date}
+                detailed={detailedSoundings}
               />
             ) : (
               <MesoanalysisImage

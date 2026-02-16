@@ -13,9 +13,14 @@ import { getPressureForHeight, Profile } from '../utils/profile';
 interface SoundingProps {
   profile: Profile | undefined;
   aspectRatio?: number;
+  detailed?: boolean;
 }
 
-const Sounding: React.FC<SoundingProps> = ({ profile, aspectRatio = 0.75 }) => {
+const Sounding: React.FC<SoundingProps> = ({
+  profile,
+  aspectRatio = 0.75,
+  detailed,
+}) => {
   const svgRef = useRef<SVGSVGElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const [width, setWidth] = useState(600);
@@ -168,6 +173,26 @@ const Sounding: React.FC<SoundingProps> = ({ profile, aspectRatio = 0.75 }) => {
           .text(label);
       }
     });
+
+    if (detailed && profile.omega?.length) {
+      const omegaScale = d3.scaleLinear().range([0, chartWidth * 0.005]);
+      profile.omega.forEach((omega, i) => {
+        const pressure = profile.pressureHPa[i];
+        if (!isNaN(omega) && pressure !== undefined) {
+          const y = yScale(pressure);
+          const lineLength = Math.abs(omegaScale(omega));
+          const color = omega < 0 ? '#ff8c00' : '#40e0d0';
+          g.append('line')
+            .attr('x1', 0)
+            .attr('x2', lineLength)
+            .attr('y1', y)
+            .attr('y2', y)
+            .attr('stroke', color)
+            .attr('stroke-width', 1.5)
+            .attr('opacity', 0.75);
+        }
+      });
+    }
 
     // Create line generators
     const tempLine = d3

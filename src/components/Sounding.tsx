@@ -489,7 +489,7 @@ const Sounding: React.FC<SoundingProps> = ({
         .attr('stroke-width', 2.5)
         .attr('stroke-linecap', 'round');
     }
-  }, [width, height, profile, parcel]);
+  }, [width, height, profile, parcel, detailed]);
 
   if (!profile || !profile.tempC?.length) {
     return (

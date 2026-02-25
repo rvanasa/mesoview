@@ -52,7 +52,7 @@ export default function NumberInput({
         </ToolButton>
       )}
       <input
-        tw="w-10 p-1 rounded-none border text-center sm:(rounded w-12)"
+        tw="w-10 p-1 rounded-none border text-center dark:bg-gray-700 dark:border-gray-600 sm:(rounded w-12)"
         type="number"
         min={min}
         max={max}

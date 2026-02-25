@@ -9,3 +9,30 @@
 .react-calendar__tile {
     @apply rounded-xl;
 }
+
+.dark .react-calendar {
+  background: transparent;
+  color: #e5e7eb;
+}
+
+.dark .react-calendar__navigation button {
+  color: #e5e7eb;
+}
+
+.dark .react-calendar__month-view__days__day--neighboringMonth {
+  color: #6b7280;
+}
+
+.dark .react-calendar__tile:enabled:hover,
+.dark .react-calendar__tile:enabled:focus {
+  background-color: #374151;
+}
+
+.dark .react-calendar__tile--active {
+  background: #3b82f6 !important;
+  color: white;
+}
+
+.dark .react-calendar__tile--now {
+  background: #1f2937;
+}

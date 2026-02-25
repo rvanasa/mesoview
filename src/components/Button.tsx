@@ -11,8 +11,10 @@ const Container = tw.div`
   py-2
   border-[1px]
   border-gray-200
+  dark:border-gray-600
   text-lg
   text-[rgba(0,0,0,.9)]
+  dark:text-gray-100
   flex
   justify-center
   items-center
@@ -23,6 +25,7 @@ const Container = tw.div`
   select-none
   
   hover:(bg-gray-100)
+  dark:hover:(bg-gray-700)
 `;
 
 export function Button({ className, type, ...rest }: ButtonProps) {

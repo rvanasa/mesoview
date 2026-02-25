@@ -102,6 +102,10 @@ export default function App() {
     continentalMesoSector,
   );
   const [detailedSoundings, setDetailedSoundings] = useState(false);
+  const [darkMode, setDarkMode] = useLocalStorage<boolean>(
+    'mesoview.darkMode',
+    false,
+  );
 
   // const [showKeys, setShowKeys] = useQueryParams('show');
   // const [hideKeys, setHideKeys] = useQueryParams('hide');
@@ -199,15 +203,23 @@ export default function App() {
     document.title = `${inputDateString ? (inputDateString.toLowerCase().endsWith('z') ? inputDateString : `${inputDateString}z`) : 'Current time'} | ${sectorName} | Mesoview`;
   }, [inputDateString, sectorName]);
 
+  useEffect(() => {
+    if (darkMode) {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+  }, [darkMode]);
+
   return (
     <div
       style={{ maxWidth: 1000 }}
-      tw="mx-auto"
+      tw="mx-auto dark:bg-gray-900 dark:text-white min-h-screen"
       onKeyDown={(e) => e.stopPropagation()}
     >
       {!!modal && (
         <div
-          tw="flex justify-center items-center bg-[#0005] fixed top-0 bottom-0 left-0 right-0 z-10"
+          tw="flex justify-center items-center bg-[#0005] dark:bg-[#000a] fixed top-0 bottom-0 left-0 right-0 z-10"
           onClick={() => setModal(undefined)}
         >
           <div onClick={(e) => e.stopPropagation()}>
@@ -264,6 +276,14 @@ export default function App() {
                     type="checkbox"
                     checked={detailedSoundings}
                     onChange={(e) => setDetailedSoundings(e.target.checked)}
+                  />
+                </label>
+                <label tw="flex items-center justify-between">
+                  <span>Dark mode</span>
+                  <input
+                    type="checkbox"
+                    checked={darkMode}
+                    onChange={(e) => setDarkMode(e.target.checked)}
                   />
                 </label>
                 <label tw="flex items-center justify-between">
@@ -413,7 +433,7 @@ export default function App() {
                       <Slider
                         styles={{
                           handle: {
-                            borderColor: '#605f60',
+                            borderColor: darkMode ? '#9ca3af' : '#605f60',
                             boxShadow: 'none',
                             width: 20,
                             height: 20,
@@ -422,9 +442,10 @@ export default function App() {
                           },
                           rail: {
                             height: 6,
+                            backgroundColor: darkMode ? '#374151' : undefined,
                           },
                           track: {
-                            backgroundColor: '#605f60',
+                            backgroundColor: darkMode ? '#9ca3af' : '#605f60',
                             height: 6,
                           },
                         }}
@@ -495,7 +516,7 @@ export default function App() {
                 )}
                 {params.length > 1 && (
                   <ToolButton onClick={() => setParams(spliced(params, i, 1))}>
-                    <FaTimes tw="text-red-700" />
+                    <FaTimes tw="text-red-700 dark:text-red-400" />
                   </ToolButton>
                 )}
               </div>
@@ -532,7 +553,7 @@ export default function App() {
 
       <div style={{ paddingBottom: 130 }}></div>
       <div
-        tw="fixed bottom-0 rounded-t-lg w-full bg-[#fffe]"
+        tw="fixed bottom-0 rounded-t-lg w-full bg-[#fffe] dark:bg-gray-800"
         style={{ maxWidth: 1000 }}
       >
         <div tw="p-3">
@@ -547,7 +568,7 @@ export default function App() {
             <code tw="font-bold flex-1 text-left text-lg select-none">
               {formatDate(date)}
               {nowOffset >= -12 && (
-                <span tw="ml-3 opacity-70 text-green-700">
+                <span tw="ml-3 opacity-70 text-green-700 dark:text-green-400">
                   {nowOffset > 0 && '+'}
                   {nowOffset === 0
                     ? 'Now'
@@ -587,7 +608,7 @@ export default function App() {
           tw="flex-1"
           styles={{
             handle: {
-              borderColor: '#222',
+              borderColor: darkMode ? '#e5e7eb' : '#222',
               boxShadow: 'none',
               // transform: 'scale(1.5)',
               width: 20,
@@ -597,9 +618,10 @@ export default function App() {
             },
             rail: {
               height: 6,
+              backgroundColor: darkMode ? '#374151' : undefined,
             },
             track: {
-              backgroundColor: '#222',
+              backgroundColor: darkMode ? '#e5e7eb' : '#222',
               height: 6,
             },
           }}
@@ -614,7 +636,7 @@ export default function App() {
           <Dropdown
             label={
               <>
-                <FaGlobe css={{ color: '#222' }} />{' '}
+                <FaGlobe tw="text-[#222] dark:text-gray-300" />{' '}
                 {sectorName || 'Choose region...'}
               </>
             }

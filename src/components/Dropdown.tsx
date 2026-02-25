@@ -16,11 +16,11 @@ export default function Dropdown({ label, anchor, children }: DropdownProps) {
         {label}
         {anchor === 'top' ? <FaCaretUp /> : <FaCaretDown />}
       </MenuButton>
-      <MenuItems tw="border-2 rounded-xl bg-[#fffe]" anchor={anchor}>
+      <MenuItems tw="border-2 rounded-xl bg-[#fffe] dark:bg-gray-800 dark:border-gray-600" anchor={anchor}>
         {children.map((item, i) => (
           <MenuItem
             key={i}
-            tw="cursor-pointer px-4 py-2 select-none hover:bg-[#0001] [transition-duration: .1s]"
+            tw="cursor-pointer px-4 py-2 select-none hover:bg-[#0001] dark:hover:bg-gray-700 [transition-duration: .1s]"
           >
             {item}
           </MenuItem>

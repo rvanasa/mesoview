@@ -536,7 +536,7 @@ export default function App() {
                 wpcSector={wpcSectorMap.get(sectorNumber) || 'us'}
                 date={date}
                 darkMode={darkMode}
-                // onClick={onClickMesoanalysisImage}
+                onClick={onClickMesoanalysisImage}
               />
             ) : (
               <MesoanalysisImage

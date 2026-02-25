@@ -14,17 +14,19 @@ function getSurfaceAnalysisUrl(wpcSector: string, date: Date): string {
   const now = new Date();
   const nowRounded = new Date(now);
   nowRounded.setUTCMinutes(0, 0, 0);
+  const product = `${wpcSector}sfc`;
+
+  // Latest analysis
   if (roundedDate >= nowRounded) {
-    return proxyImage(
-      `https://www.wpc.ncep.noaa.gov/sfc/nam${wpcSector}sfcwbg.gif`,
-    );
+    return proxyImage(`https://www.wpc.ncep.noaa.gov/sfc/${product}wbg.gif`);
   }
+  // Archive
   const archiveDate = roundToNearest3Hours(roundedDate);
   const year = archiveDate.getUTCFullYear();
   const month = String(archiveDate.getUTCMonth() + 1).padStart(2, '0');
   const day = String(archiveDate.getUTCDate()).padStart(2, '0');
   const hour = String(archiveDate.getUTCHours()).padStart(2, '0');
-  return `https://www.wpc.ncep.noaa.gov/archives/sfc/${year}/${wpcSector}${year}${month}${day}${hour}.gif`;
+  return `https://www.wpc.ncep.noaa.gov/archives/sfc/${year}/${product}${year}${month}${day}${hour}.gif`;
 }
 
 export interface SurfaceAnalysisImageProps {

@@ -14,12 +14,14 @@ interface SoundingProps {
   profile: Profile | undefined;
   aspectRatio?: number;
   detailed?: boolean;
+  darkMode?: boolean;
 }
 
 const Sounding: React.FC<SoundingProps> = ({
   profile,
   aspectRatio = 0.75,
   detailed,
+  darkMode,
 }) => {
   const svgRef = useRef<SVGSVGElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -49,6 +51,12 @@ const Sounding: React.FC<SoundingProps> = ({
 
     const svg = d3.select(svgRef.current);
     svg.selectAll('*').remove(); // Clear previous content
+
+    svg
+      .append('rect')
+      .attr('width', width)
+      .attr('height', height)
+      .attr('fill', darkMode ? '#000000' : '#ffffff');
 
     const margin = { top: 20, right: 55, bottom: 45, left: 55 };
     const chartWidth = width - margin.left - margin.right;
@@ -131,7 +139,10 @@ const Sounding: React.FC<SoundingProps> = ({
         .datum([1000, 100])
         .attr('class', 'temp-line')
         .attr('d', line)
-        .attr('stroke', temp === -20 || temp === 0 ? '#1662ac' : '#888')
+        .attr(
+          'stroke',
+          temp === -20 || temp === 0 ? '#1662ac' : darkMode ? '#666' : '#888',
+        )
         .attr('stroke-width', 1)
         .attr('stroke-dasharray', '2,2')
         .attr('fill', 'none');
@@ -282,15 +293,30 @@ const Sounding: React.FC<SoundingProps> = ({
       )
       .tickFormat((d) => `${d}`);
 
-    g.append('g').attr('class', 'y-axis').call(yAxis);
+    const yAxisGroup = g.append('g').attr('class', 'y-axis').call(yAxis);
+
+    // Style y-axis for dark mode
+    if (darkMode) {
+      yAxisGroup.selectAll('line').attr('stroke', '#9ca3af');
+      yAxisGroup.selectAll('path').attr('stroke', '#9ca3af');
+      yAxisGroup.selectAll('text').attr('fill', '#e5e7eb');
+    }
 
     // Temperature axis (bottom)
     const xAxis = d3.axisBottom(xScale).ticks(10);
 
-    g.append('g')
+    const xAxisGroup = g
+      .append('g')
       .attr('class', 'x-axis')
       .attr('transform', `translate(0,${chartHeight})`)
       .call(xAxis);
+
+    // Style x-axis for dark mode
+    if (darkMode) {
+      xAxisGroup.selectAll('line').attr('stroke', '#9ca3af');
+      xAxisGroup.selectAll('path').attr('stroke', '#9ca3af');
+      xAxisGroup.selectAll('text').attr('fill', '#e5e7eb');
+    }
 
     // Add axis labels
     g.append('text')
@@ -300,6 +326,7 @@ const Sounding: React.FC<SoundingProps> = ({
       .attr('x', -chartHeight / 2)
       .attr('text-anchor', 'middle')
       .attr('font-size', '12px')
+      .attr('fill', darkMode ? '#e5e7eb' : '#000000')
       .text('Pressure (hPa)');
 
     g.append('text')
@@ -308,6 +335,7 @@ const Sounding: React.FC<SoundingProps> = ({
       .attr('y', chartHeight + 35)
       .attr('text-anchor', 'middle')
       .attr('font-size', '12px')
+      .attr('fill', darkMode ? '#e5e7eb' : '#000000')
       .text('Temperature (°C)');
 
     // Add title
@@ -319,6 +347,7 @@ const Sounding: React.FC<SoundingProps> = ({
       .attr('text-anchor', 'start')
       .attr('font-size', '14px')
       .attr('font-weight', 'bold')
+      .attr('fill', darkMode ? '#e5e7eb' : '#000000')
       .text(
         `${formatDate(new Date(profile.time))} ${profile.model.toUpperCase()} ${profile.station.toUpperCase()}`,
       );
@@ -432,7 +461,16 @@ const Sounding: React.FC<SoundingProps> = ({
         .attr('cy', center)
         .attr('r', radius)
         .attr('fill', 'none')
-        .attr('stroke', i % 2 === 0 ? '#888' : '#ccc')
+        .attr(
+          'stroke',
+          i % 2 === 0
+            ? darkMode
+              ? '#555'
+              : '#888'
+            : darkMode
+              ? '#333'
+              : '#ccc',
+        )
         .attr('stroke-width', 0.5)
         .attr('stroke-dasharray', '2,2');
 
@@ -443,7 +481,7 @@ const Sounding: React.FC<SoundingProps> = ({
           .attr('x', center + radius)
           .attr('y', center - 2)
           .attr('font-size', '8px')
-          .attr('fill', '#666')
+          .attr('fill', darkMode ? '#aaa' : '#666')
           .attr('text-anchor', 'middle')
           .text(`${speed}`);
       }
@@ -456,7 +494,7 @@ const Sounding: React.FC<SoundingProps> = ({
       .attr('x2', center)
       .attr('y1', 0)
       .attr('y2', hodoSize)
-      .attr('stroke', '#ccc')
+      .attr('stroke', darkMode ? '#444' : '#ccc')
       .attr('stroke-width', 0.5);
 
     hodoG
@@ -465,7 +503,7 @@ const Sounding: React.FC<SoundingProps> = ({
       .attr('x2', hodoSize)
       .attr('y1', center)
       .attr('y2', center)
-      .attr('stroke', '#ccc')
+      .attr('stroke', darkMode ? '#444' : '#ccc')
       .attr('stroke-width', 0.5);
 
     // Draw hodograph as colored segments
@@ -489,7 +527,7 @@ const Sounding: React.FC<SoundingProps> = ({
         .attr('stroke-width', 2.5)
         .attr('stroke-linecap', 'round');
     }
-  }, [width, height, profile, parcel, detailed]);
+  }, [width, height, profile, parcel, detailed, darkMode]);
 
   if (!profile || !profile.tempC?.length) {
     return (
@@ -500,12 +538,17 @@ const Sounding: React.FC<SoundingProps> = ({
   }
 
   return (
-    <div ref={containerRef} tw="bg-white p-4 rounded shadow w-full">
+    <div
+      ref={containerRef}
+      tw="p-4 rounded shadow w-full"
+      style={{ backgroundColor: darkMode ? '#1f2937' : '#ffffff' }}
+    >
       <svg
         ref={svgRef}
         width={width}
         height={height}
-        tw="border border-gray-200 w-full"
+        tw="w-full"
+        style={{ border: `1px solid ${darkMode ? '#374151' : '#e5e7eb'}` }}
       />
     </div>
   );

@@ -527,6 +527,7 @@ export default function App() {
                 station={soundingStation}
                 date={date}
                 detailed={detailedSoundings}
+                darkMode={darkMode}
               />
             ) : (
               <MesoanalysisImage

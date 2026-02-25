@@ -7,6 +7,7 @@ interface BufkitSoundingProps {
   station: string;
   date: Date;
   detailed?: boolean;
+  darkMode?: boolean;
 }
 
 const BufkitSounding: React.FC<BufkitSoundingProps> = ({
@@ -14,6 +15,7 @@ const BufkitSounding: React.FC<BufkitSoundingProps> = ({
   station,
   date,
   detailed,
+  darkMode,
 }) => {
   const [profile, setProfile] = useState<Profile>();
   const [loading, setLoading] = useState(true);
@@ -50,10 +52,15 @@ const BufkitSounding: React.FC<BufkitSoundingProps> = ({
 
   return (
     <div tw="relative">
-      {!!profile && <Sounding profile={profile} detailed={detailed} />}
+      {!!profile && (
+        <Sounding profile={profile} detailed={detailed} darkMode={darkMode} />
+      )}
       <div
-        tw="absolute inset-0 flex items-center justify-center bg-white bg-opacity-75 pointer-events-none"
+        tw="absolute inset-0 flex items-center justify-center pointer-events-none"
         style={{
+          backgroundColor: darkMode
+            ? 'rgba(31, 41, 55, 0.75)'
+            : 'rgba(255, 255, 255, 0.75)',
           opacity: loading ? 1 : 0,
           transition: 'opacity 100ms ease-in-out',
         }}
@@ -63,13 +70,16 @@ const BufkitSounding: React.FC<BufkitSoundingProps> = ({
         </div> */}
       </div>
       <div
-        tw="absolute inset-0 flex items-center justify-center bg-white bg-opacity-75 pointer-events-none"
+        tw="absolute inset-0 flex items-center justify-center pointer-events-none"
         style={{
+          backgroundColor: darkMode
+            ? 'rgba(31, 41, 55, 0.75)'
+            : 'rgba(255, 255, 255, 0.75)',
           opacity: hasError ? 1 : 0,
           transition: 'opacity 100ms ease-in-out',
         }}
       >
-        <div tw="text-red-600">
+        <div tw="text-red-600 dark:text-red-400">
           <div tw="font-semibold mb-2">Error loading sounding</div>
           <div tw="text-sm">{errorMessage}</div>
         </div>

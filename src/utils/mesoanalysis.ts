@@ -16,15 +16,15 @@ export const mesoSectors: [number, string][] = [
 ];
 
 export const wcpSectors: [number, string][] = [
-  [19, 'usfnt'],
-  [11, 'namnw'],
-  [12, 'namsw'],
-  [13, 'namnc'],
-  [14, 'namcc'],
-  [15, 'namsc'],
-  [16, 'namne'],
-  [18, 'namse'],
-  [17, 'namce'],
+  [19, 'us'],
+  [11, 'nw'],
+  [12, 'sw'],
+  [13, 'nc'],
+  [14, 'cc'],
+  [15, 'sc'],
+  [16, 'ne'],
+  [18, 'se'],
+  [17, 'ce'],
   // TODO: "North America" / `na`
 ];
 

@@ -45,6 +45,7 @@ import Calendar from './Calendar';
 import Card from './Card';
 import Dropdown from './Dropdown';
 import MesoanalysisImage from './MesoanalysisImage';
+import SurfaceAnalysisImage from './SurfaceAnalysisImage';
 import NumberInput from './NumberInput';
 import { ToolButton } from './ToolButton';
 
@@ -528,6 +529,12 @@ export default function App() {
                 date={date}
                 detailed={detailedSoundings}
                 darkMode={darkMode}
+              />
+            ) : param === 'surface' ? (
+              <SurfaceAnalysisImage
+                date={date}
+                darkMode={darkMode}
+                // onClick={onClickMesoanalysisImage}
               />
             ) : (
               <MesoanalysisImage

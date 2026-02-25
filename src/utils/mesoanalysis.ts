@@ -17,11 +17,16 @@ export const mesoSectors: [number, string][] = [
 
 export const mesoParams: [string, string][] = [
   ['sounding', 'Sounding'],
+  ['surface', 'Surface Analysis'],
   ['300mb', '300 mb Analysis'],
   ['500mb', '500 mb Analysis'],
   ['700mb', '700 mb Analysis'],
   ['850mb', '850 mb Analysis'],
+  ['skewt', 'Skew-Ts'],
+  ['skewt-winter', 'Skew-Ts (winter)'],
+  ['hodo', 'Hodographs'],
   ['ageo', '300 mb Jet Circulation'],
+  ['500mb_chg', '500 mb Height Change'],
   ['pmsl', 'Sfc Pressure / Wind'],
   ['ttd', 'Temp / Dewpoint / Wind'],
   ['3cvr', 'Sfc Vorticity / 3CAPE'],

@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { isProxyUrl, proxyImage } from '../utils/proxy';
 
 const imageCache = new Map<string, string>();
 const imageLoadingCache = new Map<string, Promise<string>>();
@@ -30,8 +31,23 @@ export default function CachedImage({ src, alt, ...rest }: CachedImageProps) {
       return;
     }
     const loadingPromise = new Promise<string>((resolve, reject) => {
-      fetch(src)
-        .then(async (response) => {
+      const attemptFetch = async (
+        url: string,
+        isRetry = false,
+      ): Promise<void> => {
+        try {
+          const response = await fetch(url);
+          if (!response.ok) {
+            if (
+              (response.status === 403 || response.status === 0) &&
+              !isRetry &&
+              !isProxyUrl(url)
+            ) {
+              console.warn(`HTTP ${response.status} ${url}`);
+              return attemptFetch(proxyImage(url), true);
+            }
+            throw new Error(`HTTP ${response.status} ${url}`);
+          }
           const blob = await response.blob();
           const reader = new FileReader();
           reader.onload = () => {
@@ -44,8 +60,16 @@ export default function CachedImage({ src, alt, ...rest }: CachedImageProps) {
           };
           reader.onerror = (err) => reject(err);
           reader.readAsDataURL(blob);
-        })
-        .catch(reject);
+        } catch (err) {
+          if (!isRetry && !isProxyUrl(url)) {
+            console.warn(err);
+            return attemptFetch(proxyImage(url), true);
+          }
+          reject(err);
+        }
+      };
+
+      attemptFetch(src);
     });
     imageLoadingCache.set(src, loadingPromise);
     let cancelled = false;

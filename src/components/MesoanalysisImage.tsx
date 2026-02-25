@@ -61,6 +61,7 @@ export interface MesoanalysisImageProps {
   layers: string[];
   params: string[];
   radar: boolean;
+  darkMode?: boolean;
   onClick?(event: React.MouseEvent<HTMLDivElement>): void;
 }
 
@@ -70,6 +71,7 @@ export default function MesoanalysisImage({
   layers,
   params,
   radar,
+  darkMode,
   onClick,
 }: MesoanalysisImageProps) {
   const urls: [string | undefined, 'layer' | 'radar' | 'param'][] = layers.map(
@@ -89,7 +91,7 @@ export default function MesoanalysisImage({
   const height = 750;
   return (
     <div
-      style={{ position: 'relative', background: 'white' }}
+      style={{ position: 'relative', background: darkMode ? 'black' : 'white' }}
       onClick={onClick}
     >
       {urls.map(
@@ -101,7 +103,10 @@ export default function MesoanalysisImage({
               width={width}
               height={height}
               alt=""
-              style={i ? { position: 'absolute', top: 0, left: 0 } : {}}
+              style={{
+                ...(i ? { position: 'absolute', top: 0, left: 0 } : {}),
+                ...(darkMode ? { filter: 'invert(1) hue-rotate(180deg)' } : {}),
+              }}
               onError={(e) => ((e.target as any).style.opacity = 0)}
               onLoad={(e) => ((e.target as any).style.opacity = 1)}
             />

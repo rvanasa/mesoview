@@ -535,6 +535,7 @@ export default function App() {
                 layers={layers}
                 radar={!!checkboxes['radar']}
                 params={param.split(' ').filter((param) => param)}
+                darkMode={darkMode}
                 onClick={onClickMesoanalysisImage}
               />
             )}

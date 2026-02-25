@@ -15,6 +15,21 @@ export const mesoSectors: [number, string][] = [
   [22, 'Mountain West'],
 ];
 
+export const wcpSectors: [number, string][] = [
+  [19, 'us'],
+  [11, 'nw'],
+  [12, 'sw'],
+  [13, 'nc'],
+  [14, 'cc'],
+  [15, 'sc'],
+  [16, 'ne'],
+  [18, 'se'],
+  [17, 'ce'],
+  [20, 'us'],
+  [21, 'us'],
+  [22, 'us'],
+];
+
 export const mesoParams: [string, string][] = [
   ['sounding', 'Sounding'],
   ['surface', 'Surface Analysis'],
@@ -51,4 +66,5 @@ export const mesoParams: [string, string][] = [
 ];
 
 export const mesoSectorMap = new Map(mesoSectors);
+export const wpcSectorMap = new Map(wcpSectors);
 export const mesoParamMap = new Map(mesoParams);

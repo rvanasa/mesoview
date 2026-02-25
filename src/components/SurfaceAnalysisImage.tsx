@@ -1,53 +1,46 @@
-import CachedImage from './CachedImage';
+import { roundToNearestHour } from '../utils/date';
 import { proxyImage } from '../utils/proxy';
+import CachedImage from './CachedImage';
 
-const surfaceDisplay = 'namussfc'; // Default display type
-
-function roundDownToNearest3Hours(date: Date): Date {
+function roundToNearest3Hours(date: Date): Date {
   const rounded = new Date(date);
   rounded.setUTCHours(Math.floor(date.getUTCHours() / 3) * 3);
   rounded.setUTCMinutes(0, 0, 0);
   return rounded;
 }
 
-function getSurfaceAnalysisUrl(date: Date): string {
-  // Round down to nearest hour
-  const roundedDate = new Date(date);
-  roundedDate.setUTCMinutes(0, 0, 0);
-
+function getSurfaceAnalysisUrl(wpcSector: string, date: Date): string {
+  const roundedDate = roundToNearestHour(date);
   const now = new Date();
   const nowRounded = new Date(now);
   nowRounded.setUTCMinutes(0, 0, 0);
-
-  // If the time is >= current hour, use latest URL
   if (roundedDate >= nowRounded) {
     return proxyImage(
-      `https://www.wpc.ncep.noaa.gov/sfc/${surfaceDisplay}wbg.gif`,
+      `https://www.wpc.ncep.noaa.gov/sfc/nam${wpcSector}sfcwbg.gif`,
     );
   }
-
-  // Otherwise, round down to nearest 3-hour interval and use archive URL
-  const archiveDate = roundDownToNearest3Hours(roundedDate);
+  const archiveDate = roundToNearest3Hours(roundedDate);
   const year = archiveDate.getUTCFullYear();
   const month = String(archiveDate.getUTCMonth() + 1).padStart(2, '0');
   const day = String(archiveDate.getUTCDate()).padStart(2, '0');
   const hour = String(archiveDate.getUTCHours()).padStart(2, '0');
-
-  return `https://www.wpc.ncep.noaa.gov/archives/sfc/${year}/${surfaceDisplay}${year}${month}${day}${hour}.gif`;
+  return `https://www.wpc.ncep.noaa.gov/archives/sfc/${year}/${wpcSector}${year}${month}${day}${hour}.gif`;
 }
 
 export interface SurfaceAnalysisImageProps {
+  wpcSector: string;
   date: Date;
   darkMode?: boolean;
   onClick?(event: React.MouseEvent<HTMLDivElement>): void;
 }
 
 export default function SurfaceAnalysisImage({
+  wpcSector,
   date,
   darkMode,
   onClick,
 }: SurfaceAnalysisImageProps) {
-  const url = getSurfaceAnalysisUrl(date);
+  const url = getSurfaceAnalysisUrl(wpcSector, date);
   const width = 1000;
   const height = 750;
 

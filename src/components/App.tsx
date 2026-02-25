@@ -31,6 +31,7 @@ import {
   mesoParams,
   mesoSectorMap,
   mesoSectors,
+  wpcSectorMap,
 } from '../utils/mesoanalysis';
 import {
   ForecastModel,
@@ -45,8 +46,8 @@ import Calendar from './Calendar';
 import Card from './Card';
 import Dropdown from './Dropdown';
 import MesoanalysisImage from './MesoanalysisImage';
-import SurfaceAnalysisImage from './SurfaceAnalysisImage';
 import NumberInput from './NumberInput';
+import SurfaceAnalysisImage from './SurfaceAnalysisImage';
 import { ToolButton } from './ToolButton';
 
 const defaultMesoSector = 13; // Central U.S.
@@ -532,6 +533,7 @@ export default function App() {
               />
             ) : param === 'surface' ? (
               <SurfaceAnalysisImage
+                wpcSector={wpcSectorMap.get(sectorNumber) || 'us'}
                 date={date}
                 darkMode={darkMode}
                 // onClick={onClickMesoanalysisImage}

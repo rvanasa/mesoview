@@ -22,14 +22,14 @@ function getSurfaceAnalysisUrl(wpcSector: string, date: Date): string {
   const hour = String(archiveDate.getUTCHours()).padStart(2, '0');
   if (archiveDate >= new Date(now.getTime() - 1000 * 60 * 60 * 24)) {
     return proxyImage(
-      `https://www.wpc.ncep.noaa.gov/sfc/${/* product */ 'namussfc'}${hour}wbg.gif`,
+      `https://www.wpc.ncep.noaa.gov/sfc/${product}${hour}wbg.gif`,
     );
   }
   const year = archiveDate.getUTCFullYear();
   const month = String(archiveDate.getUTCMonth() + 1).padStart(2, '0');
   const day = String(archiveDate.getUTCDate()).padStart(2, '0');
   return proxyImage(
-    `https://www.wpc.ncep.noaa.gov/archives/sfc/${year}/${product}${year}${month}${day}${hour}.gif`,
+    `https://www.wpc.ncep.noaa.gov/archives/sfc/${year}/${/* product */ 'namussfc'}${year}${month}${day}${hour}.gif`,
   );
 }
 

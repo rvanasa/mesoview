@@ -22,7 +22,7 @@ function getSurfaceAnalysisUrl(wpcSector: string, date: Date): string {
   const hour = String(archiveDate.getUTCHours()).padStart(2, '0');
   if (archiveDate >= new Date(now.getTime() - 1000 * 60 * 60 * 24)) {
     return proxyImage(
-      `https://www.wpc.ncep.noaa.gov/sfc/${product}${hour}wbg.gif`,
+      `https://www.wpc.ncep.noaa.gov/sfc/${/* product */ 'namussfc'}${hour}wbg.gif`,
     );
   }
   const year = archiveDate.getUTCFullYear();

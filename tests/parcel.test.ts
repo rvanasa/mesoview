@@ -11,7 +11,7 @@ describe('Parcel Calculation', () => {
     const filePath = join(__dirname, 'fixtures', 'rap_tbl.buf');
     const sampleBufkitData = readFileSync(filePath, 'utf-8');
     const soundings = parseBufkitFile(sampleBufkitData);
-    profile = bufkitSoundingToProfile(soundings[0], 'rap');
+    profile = bufkitSoundingToProfile(soundings[0], 'rap', 'America/Denver');
   });
 
   it('should calculate surface parcel with correct initial conditions', () => {
@@ -46,7 +46,7 @@ describe('Parcel Calculation', () => {
     const lfcPressure = parcel.lfc?.pressureHPa ?? Infinity;
     const elPressure = parcel.el?.pressureHPa ?? Infinity;
     const lclPressure = parcel.lcl?.pressureHPa ?? 0;
-    
+
     // When convection exists, validate vertical ordering
     // When it doesn't exist, the Infinity values will pass these checks
     expect(hasConvection ? lfcPressure <= lclPressure : true).toBe(true);
@@ -70,7 +70,7 @@ describe('Parcel Calculation', () => {
 
     // Find points below LFC and above surface (if LFC exists)
     const pointsBelowLFC = [];
-    
+
     if (parcel.lfc) {
       for (let i = 0; i < parcel.pressureHPa.length - 1; i++) {
         if (parcel.pressureHPa[i] > parcel.lfc.pressureHPa) {
@@ -94,7 +94,7 @@ describe('Parcel Calculation', () => {
     pointsBelowLFC.forEach((point) => {
       expect(point.parcelTemp).toBeLessThanOrEqual(point.envTemp + 0.5);
     });
-    
+
     // Ensure test validates something meaningful
     expect(pointsBelowLFC.length >= 0).toBe(true);
   });

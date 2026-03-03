@@ -230,11 +230,13 @@ function paToMicrobar(omegaPa: number): number {
  * Convert a BufkitSounding to a Profile for display
  * @param sounding The Bufkit sounding to convert
  * @param model The model name (e.g., "rap", "hrrr")
+ * @param timeZone Optional IANA timezone identifier
  * @returns A Profile object
  */
 export function bufkitSoundingToProfile(
   sounding: BufkitSounding,
   model: ForecastModel,
+  timeZone?: string,
 ): Profile {
   // Convert wind components for each level
   const windComponents = sounding.sounding.windDir.map((dir, i) =>
@@ -249,6 +251,7 @@ export function bufkitSoundingToProfile(
 
   return {
     time: formatBufkitTime(sounding.time),
+    timeZone,
     model: model,
     station: sounding.stationId,
     latitude: sounding.latitude,

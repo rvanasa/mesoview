@@ -15,20 +15,25 @@ export const soundingModels = [
 export type ForecastModel = (typeof soundingModels)[number]['key'];
 
 // TODO: fetch
-export const soundingStations: { key: string; label: string }[] = [
-  { key: 'tbl', label: 'TBL - Boulder' },
-  { key: 'kbjc', label: 'KBJC - Broomfield' },
-  { key: 'den', label: 'DEN - Denver Airport' },
-  { key: 'kbaf', label: 'KBAF - Westfield' },
-  { key: 'kcef', label: 'KCEF - Holyoke' },
-  { key: 'kore', label: 'KORE - Orange' },
-  { key: 'korh', label: 'KORH - Worcester' },
-  { key: 'kbed', label: 'KBED - Bedford' },
-  { key: 'kbos', label: 'KBOS - Boston' },
+export const soundingStations: {
+  key: string;
+  label: string;
+  timeZone: string;
+}[] = [
+  { key: 'tbl', label: 'TBL - Boulder', timeZone: 'America/Denver' },
+  { key: 'kbjc', label: 'KBJC - Broomfield', timeZone: 'America/Denver' },
+  { key: 'den', label: 'DEN - Denver Airport', timeZone: 'America/Denver' },
+  { key: 'kbaf', label: 'KBAF - Westfield', timeZone: 'America/New_York' },
+  { key: 'kcef', label: 'KCEF - Holyoke', timeZone: 'America/New_York' },
+  { key: 'kore', label: 'KORE - Orange', timeZone: 'America/New_York' },
+  { key: 'korh', label: 'KORH - Worcester', timeZone: 'America/New_York' },
+  { key: 'kbed', label: 'KBED - Bedford', timeZone: 'America/New_York' },
+  { key: 'kbos', label: 'KBOS - Boston', timeZone: 'America/New_York' },
 ];
 
 export interface Profile {
   time: number;
+  timeZone: string | undefined;
   model: ForecastModel;
   station: string;
   latitude: number;
@@ -112,7 +117,11 @@ export async function fetchProfileAtDate(
       return;
     }
   }
-  return bufkitSoundingToProfile(sounding, model);
+  const stationData = soundingStations.find(
+    (s) => s.key.toLowerCase() === station.toLowerCase(),
+  );
+  const timeZone = stationData?.timeZone;
+  return bufkitSoundingToProfile(sounding, model, timeZone);
 }
 
 export function getPressureForHeight(

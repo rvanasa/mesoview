@@ -1,7 +1,7 @@
 import * as d3 from 'd3';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import 'twin.macro';
-import { formatDate } from '../utils/date';
+import { formatDate, formatLocalTime } from '../utils/date';
 import {
   getParcel,
   mixingRatio,
@@ -339,6 +339,7 @@ const Sounding: React.FC<SoundingProps> = ({
       .text('Temperature (°C)');
 
     // Add title
+    const date = new Date(profile.time);
     svg
       .append('text')
       .attr('class', 'title')
@@ -346,10 +347,12 @@ const Sounding: React.FC<SoundingProps> = ({
       .attr('y', 15)
       .attr('text-anchor', 'start')
       .attr('font-size', '14px')
+      .style('white-space', 'pre')
+      .attr('font-family', 'monospace')
       .attr('font-weight', 'bold')
       .attr('fill', darkMode ? '#e5e7eb' : '#000000')
       .text(
-        `${formatDate(new Date(profile.time))} ${profile.model.toUpperCase()} ${profile.station.toUpperCase()}`,
+        `${formatDate(date)} ${profile.model.toUpperCase()} ${profile.station.toUpperCase()}${profile.timeZone ? ` ${formatLocalTime(date)}` : ''}`,
       );
 
     // // Add CAPE/CIN display

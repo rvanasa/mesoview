@@ -15,14 +15,16 @@ export function roundToNearestHour(date: Date) {
 }
 
 export function plusHours(date: Date, hours: number): Date {
-  return new Date(date.getTime() + 3600000 * hours);
+  return new Date(date.getTime() + hours * HOUR);
 }
 
 export function formatDate(date: Date): string {
-  return `${date.toISOString().slice(0, 10)} ${zeroPad(
-    date.getUTCHours(),
-    2,
-  )}z`;
+  return `${date.toISOString().slice(0, 10)} ${zeroPad(date.getUTCHours(), 2)}z`;
+}
+
+export function formatLocalTime(date: Date): string {
+  const localHours = date.getHours();
+  return `${String(localHours % 12 || 12).padStart(2, ' ')}${localHours < 12 ? 'am' : 'pm'}`;
 }
 
 export function parseDate(dateString: string, defaultHour: number): Date;

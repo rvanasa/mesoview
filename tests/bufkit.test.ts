@@ -64,7 +64,11 @@ describe('Bufkit Parser', () => {
 
   it('should convert bufkit sounding to profile', () => {
     const soundings = parseBufkitFile(sampleBufkitData);
-    const profile = bufkitSoundingToProfile(soundings[0], 'rap');
+    const profile = bufkitSoundingToProfile(
+      soundings[0],
+      'rap',
+      'America/Denver',
+    );
 
     expect(profile.station).toBe('TBL');
     expect(profile.model).toBe('rap');
@@ -85,6 +89,8 @@ describe('Bufkit Parser', () => {
     expect(profile.vKt[0]).toBeCloseTo(-4.67, 1);
 
     expect(profile.omega[0]).toBeCloseTo(0.0, 1);
+
+    expect(profile.timeZone).toBe('America/Denver');
   });
 
   it('should handle second sounding with different time', () => {

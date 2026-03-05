@@ -1,16 +1,11 @@
 import Slider from 'rc-slider';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import {
-  FaAngleDoubleUp,
   FaAngleLeft,
   FaAngleRight,
-  FaArrowDown,
-  FaArrowUp,
   FaGlobe,
-  FaLayerGroup,
   FaRegCalendarAlt,
   FaShareAlt,
-  FaTimes,
   FaUndoAlt,
 } from 'react-icons/fa';
 import { FaGear } from 'react-icons/fa6';
@@ -27,46 +22,21 @@ import {
 } from '../utils/date';
 import {
   continentalMesoSector,
-  mesoParamMap,
-  mesoParams,
   mesoSectorMap,
   mesoSectors,
-  wpcSectorMap,
 } from '../utils/mesoanalysis';
-import {
-  ForecastModel,
-  soundingModels,
-  soundingStations,
-} from '../utils/profile';
-import spliced from '../utils/spliced';
-import BufkitSounding from './BufkitSounding';
+import { parseView } from '../utils/source';
 import { Button } from './Button';
 import { ButtonGroup } from './ButtonGroup';
 import Calendar from './Calendar';
 import Card from './Card';
 import Dropdown from './Dropdown';
-import MesoanalysisImage from './MesoanalysisImage';
 import NumberInput from './NumberInput';
-import SurfaceAnalysisImage from './SurfaceAnalysisImage';
-import { ToolButton } from './ToolButton';
+import ViewDropdown from './ParamDropdown';
+import View from './View';
 
 const defaultMesoSector = 13; // Central U.S.
 const defaultHour = 23;
-
-const categories: { param: string; label: string }[][] = [
-  [
-    { param: 'pmsl', label: 'Surface' },
-    { param: '850mb', label: '850 mb' },
-    { param: '700mb', label: '700 mb' },
-    { param: '500mb', label: '500 mb' },
-    { param: '300mb', label: '300 mb' },
-  ],
-];
-const categoryParamLabelMap = new Map(
-  categories.flatMap((category) =>
-    category.map(({ param, label }) => [param, label]),
-  ),
-);
 
 type CheckboxKey = 'counties' | 'highways' | 'radar' | 'warnings' | 'spcday1';
 const checkboxLabels: Record<CheckboxKey, string> = {
@@ -88,7 +58,8 @@ const checkboxLayers: Partial<Record<CheckboxKey, string>> = {
 };
 
 export default function App() {
-  const [params, setParams] = useQueryParams('param', ['500mb', '3cvr']);
+  const [_views, _setViews] = useQueryParams('view', ['spc-500mb', 'spc-3cvr']);
+  const [_spcParams, _setSpcParams] = useQueryParams('param');
   const [sectorQueryParam, setSectorQueryParam] = useQueryParam('sector');
   const [inputDateString, setInputDateString] = useQueryParam('time');
   const [modal, setModal] = useState<'calendar' | 'settings'>();
@@ -107,6 +78,15 @@ export default function App() {
   const [darkMode, setDarkMode] = useLocalStorage<boolean>(
     'mesoview.darkMode',
     false,
+  );
+
+  const views = [..._views, ..._spcParams.map((param) => `spc-${param}`)];
+  const setViews = useCallback(
+    (views: string[]) => {
+      _setSpcParams([]); // TODO: fix bug when running after _setViews
+      _setViews(views);
+    },
+    [_setViews, _setSpcParams],
   );
 
   // const [showKeys, setShowKeys] = useQueryParams('show');
@@ -145,7 +125,8 @@ export default function App() {
     [setInputDateString],
   );
   const [hourOffset, setHourOffset] = useState(
-    inputDateString ? 0 : 1 /* +1 hour by default */,
+    // inputDateString ? 0 : 1 /* +1 hour by default */,
+    0,
   );
 
   useListener(document, 'keydown', (event: KeyboardEvent) => {
@@ -314,252 +295,29 @@ export default function App() {
           </div>
         </div>
       )}
-      {params.map((param, i) => {
-        const isStandardParameter = (p: string) => !p.startsWith('sounding-');
-        const soundingMatch = param.match(/^sounding(?:-([^-]+)-([^-]+))?$/);
-        const isSounding = !!soundingMatch;
-        const soundingModel =
-          (soundingMatch?.[1] as ForecastModel | undefined) || 'rap';
-        const soundingStation = soundingMatch?.[2] || 'kcef';
-        return (
-          <div key={i}>
-            <div tw="flex items-center justify-between p-2">
-              <div tw="flex gap-4">
-                <Dropdown
-                  label={
-                    isSounding ? (
-                      'Sounding'
-                    ) : categoryParamLabelMap.has(param) ? (
-                      <div tw="text-left min-w-[4rem]">
-                        {categoryParamLabelMap.get(param)}
-                      </div>
-                    ) : (
-                      mesoParamMap.get(param) || param || 'Choose parameter'
-                    )
-                  }
-                  anchor="bottom"
-                >
-                  {/* <div style={{ maxHeight: "70vh" }} tw="overflow-y-scroll"> */}
-                  {mesoParams.map(([key, title], j) => (
-                    <div
-                      key={j}
-                      onClick={() => setParams(spliced(params, i, 1, key))}
-                    >
-                      {title}
-                    </div>
-                  ))}
-                  {/* </div> */}
-                </Dropdown>
-                {isSounding && (
-                  <>
-                    <Dropdown
-                      label={
-                        <div tw="text-left min-w-[3rem]">
-                          {soundingModels.find((m) => m.key === soundingModel)
-                            ?.label ||
-                            soundingModel?.toUpperCase() ||
-                            'Model'}
-                        </div>
-                      }
-                      anchor="bottom"
-                    >
-                      {soundingModels.map((model) => (
-                        <div
-                          key={model.key}
-                          onClick={() =>
-                            setParams(
-                              spliced(
-                                params,
-                                i,
-                                1,
-                                `sounding-${model.key}-${soundingStation}`,
-                              ),
-                            )
-                          }
-                        >
-                          {model.label}
-                        </div>
-                      ))}
-                    </Dropdown>
-                    <Dropdown
-                      label={
-                        <div tw="text-left min-w-[3rem]">
-                          {soundingStations.find(
-                            (s) => s.key === soundingStation,
-                          )?.label ||
-                            soundingStation?.toUpperCase() ||
-                            'Station'}
-                        </div>
-                      }
-                      anchor="bottom"
-                    >
-                      {soundingStations.map((station) => (
-                        <div
-                          key={station.key}
-                          onClick={() =>
-                            setParams(
-                              spliced(
-                                params,
-                                i,
-                                1,
-                                `sounding-${soundingModel}-${station.key}`,
-                              ),
-                            )
-                          }
-                        >
-                          {station.label}
-                        </div>
-                      ))}
-                    </Dropdown>
-                  </>
-                )}
-              </div>
-              {!isSounding &&
-                categoryParamLabelMap.has(param) &&
-                (() => {
-                  let category!: { param: string; label: string }[];
-                  let entryIndex = 0;
-                  outer: for (category of categories) {
-                    for (
-                      entryIndex = 0;
-                      entryIndex < category.length;
-                      entryIndex++
-                    ) {
-                      if (category[entryIndex].param === param) {
-                        break outer;
-                      }
-                    }
-                  }
-                  return (
-                    <div tw="w-full flex justify-end mx-5">
-                      <Slider
-                        styles={{
-                          handle: {
-                            borderColor: darkMode ? '#9ca3af' : '#605f60',
-                            boxShadow: 'none',
-                            width: 20,
-                            height: 20,
-                            borderWidth: 3,
-                            top: 3,
-                          },
-                          rail: {
-                            height: 6,
-                            backgroundColor: darkMode ? '#374151' : undefined,
-                          },
-                          track: {
-                            backgroundColor: darkMode ? '#9ca3af' : '#605f60',
-                            height: 6,
-                          },
-                        }}
-                        value={entryIndex}
-                        min={0}
-                        max={category.length - 1}
-                        step={1}
-                        // startPoint={0}
-                        onChange={(value) =>
-                          setParams(
-                            spliced(
-                              params,
-                              i,
-                              1,
-                              category[value as number].param,
-                            ),
-                          )
-                        }
-                      />
-                    </div>
-                  );
-                })()}
-              <div tw="flex space-x-2">
-                {!isSounding && param.includes(' ') && (
-                  <ToolButton
-                    onClick={() =>
-                      setParams(spliced(params, i, 1, ...param.split(' ')))
-                    }
-                  >
-                    <FaLayerGroup />
-                  </ToolButton>
-                )}
-                {!isSounding && i > 0 && isStandardParameter(params[i - 1]) && (
-                  <ToolButton
-                    onClick={() =>
-                      setParams(
-                        spliced(
-                          params,
-                          i - 1,
-                          2,
-                          `${params[i - 1]} ${params[i]}`,
-                        ),
-                      )
-                    }
-                  >
-                    <FaAngleDoubleUp />
-                  </ToolButton>
-                )}
-                {i > 0 && (
-                  <ToolButton
-                    onClick={() =>
-                      setParams(
-                        spliced(params, i - 1, 2, params[i], params[i - 1]),
-                      )
-                    }
-                  >
-                    <FaArrowUp />
-                  </ToolButton>
-                )}
-                {i < params.length - 1 && (
-                  <ToolButton
-                    onClick={() =>
-                      setParams(spliced(params, i, 2, params[i + 1], params[i]))
-                    }
-                  >
-                    <FaArrowDown />
-                  </ToolButton>
-                )}
-                {params.length > 1 && (
-                  <ToolButton onClick={() => setParams(spliced(params, i, 1))}>
-                    <FaTimes tw="text-red-700 dark:text-red-400" />
-                  </ToolButton>
-                )}
-              </div>
-            </div>
-            {isSounding && soundingModel && soundingStation ? (
-              <BufkitSounding
-                model={soundingModel}
-                station={soundingStation}
-                date={date}
-                detailed={detailedSoundings}
-                darkMode={darkMode}
-              />
-            ) : param === 'surface' ? (
-              <SurfaceAnalysisImage
-                wpcSector={wpcSectorMap.get(sectorNumber) || 'us'}
-                date={date}
-                darkMode={darkMode}
-                onClick={onClickMesoanalysisImage}
-              />
-            ) : (
-              <MesoanalysisImage
-                date={date}
-                sector={sector}
-                layers={layers}
-                radar={!!checkboxes['radar']}
-                params={param.split(' ').filter((param) => param)}
-                darkMode={darkMode}
-                onClick={onClickMesoanalysisImage}
-              />
-            )}
-          </div>
-        );
-      })}
+      {views.map((view, i) => (
+        <View
+          key={i}
+          view={view}
+          index={i}
+          views={views}
+          setViews={setViews}
+          darkMode={darkMode}
+          date={date}
+          sectorNumber={sectorNumber}
+          sector={sector}
+          layers={layers}
+          radar={!!checkboxes['radar']}
+          detailedSoundings={detailedSoundings}
+          onClickImage={onClickMesoanalysisImage}
+        />
+      ))}
       <div tw="p-3 flex justify-between">
-        <Dropdown label="Add parameter" anchor="top">
-          {mesoParams.map(([key, title], i) => (
-            <div key={i} onClick={() => setParams([...params, key])}>
-              {title}
-            </div>
-          ))}
-        </Dropdown>
+        <ViewDropdown
+          label="Add parameter"
+          anchor="top"
+          onSelect={(view) => setViews([...views, view])}
+        />
       </div>
 
       <div style={{ paddingBottom: 130 }}></div>
@@ -674,9 +432,8 @@ export default function App() {
                 onClick={() =>
                   navigator.share({
                     title:
-                      params
-                        .map((param) => mesoParamMap.get(param))
-                        .join(', ') || 'Mesoanalysis',
+                      views.map((view) => parseView(view).name).join(', ') ||
+                      'Mesoanalysis',
                     url: window.location.href,
                   })
                 }

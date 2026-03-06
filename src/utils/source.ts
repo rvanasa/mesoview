@@ -1,6 +1,7 @@
 import { mesoParamMap } from './mesoanalysis';
+import { pivotalModelMap } from './pivotal';
 
-export type SourceKey = 'unknown' | 'spc' | 'sounding' | 'surface';
+export type SourceKey = 'unknown' | 'spc' | 'sounding' | 'surface' | 'pivotal';
 export interface Source {
   key: SourceKey;
   name: string;
@@ -11,6 +12,11 @@ export const sources: Source[] = [
   {
     key: 'spc',
     name: 'SPC Mesoanalysis',
+    combinable: true,
+  },
+  {
+    key: 'pivotal',
+    name: 'Pivotal Weather',
     combinable: true,
   },
   {
@@ -64,6 +70,17 @@ function resolveParamName(
 ): string | undefined {
   if (sourceKey === 'spc') {
     return param ? mesoParamMap.get(param) || param : undefined;
+  }
+  if (sourceKey === 'pivotal') {
+    const parts = param.split('-', 2); // TODO: escape dashes in param parts?
+    if (parts.length === 2) {
+      const [model] = parts;
+      const modelName = pivotalModelMap.get(model);
+      if (modelName) {
+        return modelName;
+      }
+    }
+    return param;
   }
   return;
 }

@@ -15,9 +15,15 @@ setInterval(
 export interface CachedImageProps
   extends React.ImgHTMLAttributes<HTMLImageElement> {
   src: string;
+  proxy?: boolean;
 }
 
-export default function CachedImage({ src, alt, ...rest }: CachedImageProps) {
+export default function CachedImage({
+  src,
+  alt,
+  proxy,
+  ...rest
+}: CachedImageProps) {
   const [data, setData] = useState<string | undefined>();
   useEffect(() => {
     const data = imageCache.get(src);
@@ -39,6 +45,7 @@ export default function CachedImage({ src, alt, ...rest }: CachedImageProps) {
           const response = await fetch(url);
           if (!response.ok) {
             if (
+              proxy &&
               (response.status === 403 || response.status === 0) &&
               !isRetry &&
               !isProxyUrl(url)
@@ -61,7 +68,7 @@ export default function CachedImage({ src, alt, ...rest }: CachedImageProps) {
           reader.onerror = (err) => reject(err);
           reader.readAsDataURL(blob);
         } catch (err) {
-          if (!isRetry && !isProxyUrl(url)) {
+          if (proxy && !isProxyUrl(url)) {
             console.warn(err);
             return attemptFetch(proxyImage(url), true);
           }
@@ -88,6 +95,6 @@ export default function CachedImage({ src, alt, ...rest }: CachedImageProps) {
     return () => {
       cancelled = true;
     };
-  }, [src]);
+  }, [proxy, src]);
   return <img src={data ?? ''} alt={alt} {...rest} />;
 }

@@ -1,4 +1,5 @@
 import Slider from 'rc-slider';
+import { useState, useEffect } from 'react';
 import {
   FaAngleDoubleUp,
   FaArrowDown,
@@ -8,6 +9,12 @@ import {
 } from 'react-icons/fa';
 import 'twin.macro';
 import { wpcSectorMap } from '../utils/mesoanalysis';
+import {
+  formatModelRun,
+  getAvailableRuns,
+  getRegionFromSpcSector,
+  pivotalParamMap,
+} from '../utils/pivotal';
 import {
   ForecastModel,
   soundingModels,
@@ -19,6 +26,7 @@ import BufkitSounding from './BufkitSounding';
 import Dropdown from './Dropdown';
 import MesoanalysisImage from './MesoanalysisImage';
 import ViewDropdown from './ParamDropdown';
+import PivotalImage from './PivotalImage';
 import SurfaceAnalysisImage from './SurfaceAnalysisImage';
 import { ToolButton } from './ToolButton';
 
@@ -66,8 +74,8 @@ export default function View({
   detailedSoundings,
   onClickImage,
 }: ViewProps) {
-  const { source, param, name } = parseView(view);
-  console.log({ source, param, name });
+  const parsedView = parseView(view);
+  const { source, param, name } = parsedView;
   const soundingMatch =
     source.key === 'sounding' && param
       ? param.match(/^([^-]+)-([^-]+)$/)
@@ -76,11 +84,42 @@ export default function View({
     (soundingMatch?.[1] as ForecastModel | undefined) || 'rap';
   const soundingStation = soundingMatch?.[2] || 'kcef';
 
+  // Parse pivotal params: format is "model-param1 param2 param3"
+  // e.g., "hrrr-sfctd" or "hrrr-sfctd refcmp"
+  const pivotalMatch =
+    source.key === 'pivotal' && param ? param.match(/^([^-]+)-(.+)$/) : null;
+  const pivotalModel = pivotalMatch?.[1] || 'hrrr';
+  const pivotalParams = pivotalMatch?.[2]?.split(' ').filter((p) => p) || [];
+  const pivotalRegion = getRegionFromSpcSector(sectorNumber);
+
+  // State for selected model run (null = use most recent)
+  const [selectedModelRun, setSelectedModelRun] = useState<Date | null>(null);
+  const [modelRunOptions, setModelRunOptions] = useState<
+    { date: Date | null; label: string }[]
+  >([{ date: null, label: 'Latest' }]);
+
+  // Load available runs when pivotal model changes
+  useEffect(() => {
+    if (source.key === 'pivotal') {
+      setModelRunOptions([{ date: null, label: 'Latest' }]);
+      getAvailableRuns(pivotalModel).then((runs) => {
+        setModelRunOptions([
+          { date: null, label: 'Latest' },
+          ...runs.map((run) => ({
+            date: run,
+            label: formatModelRun(run),
+          })),
+        ]);
+      });
+    }
+  }, [source.key, pivotalModel]);
+
   return (
     <div>
       <div tw="flex items-center justify-between p-2">
         <div tw="flex gap-4">
           <ViewDropdown
+            view={parsedView}
             label={
               source.key === 'sounding' ? (
                 'Sounding'
@@ -152,6 +191,58 @@ export default function View({
                     }
                   >
                     {station.label}
+                  </div>
+                ))}
+              </Dropdown>
+            </>
+          )}
+          {source.key === 'pivotal' && (
+            <>
+              <Dropdown
+                label={
+                  <div tw="text-left min-w-[3rem]">
+                    {pivotalParams.length > 0
+                      ? pivotalParamMap.get(pivotalParams[0]) ||
+                        pivotalParams[0]
+                      : 'Param'}
+                  </div>
+                }
+                anchor="bottom"
+              >
+                {[...pivotalParamMap.entries()].map(([paramKey, paramName]) => (
+                  <div
+                    key={paramKey}
+                    onClick={() =>
+                      setViews(
+                        spliced(
+                          views,
+                          i,
+                          1,
+                          `pivotal-${pivotalModel}-${paramKey}`,
+                        ),
+                      )
+                    }
+                  >
+                    {paramName}
+                  </div>
+                ))}
+              </Dropdown>
+              <Dropdown
+                label={
+                  <div tw="text-left min-w-[3rem]">
+                    {selectedModelRun
+                      ? formatModelRun(selectedModelRun)
+                      : 'Latest'}
+                  </div>
+                }
+                anchor="bottom"
+              >
+                {modelRunOptions.map((option) => (
+                  <div
+                    key={option.date?.toISOString() ?? 'latest'}
+                    onClick={() => setSelectedModelRun(option.date)}
+                  >
+                    {option.label}
                   </div>
                 ))}
               </Dropdown>
@@ -271,6 +362,16 @@ export default function View({
         <SurfaceAnalysisImage
           wpcSector={wpcSectorMap.get(sectorNumber) || 'us'}
           date={date}
+          darkMode={darkMode}
+          onClick={onClickImage}
+        />
+      ) : source.key === 'pivotal' ? (
+        <PivotalImage
+          date={date}
+          model={pivotalModel}
+          region={pivotalRegion}
+          params={pivotalParams}
+          selectedRun={selectedModelRun}
           darkMode={darkMode}
           onClick={onClickImage}
         />

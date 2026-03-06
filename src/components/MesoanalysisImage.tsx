@@ -103,6 +103,7 @@ export default function MesoanalysisImage({
               width={width}
               height={height}
               alt=""
+              proxy
               style={{
                 ...(i ? { position: 'absolute', top: 0, left: 0 } : {}),
                 ...(darkMode ? { filter: 'invert(1) hue-rotate(180deg)' } : {}),

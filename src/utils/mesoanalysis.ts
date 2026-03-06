@@ -52,6 +52,7 @@ export const mesoParams: [string, string][] = [
   ['mlcp', 'MLCAPE / MLCIN'],
   ['hail', 'Hail Parameters'],
   ['mbcp', 'Microburst Composite'],
+  ['ddiv', 'Differential Divergence'],
   ['vadv', 'Vorticity Advection'],
   ['ddrh', 'Dendritic Growth Layer'],
   ['snsq', 'Snow Squall'],

@@ -31,9 +31,13 @@ async function getPivotalRunInfo(
   const runFrequency = getModelRunFrequency(model);
   let runDate = await getLatestRun(model);
   let forecastHour = Math.round((date.getTime() - runDate.getTime()) / 3600000);
-  while (forecastHour < 0) {
-    runDate = new Date(runDate.getTime() - runFrequency * 3600000);
-    forecastHour = Math.round((date.getTime() - runDate.getTime()) / 3600000);
+  if (selectedRun === null) {
+    while (forecastHour < 0) {
+      runDate = new Date(runDate.getTime() - runFrequency * 3600000);
+      forecastHour = Math.round((date.getTime() - runDate.getTime()) / 3600000);
+    }
+  } else if (forecastHour < 0) {
+    forecastHour = 0;
   }
   return { runDate, forecastHour };
 }

@@ -59,15 +59,14 @@ const checkboxLayers: Partial<Record<CheckboxKey, string>> = {
 
 export default function App() {
   const [queryParams, setQueryParams] = useSearchParams();
-  const paramValues = queryParams.getAll('param');
   useEffect(() => {
     if (queryParams.has('param')) {
-      const views = queryParams.getAll('param').map((param) => param == 'surface' || param.startsWith('sounding-') ? param : `spc-${param}`);
+      const views = queryParams.getAll('param').map((param) => param === 'surface' || param.startsWith('sounding-') ? param : `spc-${param}`);
       queryParams.delete('param');
       views.forEach((view) => queryParams.append('view', view));
       setQueryParams(queryParams.toString(), { replace: true });
     }
-  }, []);
+  }, [queryParams, setQueryParams]);
 
   const [views, setViews] = useQueryParams('view', ['spc-500mb', 'spc-3cvr']);
   const [sectorQueryParam, setSectorQueryParam] = useQueryParam('sector');

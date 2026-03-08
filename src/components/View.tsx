@@ -84,12 +84,20 @@ export default function View({
     (soundingMatch?.[1] as ForecastModel | undefined) || 'rap';
   const soundingStation = soundingMatch?.[2] || 'kcef';
 
-  // Parse pivotal params: format is "model-param1 param2 param3"
-  // e.g., "hrrr-sfctd" or "hrrr-sfctd refcmp"
-  const pivotalMatch =
-    source.key === 'pivotal' && param ? param.match(/^([^-]+)-(.+)$/) : null;
-  const pivotalModel = pivotalMatch?.[1] || 'hrrr';
-  const pivotalParams = pivotalMatch?.[2]?.split(' ').filter((p) => p) || [];
+  // Parse pivotal params: format is "model1-param1 model2-param2 model3-param3"
+  // e.g., "hrrr-sfctd" or "hrrr-sfctd nam-refcmp"
+  const pivotalModelParams: { model: string; param: string }[] = [];
+  if (source.key === 'pivotal' && param) {
+    const parts = param.split(' ').filter((p) => p);
+    for (const part of parts) {
+      const match = part.match(/^([^-]+)-(.+)$/);
+      if (match) {
+        pivotalModelParams.push({ model: match[1], param: match[2] });
+      }
+    }
+  }
+  const primaryPivotalModel = pivotalModelParams[0]?.model || 'hrrr';
+  const primaryPivotalParam = pivotalModelParams[0]?.param || '';
   const pivotalRegion = getRegionFromSpcSector(sectorNumber);
 
   // State for selected model run (undefined = use most recent)
@@ -102,7 +110,7 @@ export default function View({
   useEffect(() => {
     if (source.key === 'pivotal') {
       setModelRunOptions([{ date: undefined, label: 'Latest' }]);
-      getAvailableRuns(pivotalModel).then((runs) => {
+      getAvailableRuns(primaryPivotalModel).then((runs) => {
         setModelRunOptions([
           { date: undefined, label: 'Latest' },
           ...runs.map((run) => ({
@@ -112,7 +120,7 @@ export default function View({
         ]);
       });
     }
-  }, [source.key, pivotalModel]);
+  }, [source.key, primaryPivotalModel]);
 
   return (
     <div>
@@ -201,9 +209,9 @@ export default function View({
               <Dropdown
                 label={
                   <div tw="text-left min-w-[3rem]">
-                    {pivotalParams.length > 0
-                      ? pivotalParamMap.get(pivotalParams[0]) ||
-                        pivotalParams[0]
+                    {primaryPivotalParam
+                      ? pivotalParamMap.get(primaryPivotalParam) ||
+                        primaryPivotalParam
                       : 'Param'}
                   </div>
                 }
@@ -218,7 +226,7 @@ export default function View({
                           views,
                           i,
                           1,
-                          `pivotal-${pivotalModel}-${paramKey}`,
+                          `pivotal-${primaryPivotalModel}-${paramKey}`,
                         ),
                       )
                     }
@@ -368,10 +376,11 @@ export default function View({
       ) : source.key === 'pivotal' ? (
         <PivotalImage
           date={date}
-          model={pivotalModel}
           region={pivotalRegion}
-          params={pivotalParams}
-          selectedRun={selectedModelRun}
+          modelParams={pivotalModelParams.map((mp) => ({
+            ...mp,
+            selectedRun: selectedModelRun,
+          }))}
           darkMode={darkMode}
           onClick={onClickImage}
         />

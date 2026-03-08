@@ -34,22 +34,24 @@ async function getPivotalRunInfo(
   return { runDate, forecastHour };
 }
 
+export interface ModelParam {
+  model: string;
+  param: string;
+  selectedRun?: Date;
+}
+
 export interface PivotalImageProps {
   date: Date;
-  model: string;
   region: string;
-  params: string[];
-  selectedRun?: Date;
+  modelParams: ModelParam[];
   darkMode?: boolean;
   onClick?(event: React.MouseEvent<HTMLDivElement>): void;
 }
 
 export default function PivotalImage({
   date,
-  model,
   region,
-  params,
-  selectedRun,
+  modelParams,
   darkMode,
   onClick,
 }: PivotalImageProps) {
@@ -60,17 +62,18 @@ export default function PivotalImage({
 
     async function loadImageUrls() {
       try {
-        const info = await getPivotalRunInfo(date, model, selectedRun);
-        if (!cancelled) {
-          const imageUrls = params.map((param) =>
-            getPivotalImageUrl(
-              model,
-              info.runDate,
-              info.forecastHour,
-              param,
-              region,
-            ),
+        const urlPromises = modelParams.map(async ({ model, param, selectedRun }) => {
+          const info = await getPivotalRunInfo(date, model, selectedRun);
+          return getPivotalImageUrl(
+            model,
+            info.runDate,
+            info.forecastHour,
+            param,
+            region,
           );
+        });
+        const imageUrls = await Promise.all(urlPromises);
+        if (!cancelled) {
           setUrls(imageUrls);
         }
       } catch (error) {
@@ -83,7 +86,7 @@ export default function PivotalImage({
     return () => {
       cancelled = true;
     };
-  }, [date, model, selectedRun, params, region]);
+  }, [date, modelParams, region]);
 
   const width = 1180;
   const height = 850;
@@ -93,19 +96,19 @@ export default function PivotalImage({
       style={{ position: 'relative', background: darkMode ? 'black' : 'white' }}
       onClick={onClick}
     >
-      {params.map((param, i) => (
+      {modelParams.map(({ model, param }, i) => (
         <CachedImage
-          key={param}
+          key={`${model}-${param}`}
           src={urls[i] || ''}
           width={width}
           height={height}
           alt=""
           style={{
-            ...(i ? { position: 'absolute', top: 0, left: 0 } : {}),
+            ...(i ? { position: 'absolute', top: 0, left: 0, opacity: 0.5 } : {}),
             ...(darkMode ? { filter: 'invert(1) hue-rotate(180deg)' } : {}),
           }}
           onError={(e) => ((e.target as any).style.opacity = 0)}
-          onLoad={(e) => ((e.target as any).style.opacity = 1)}
+          onLoad={(e) => ((e.target as any).style.opacity = i ? 0.5 : 1)}
         />
       ))}
     </div>

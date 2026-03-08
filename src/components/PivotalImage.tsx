@@ -13,31 +13,23 @@ import CachedImage from './CachedImage';
 async function getPivotalRunInfo(
   date: Date,
   model: string,
-  selectedRun: Date | null = null,
+  selectedRun: Date | undefined,
 ): Promise<{ runDate: Date; forecastHour: number }> {
   date = roundToNearestHour(date);
   if (selectedRun) {
-    const runFrequency = getModelRunFrequency(model);
     let runDate = new Date(selectedRun);
-    let forecastHour = Math.round(
-      (date.getTime() - runDate.getTime()) / 3600000,
+    let forecastHour = Math.max(
+      Math.round((date.getTime() - runDate.getTime()) / 3600000),
+      0,
     );
-    while (forecastHour < 0) {
-      runDate = new Date(runDate.getTime() - runFrequency * 3600000);
-      forecastHour = Math.round((date.getTime() - runDate.getTime()) / 3600000);
-    }
     return { runDate, forecastHour };
   }
   const runFrequency = getModelRunFrequency(model);
   let runDate = await getLatestRun(model);
   let forecastHour = Math.round((date.getTime() - runDate.getTime()) / 3600000);
-  if (selectedRun === null) {
-    while (forecastHour < 0) {
-      runDate = new Date(runDate.getTime() - runFrequency * 3600000);
-      forecastHour = Math.round((date.getTime() - runDate.getTime()) / 3600000);
-    }
-  } else if (forecastHour < 0) {
-    forecastHour = 0;
+  while (forecastHour < 0) {
+    runDate = new Date(runDate.getTime() - runFrequency * 3600000);
+    forecastHour = Math.round((date.getTime() - runDate.getTime()) / 3600000);
   }
   return { runDate, forecastHour };
 }
@@ -47,7 +39,7 @@ export interface PivotalImageProps {
   model: string;
   region: string;
   params: string[];
-  selectedRun?: Date | null;
+  selectedRun?: Date;
   darkMode?: boolean;
   onClick?(event: React.MouseEvent<HTMLDivElement>): void;
 }
@@ -68,7 +60,7 @@ export default function PivotalImage({
 
     async function loadImageUrls() {
       try {
-        const info = await getPivotalRunInfo(date, model, selectedRun ?? null);
+        const info = await getPivotalRunInfo(date, model, selectedRun);
         if (!cancelled) {
           const imageUrls = params.map((param) =>
             getPivotalImageUrl(

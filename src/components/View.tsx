@@ -92,19 +92,19 @@ export default function View({
   const pivotalParams = pivotalMatch?.[2]?.split(' ').filter((p) => p) || [];
   const pivotalRegion = getRegionFromSpcSector(sectorNumber);
 
-  // State for selected model run (null = use most recent)
-  const [selectedModelRun, setSelectedModelRun] = useState<Date | null>(null);
+  // State for selected model run (undefined = use most recent)
+  const [selectedModelRun, setSelectedModelRun] = useState<Date>();
   const [modelRunOptions, setModelRunOptions] = useState<
-    { date: Date | null; label: string }[]
-  >([{ date: null, label: 'Latest' }]);
+    { date: Date | undefined; label: string }[]
+  >([{ date: undefined, label: 'Latest' }]);
 
   // Load available runs when pivotal model changes
   useEffect(() => {
     if (source.key === 'pivotal') {
-      setModelRunOptions([{ date: null, label: 'Latest' }]);
+      setModelRunOptions([{ date: undefined, label: 'Latest' }]);
       getAvailableRuns(pivotalModel).then((runs) => {
         setModelRunOptions([
-          { date: null, label: 'Latest' },
+          { date: undefined, label: 'Latest' },
           ...runs.map((run) => ({
             date: run,
             label: formatModelRun(run),

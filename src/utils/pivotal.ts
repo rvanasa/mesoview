@@ -25,27 +25,25 @@ export const pivotalRegions: PivotalRegion[] = [
 export interface PivotalModel {
   id: string;
   name: string;
-  highRes?: boolean;
   subdomain?: string;
   runFrequency: number;
 }
 
 export const pivotalModels: PivotalModel[] = [
-  { id: 'hrrr', name: 'HRRR', highRes: true, runFrequency: 1 },
+  { id: 'hrrr', name: 'HRRR', runFrequency: 1 },
   { id: 'rap', name: 'RAP', runFrequency: 1 },
-  { id: 'rrfs_a', name: 'RRFS', highRes: true, runFrequency: 3 },
+  { id: 'rrfs_a', name: 'RRFS', runFrequency: 3 },
   {
     id: 'nam4km',
     name: 'NAM 3km',
-    highRes: true,
     subdomain: 'm1o',
     runFrequency: 6,
   },
-  { id: 'gfs', name: 'GFS', runFrequency: 6 },
-  { id: 'ecmwf', name: 'ECMWF', runFrequency: 12 },
-  { id: 'hrwarw', name: 'HRW ARW', highRes: true, runFrequency: 12 },
-  { id: 'hrwnssl', name: 'HRW NSSL', highRes: true, runFrequency: 12 },
-  { id: 'hrwfv3', name: 'HRW FV3', highRes: true, runFrequency: 12 },
+  { id: 'hrwarw', name: 'HRW ARW', runFrequency: 12 },
+  { id: 'hrwnssl', name: 'HRW NSSL', runFrequency: 12 },
+  { id: 'hrwfv3', name: 'HRW FV3', runFrequency: 12 },
+    // { id: 'gfs', name: 'GFS', runFrequency: 6 },
+    // { id: 'ecmwf_full', name: 'ECMWF', runFrequency: 12 },
 ];
 
 export const pivotalParams: [string, string][] = [

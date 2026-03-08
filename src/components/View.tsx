@@ -220,16 +220,17 @@ export default function View({
                 {[...pivotalParamMap.entries()].map(([paramKey, paramName]) => (
                   <div
                     key={paramKey}
-                    onClick={() =>
-                      setViews(
-                        spliced(
-                          views,
-                          i,
-                          1,
-                          `pivotal-${primaryPivotalModel}-${paramKey}`,
-                        ),
-                      )
-                    }
+                    onClick={() => {
+                      // Keep overlay layers by preserving all but the first model-param
+                      const overlayParts = pivotalModelParams
+                        .slice(1)
+                        .map((mp) => `${mp.model}-${mp.param}`)
+                        .join(' ');
+                      const newParam = overlayParts
+                        ? `${primaryPivotalModel}-${paramKey} ${overlayParts}`
+                        : `${primaryPivotalModel}-${paramKey}`;
+                      setViews(spliced(views, i, 1, `pivotal-${newParam}`));
+                    }}
                   >
                     {paramName}
                   </div>

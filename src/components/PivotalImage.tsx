@@ -62,16 +62,18 @@ export default function PivotalImage({
 
     async function loadImageUrls() {
       try {
-        const urlPromises = modelParams.map(async ({ model, param, selectedRun }) => {
-          const info = await getPivotalRunInfo(date, model, selectedRun);
-          return getPivotalImageUrl(
-            model,
-            info.runDate,
-            info.forecastHour,
-            param,
-            region,
-          );
-        });
+        const urlPromises = modelParams.map(
+          async ({ model, param, selectedRun }) => {
+            const info = await getPivotalRunInfo(date, model, selectedRun);
+            return getPivotalImageUrl(
+              model,
+              info.runDate,
+              info.forecastHour,
+              param,
+              region,
+            );
+          },
+        );
         const imageUrls = await Promise.all(urlPromises);
         if (!cancelled) {
           setUrls(imageUrls);
@@ -104,7 +106,9 @@ export default function PivotalImage({
           height={height}
           alt=""
           style={{
-            ...(i ? { position: 'absolute', top: 0, left: 0, opacity: 0.5 } : {}),
+            ...(i
+              ? { position: 'absolute', top: 0, left: 0, opacity: 0.5 }
+              : {}),
             ...(darkMode ? { filter: 'invert(1) hue-rotate(180deg)' } : {}),
           }}
           onError={(e) => ((e.target as any).style.opacity = 0)}

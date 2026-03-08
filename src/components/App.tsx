@@ -58,12 +58,21 @@ const checkboxLayers: Partial<Record<CheckboxKey, string>> = {
 };
 
 export default function App() {
-  const [_views, _setViews] = useQueryParams('view', ['spc-500mb', 'spc-3cvr']);
-  const [_spcParams, _setSpcParams] = useQueryParams('param');
+  const [queryParams, setQueryParams] = useSearchParams();
+  const paramValues = queryParams.getAll('param');
+  useEffect(() => {
+    if (queryParams.has('param')) {
+      const views = queryParams.getAll('param').map((param) => param == 'surface' || param.startsWith('sounding-') ? param : `spc-${param}`);
+      queryParams.delete('param');
+      views.forEach((view) => queryParams.append('view', view));
+      setQueryParams(queryParams.toString(), { replace: true });
+    }
+  }, []);
+
+  const [views, setViews] = useQueryParams('view', ['spc-500mb', 'spc-3cvr']);
   const [sectorQueryParam, setSectorQueryParam] = useQueryParam('sector');
   const [inputDateString, setInputDateString] = useQueryParam('time');
   const [modal, setModal] = useState<'calendar' | 'settings'>();
-  const [queryParams] = useSearchParams();
   const [sliderRange, setSliderRange] = useState(
     +queryParams.get('range')! || 1,
   );
@@ -78,15 +87,6 @@ export default function App() {
   const [darkMode, setDarkMode] = useLocalStorage<boolean>(
     'mesoview.darkMode',
     false,
-  );
-
-  const views = [..._views, ..._spcParams.map((param) => `spc-${param}`)];
-  const setViews = useCallback(
-    (views: string[]) => {
-      _setSpcParams([]); // TODO: fix bug when running after _setViews
-      _setViews(views);
-    },
-    [_setViews, _setSpcParams],
   );
 
   // const [showKeys, setShowKeys] = useQueryParams('show');

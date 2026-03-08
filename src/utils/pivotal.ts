@@ -118,6 +118,15 @@ export function getModelRunFrequency(model: string): number {
   return modelData?.runFrequency ?? 1;
 }
 
+// Cache for available runs (5 minute TTL)
+const availableRunsCache = new Map<
+  string,
+  { runs: Date[]; timestamp: number }
+>();
+const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
+
+const latestRunPromiseCache = new Map<string, Promise<Date>>();
+
 /**
  * Get available model runs by fetching from Pivotal Weather
  * Returns an array of recent run dates based on the model's run frequency
@@ -128,6 +137,12 @@ export async function getAvailableRuns(
   model: string,
   count: number = 10,
 ): Promise<Date[]> {
+  const cacheKey = `${model}-${count}`;
+  const cached = availableRunsCache.get(cacheKey);
+  if (cached && Date.now() - cached.timestamp < CACHE_TTL) {
+    return cached.runs;
+  }
+
   const runs: Date[] = [];
   const runFrequency = getModelRunFrequency(model);
 
@@ -171,13 +186,13 @@ export async function getAvailableRuns(
         runs.push(runDate);
       }
 
+      availableRunsCache.set(cacheKey, { runs, timestamp: Date.now() });
       return runs;
     }
   } catch (error) {
     console.warn('Failed to fetch available runs from Pivotal Weather:', error);
   }
 
-  // Fallback: calculate runs based on current time
   let date = roundToNearestHour(new Date());
 
   for (let i = 0; i < count; i++) {
@@ -193,6 +208,7 @@ export async function getAvailableRuns(
     }
   }
 
+  availableRunsCache.set(cacheKey, { runs, timestamp: Date.now() });
   return runs;
 }
 
@@ -201,8 +217,22 @@ export async function getAvailableRuns(
  * @param model Model ID (e.g., 'hrrr', 'rap')
  */
 export async function getLatestRun(model: string): Promise<Date> {
-  const runs = await getAvailableRuns(model, 1);
-  return runs[0];
+  const cachedPromise = latestRunPromiseCache.get(model);
+  if (cachedPromise) {
+    return cachedPromise;
+  }
+  const promise = getAvailableRuns(model, 1)
+    .then((runs) => {
+      setTimeout(() => latestRunPromiseCache.delete(model), 100);
+      return runs[0];
+    })
+    .catch((error) => {
+      latestRunPromiseCache.delete(model);
+      throw error;
+    });
+
+  latestRunPromiseCache.set(model, promise);
+  return promise;
 }
 
 /**

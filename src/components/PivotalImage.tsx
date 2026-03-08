@@ -8,39 +8,24 @@ import {
 import CachedImage from './CachedImage';
 
 /**
- * Check if an image URL exists
- */
-async function checkImageExists(url: string): Promise<boolean> {
-  try {
-    const response = await fetch(url, { method: 'HEAD' });
-    return response.ok;
-  } catch {
-    return false;
-  }
-}
-
-/**
  * Determine the model run time and forecast hour for a given date.
- * Try the most recent run first, then fall back to the most recent previous run for the selected time.
  */
 async function getPivotalRunInfo(
   date: Date,
   model: string,
-  region: string,
-  params: string[],
   selectedRun: Date | null = null,
-): Promise<{ runDate: Date; forecastHour: number } | undefined> {
+): Promise<{ runDate: Date; forecastHour: number }> {
   date = roundToNearestHour(date);
-  const runFrequency = getModelRunFrequency(model);
 
   // If a specific run is selected, use it
   if (selectedRun) {
-    let forecastHour = Math.round(
-      (date.getTime() - selectedRun.getTime()) / 3600000,
-    );
+    const runFrequency = getModelRunFrequency(model);
     let runDate = new Date(selectedRun);
+    let forecastHour = Math.round(
+      (date.getTime() - runDate.getTime()) / 3600000,
+    );
 
-    // If forecast hour is negative, use previous runs
+    // If forecast hour is negative, walk back to previous runs
     while (forecastHour < 0) {
       runDate = new Date(runDate.getTime() - runFrequency * 3600000);
       forecastHour = Math.round((date.getTime() - runDate.getTime()) / 3600000);
@@ -49,33 +34,13 @@ async function getPivotalRunInfo(
     return { runDate, forecastHour };
   }
 
-  // Try the most recent available run
+  // Use the latest available run
   const latestRun = await getLatestRun(model);
   const forecastHour = Math.round(
     (date.getTime() - latestRun.getTime()) / 3600000,
   );
 
-  // Check if this forecast image exists
-  const url = getPivotalImageUrl(
-    model,
-    latestRun,
-    forecastHour,
-    params[0],
-    region,
-  );
-  const exists = await checkImageExists(url);
-
-  if (exists) {
-    return { runDate: latestRun, forecastHour };
-  }
-
-  // Fallback: Use the selected date as the run time with forecast hour 0
-  let fallbackRunDate = roundToNearestHour(date);
-  const targetHour = fallbackRunDate.getUTCHours();
-  const runHour = Math.round(targetHour / runFrequency) * runFrequency;
-  fallbackRunDate.setUTCHours(runHour, 0, 0, 0);
-
-  return { runDate: fallbackRunDate, forecastHour: 0 };
+  return { runDate: latestRun, forecastHour };
 }
 
 export interface PivotalImageProps {
@@ -97,48 +62,37 @@ export default function PivotalImage({
   darkMode,
   onClick,
 }: PivotalImageProps) {
-  const [runInfo, setRunInfo] = useState<
-    { runDate: Date; forecastHour: number } | undefined | null
-  >(undefined);
+  const [urls, setUrls] = useState<string[]>([]);
 
   useEffect(() => {
     let cancelled = false;
 
-    async function loadRunInfo() {
+    async function loadImageUrls() {
       try {
-        const info = await getPivotalRunInfo(
-          date,
-          model,
-          region,
-          params,
-          selectedRun ?? null,
-        );
+        const info = await getPivotalRunInfo(date, model, selectedRun ?? null);
         if (!cancelled) {
-          setRunInfo(info ?? null);
+          const imageUrls = params.map((param) =>
+            getPivotalImageUrl(
+              model,
+              info.runDate,
+              info.forecastHour,
+              param,
+              region,
+            ),
+          );
+          setUrls(imageUrls);
         }
       } catch (error) {
         console.error('Error loading run info:', error);
-        if (!cancelled) {
-          setRunInfo(null);
-        }
       }
     }
 
-    setRunInfo(undefined);
-    loadRunInfo();
+    loadImageUrls();
 
     return () => {
       cancelled = true;
     };
-  }, [date, model, region, params, selectedRun]);
-
-  const { runDate, forecastHour } = runInfo || {
-    runDate: new Date(),
-    forecastHour: 0,
-  };
-  const urls = params.map((param) =>
-    getPivotalImageUrl(model, runDate, forecastHour, param, region),
-  );
+  }, [date, model, selectedRun, params, region]);
 
   const width = 1180;
   const height = 850;
@@ -148,10 +102,10 @@ export default function PivotalImage({
       style={{ position: 'relative', background: darkMode ? 'black' : 'white' }}
       onClick={onClick}
     >
-      {urls.map((url, i) => (
+      {params.map((param, i) => (
         <CachedImage
-          key={i}
-          src={url}
+          key={param}
+          src={urls[i] || ''}
           width={width}
           height={height}
           alt=""

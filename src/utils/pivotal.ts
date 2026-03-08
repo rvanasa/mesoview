@@ -53,7 +53,7 @@ export const pivotalParams: [string, string][] = [
   ['cape03', '3CAPE'],
   ['sfctd_b-imp', 'Dewpoint'],
   ['sfct_b-imp', 'Temperature'],
-  ['rh', 'Humidity'],
+  ['sfcrh', 'Humidity'],
   ['refcmp_uh001h', 'Reflectivity'],
   ['sim_ir', 'IR Satellite'],
   ['cloudcover_levels', 'Cloud Cover'],

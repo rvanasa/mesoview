@@ -16,31 +16,26 @@ async function getPivotalRunInfo(
   selectedRun: Date | null = null,
 ): Promise<{ runDate: Date; forecastHour: number }> {
   date = roundToNearestHour(date);
-
-  // If a specific run is selected, use it
   if (selectedRun) {
     const runFrequency = getModelRunFrequency(model);
     let runDate = new Date(selectedRun);
     let forecastHour = Math.round(
       (date.getTime() - runDate.getTime()) / 3600000,
     );
-
-    // If forecast hour is negative, walk back to previous runs
     while (forecastHour < 0) {
       runDate = new Date(runDate.getTime() - runFrequency * 3600000);
       forecastHour = Math.round((date.getTime() - runDate.getTime()) / 3600000);
     }
-
     return { runDate, forecastHour };
   }
-
-  // Use the latest available run
-  const latestRun = await getLatestRun(model);
-  const forecastHour = Math.round(
-    (date.getTime() - latestRun.getTime()) / 3600000,
-  );
-
-  return { runDate: latestRun, forecastHour };
+  const runFrequency = getModelRunFrequency(model);
+  let runDate = await getLatestRun(model);
+  let forecastHour = Math.round((date.getTime() - runDate.getTime()) / 3600000);
+  while (forecastHour < 0) {
+    runDate = new Date(runDate.getTime() - runFrequency * 3600000);
+    forecastHour = Math.round((date.getTime() - runDate.getTime()) / 3600000);
+  }
+  return { runDate, forecastHour };
 }
 
 export interface PivotalImageProps {

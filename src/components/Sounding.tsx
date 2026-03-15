@@ -148,6 +148,24 @@ const Sounding: React.FC<SoundingProps> = ({
         .attr('fill', 'none');
     });
 
+    // Helper function to get temperature at a given height MSL
+    const getTemperatureAtHeight = (heightMSL: number): number | undefined => {
+      // Find the two points that bracket this height
+      for (let i = 0; i < profile.heightM.length - 1; i++) {
+        const h1 = profile.heightM[i];
+        const h2 = profile.heightM[i + 1];
+
+        if (h1 <= heightMSL && h2 >= heightMSL) {
+          // Linear interpolation
+          const t1 = profile.tempC[i];
+          const t2 = profile.tempC[i + 1];
+          const fraction = (heightMSL - h1) / (h2 - h1);
+          return t1 + fraction * (t2 - t1);
+        }
+      }
+      return undefined;
+    };
+
     // Draw height AGL lines
     const heightLevels = [
       { height: 0, label: 'Surface', color: heightColors.surface },
@@ -158,13 +176,23 @@ const Sounding: React.FC<SoundingProps> = ({
       { height: 12000, label: '12km', color: heightColors['12km'] },
     ];
 
+    // Calculate temperatures at each height level for lapse rate computation
+    const heightTemps: Array<{
+      height: number;
+      temp: number | undefined;
+      pressure: number | undefined;
+      y: number | undefined;
+    }> = [];
+
     heightLevels.forEach(({ height, label, color }) => {
       const targetHeightMSL = surfaceHeight + height;
       const pressure = getPressureForHeight(profile, targetHeightMSL);
+      const temp = getTemperatureAtHeight(targetHeightMSL);
+      const y = pressure !== undefined ? yScale(pressure) : undefined;
 
-      if (pressure !== undefined) {
-        const y = yScale(pressure);
+      heightTemps.push({ height, temp, pressure, y });
 
+      if (pressure !== undefined && y !== undefined) {
         g.append('line')
           .attr('x1', 0)
           .attr('x2', chartWidth)
@@ -184,6 +212,96 @@ const Sounding: React.FC<SoundingProps> = ({
           .text(label);
       }
     });
+
+    // Draw LCL level if available
+    if (parcel?.lcl) {
+      const lclPressure = parcel.lcl.pressureHPa;
+      const lclTempC = parcel.lcl.tempC;
+
+      // Find height MSL for LCL pressure by interpolation
+      let lclHeightMSL: number | undefined;
+      for (let i = 0; i < profile.pressureHPa.length - 1; i++) {
+        const p1 = profile.pressureHPa[i];
+        const p2 = profile.pressureHPa[i + 1];
+
+        // Pressure decreases with height, so p1 > p2
+        if (
+          (p1 >= lclPressure && p2 <= lclPressure) ||
+          (p1 <= lclPressure && p2 >= lclPressure)
+        ) {
+          const h1 = profile.heightM[i];
+          const h2 = profile.heightM[i + 1];
+          const t = (lclPressure - p1) / (p2 - p1);
+          lclHeightMSL = h1 + t * (h2 - h1);
+          break;
+        }
+      }
+
+      if (lclHeightMSL !== undefined) {
+        const lclHeightAGL = lclHeightMSL - surfaceHeight;
+        const lclY = yScale(lclPressure);
+        const barStartX = skewX(lclTempC + 5, lclPressure);
+        const barEndX = skewX(lclTempC + 8, lclPressure);
+        g.append('line')
+          .attr('x1', barStartX)
+          .attr('x2', barEndX)
+          .attr('y1', lclY)
+          .attr('y2', lclY)
+          .attr('stroke', 'green')
+          .attr('stroke-width', 2);
+        g.append('text')
+          .attr('x', barEndX + 10)
+          .attr('y', lclY + 4)
+          .attr('font-size', '11px')
+          .attr('fill', 'green')
+          .attr('font-weight', 'bold')
+          .text(`${(lclHeightAGL / 1000).toFixed(1)} km`);
+      }
+    }
+
+    // Calculate and display lapse rates every 500m on the right side
+    const lapseRateHeights: number[] = [];
+    for (let h = 0; h <= 12000; h += 500) {
+      lapseRateHeights.push(h);
+    }
+
+    for (let i = 0; i < lapseRateHeights.length - 1; i++) {
+      const lowerHeightAGL = lapseRateHeights[i];
+      const upperHeightAGL = lapseRateHeights[i + 1];
+
+      const lowerHeightMSL = surfaceHeight + lowerHeightAGL;
+      const upperHeightMSL = surfaceHeight + upperHeightAGL;
+
+      const lowerPressure = getPressureForHeight(profile, lowerHeightMSL);
+      const upperPressure = getPressureForHeight(profile, upperHeightMSL);
+      const lowerTemp = getTemperatureAtHeight(lowerHeightMSL);
+      const upperTemp = getTemperatureAtHeight(upperHeightMSL);
+
+      if (
+        lowerTemp !== undefined &&
+        upperTemp !== undefined &&
+        lowerPressure !== undefined &&
+        upperPressure !== undefined
+      ) {
+        const heightDiffKm = (upperHeightAGL - lowerHeightAGL) / 1000;
+        const tempDiff = lowerTemp - upperTemp; // temp decrease with height
+        const lapseRate = tempDiff / heightDiffKm; // C/km
+
+        const lowerY = yScale(lowerPressure);
+        const upperY = yScale(upperPressure);
+        const midY = (lowerY + upperY) / 2;
+
+        g.append('text')
+          .attr('x', chartWidth - 5)
+          .attr('y', midY + 4)
+          .attr('font-size', '11px')
+          .attr('fill', '#888888')
+          .attr('opacity', 0.7)
+          .attr('text-anchor', 'end')
+          .attr('font-weight', 'normal')
+          .text(lapseRate.toFixed(1));
+      }
+    }
 
     if (detailed && profile.omega?.length) {
       const omegaScale = d3.scaleLinear().range([0, chartWidth * 0.005]);
@@ -276,7 +394,7 @@ const Sounding: React.FC<SoundingProps> = ({
         .datum(parcel.tempC)
         .attr('class', 'parcel-profile')
         .attr('d', parcelLine)
-        .attr('stroke', 'black')
+        .attr('stroke', darkMode ? 'white' : 'black')
         .attr('opacity', 0.25)
         .attr('stroke-width', 1)
         .attr('stroke-dasharray', '5,3')

@@ -176,7 +176,6 @@ const Sounding: React.FC<SoundingProps> = ({
       { height: 12000, label: '12km', color: heightColors['12km'] },
     ];
 
-    // Calculate temperatures at each height level for lapse rate computation
     const heightTemps: Array<{
       height: number;
       temp: number | undefined;
@@ -241,7 +240,7 @@ const Sounding: React.FC<SoundingProps> = ({
         const lclHeightAGL = lclHeightMSL - surfaceHeight;
         const lclY = yScale(lclPressure);
         const barStartX = skewX(lclTempC + 5, lclPressure);
-        const barEndX = skewX(lclTempC + 8, lclPressure);
+        const barEndX = skewX(lclTempC + 9, lclPressure);
         g.append('line')
           .attr('x1', barStartX)
           .attr('x2', barEndX)
@@ -250,7 +249,7 @@ const Sounding: React.FC<SoundingProps> = ({
           .attr('stroke', 'green')
           .attr('stroke-width', 2);
         g.append('text')
-          .attr('x', barEndX + 10)
+          .attr('x', barEndX + 5)
           .attr('y', lclY + 4)
           .attr('font-size', '11px')
           .attr('fill', 'green')
@@ -259,9 +258,30 @@ const Sounding: React.FC<SoundingProps> = ({
       }
     }
 
+    // Helper function to calculate moist adiabatic lapse rate (°C/km)
+    const calculateMoistAdiabaticLapseRate = (
+      tempC: number,
+      pressureHPa: number,
+    ): number => {
+      const g = 9.8; // m/s^2
+      const Cp = 1004; // J/(kg*K)
+      const Lv = 2.5e6; // J/kg
+      const Rd = 287; // J/(kg*K)
+      const epsilon = 0.622;
+
+      const tempK = tempC + 273.15;
+      const es = saturationVaporPressure(tempC);
+      const ws = mixingRatio(pressureHPa, es) / 1000; // Convert g/kg to kg/kg
+
+      const numerator = g * (1 + (Lv * ws) / (Rd * tempK));
+      const denominator = Cp + (Lv * Lv * ws * epsilon) / (Rd * tempK * tempK);
+
+      return (numerator / denominator) * 1000; // Convert K/m to °C/km
+    };
+
     // Calculate and display lapse rates every 500m on the right side
     const lapseRateHeights: number[] = [];
-    for (let h = 0; h <= 12000; h += 500) {
+    for (let h = 0; h <= 6000; h += 500) {
       lapseRateHeights.push(h);
     }
 
@@ -287,16 +307,35 @@ const Sounding: React.FC<SoundingProps> = ({
         const tempDiff = lowerTemp - upperTemp; // temp decrease with height
         const lapseRate = tempDiff / heightDiffKm; // C/km
 
+        // Calculate moist adiabatic lapse rate at the mid-level
+        const midTemp = (lowerTemp + upperTemp) / 2;
+        const midPressure = (lowerPressure + upperPressure) / 2;
+        const moistAdiabaticLapseRate = calculateMoistAdiabaticLapseRate(
+          midTemp,
+          midPressure,
+        );
+
         const lowerY = yScale(lowerPressure);
         const upperY = yScale(upperPressure);
         const midY = (lowerY + upperY) / 2;
 
+        const lapseRateColor =
+          lapseRate < moistAdiabaticLapseRate
+            ? heightColors['12km']
+            : lapseRate > 9
+              ? heightColors['1km']
+              : lapseRate > 8
+                ? heightColors['3km']
+                : lapseRate > 7
+                  ? heightColors['9km']
+                  : '#888888';
+
         g.append('text')
-          .attr('x', chartWidth - 5)
+          .attr('x', chartWidth + 18)
           .attr('y', midY + 4)
-          .attr('font-size', '11px')
-          .attr('fill', '#888888')
-          .attr('opacity', 0.7)
+          .attr('font-size', '10px')
+          .attr('fill', lapseRateColor)
+          .attr('opacity', 0.5)
           .attr('text-anchor', 'end')
           .attr('font-weight', 'normal')
           .text(lapseRate.toFixed(1));

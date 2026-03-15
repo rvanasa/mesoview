@@ -9,6 +9,7 @@ import {
   virtualTemperature,
 } from '../utils/parcel';
 import { getPressureForHeight, Profile } from '../utils/profile';
+import { useSessionStorage } from 'usehooks-ts';
 
 interface SoundingProps {
   profile: Profile | undefined;
@@ -26,6 +27,7 @@ const Sounding: React.FC<SoundingProps> = ({
   const svgRef = useRef<SVGSVGElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const [width, setWidth] = useState(600);
+  const [zoomed, setZoomed] = useSessionStorage('mesoview.soundingZoom', false);
   const height = width * aspectRatio;
 
   const parcel = useMemo(
@@ -58,6 +60,7 @@ const Sounding: React.FC<SoundingProps> = ({
       .attr('height', height)
       .attr('fill', darkMode ? '#000000' : '#ffffff');
 
+    // Increase right margin in zoomed mode to accommodate more lapse rate text
     const margin = { top: 20, right: 55, bottom: 45, left: 55 };
     const chartWidth = width - margin.left - margin.right;
     const chartHeight = height - margin.top - margin.bottom;
@@ -89,17 +92,16 @@ const Sounding: React.FC<SoundingProps> = ({
     const surfaceHeight = profile.heightM[0];
 
     // Pressure scale (vertical, logarithmic)
-    const pressureExtent = d3.extent(profile.pressureHPa) as [number, number];
-    const yScale = d3
-      .scaleLog()
-      .domain([1000, 100]) // Standard pressure range for soundings
-      .range([chartHeight, 0]);
+    // For 0-6km zoom, calculate the pressure at 6km AGL
+    const pressureDomain: [number, number] = [1000, zoomed ? 500 : 100];
 
-    // Temperature scale (horizontal, skewed) - fixed range -40C to 40C
-    const xScale = d3.scaleLinear().domain([-40, 40]).range([0, chartWidth]);
+    const yScale = d3.scaleLog().domain(pressureDomain).range([chartHeight, 0]);
+
+    const tempRange: [number, number] = [-40, 40];
+    const xScale = d3.scaleLinear().domain(tempRange).range([0, chartWidth]);
 
     // Skew function for temperature lines
-    const skewFactor = 1.5; // Controls the skew amount
+    const skewFactor = zoomed ? 0 : 1.5; // Controls the skew amount
     const skewScaling = chartWidth * 0.2; // Scale skew based on chart width
     const skewX = (temp: number, pressure: number) => {
       const logP = Math.log(pressure);
@@ -109,7 +111,7 @@ const Sounding: React.FC<SoundingProps> = ({
 
     // Draw pressure grid lines (horizontal)
     const pressureLevels = [
-      100, 150, 200, 250, 300, 400, 500, 600, 700, 850, 925, 1000,
+      100, 150, 200, 250, 300, 400, 500, 600, 700, 850, 1000,
     ];
     // g.selectAll('.pressure-line')
     //   .data(
@@ -166,7 +168,6 @@ const Sounding: React.FC<SoundingProps> = ({
       return undefined;
     };
 
-    // Draw height AGL lines
     const heightLevels = [
       { height: 0, label: 'Surface', color: heightColors.surface },
       { height: 1000, label: '1km', color: heightColors['1km'] },
@@ -279,9 +280,10 @@ const Sounding: React.FC<SoundingProps> = ({
       return (numerator / denominator) * 1000; // Convert K/m to °C/km
     };
 
-    // Calculate and display lapse rates every 500m on the right side
+    // Calculate and display lapse rates
+    const lapseRateInterval = zoomed ? 250 : 500;
     const lapseRateHeights: number[] = [];
-    for (let h = 0; h <= 6000; h += 500) {
+    for (let h = 0; h <= 6000; h += lapseRateInterval) {
       lapseRateHeights.push(h);
     }
 
@@ -330,6 +332,7 @@ const Sounding: React.FC<SoundingProps> = ({
                   ? heightColors['9km']
                   : '#888888';
 
+        // Adjust font size and spacing for zoomed view
         g.append('text')
           .attr('x', chartWidth + 18)
           .attr('y', midY + 4)
@@ -440,14 +443,9 @@ const Sounding: React.FC<SoundingProps> = ({
         .attr('fill', 'none');
     }
 
-    // Add axes
     const yAxis = d3
       .axisLeft(yScale)
-      .tickValues(
-        pressureLevels.filter(
-          (p) => p >= pressureExtent[0] && p <= pressureExtent[1],
-        ),
-      )
+      .tickValues(pressureLevels)
       .tickFormat((d) => `${d}`);
 
     const yAxisGroup = g.append('g').attr('class', 'y-axis').call(yAxis);
@@ -594,9 +592,10 @@ const Sounding: React.FC<SoundingProps> = ({
     }
 
     // Draw hodograph in top right
-    const hodoSize = Math.min(chartWidth * 0.4, 200);
+    // Make smaller in zoomed mode to provide more space for main chart
+    const hodoSize = Math.min(chartWidth * (zoomed ? 0.3 : 0.4), 200);
     const hodoMargin = 0;
-    const hodoX = chartWidth - hodoSize - hodoMargin;
+    const hodoX = chartWidth - hodoSize - hodoMargin - (zoomed ? 10 : 0);
     const hodoY = hodoMargin;
 
     const hodoG = g
@@ -604,7 +603,7 @@ const Sounding: React.FC<SoundingProps> = ({
       .attr('transform', `translate(${hodoX},${hodoY})`);
 
     // Find max wind speed for scaling
-    const maxWindKt = 60;
+    const maxWindKt = zoomed ? 20 : 60;
     const windScale = Math.max(maxWindKt, 30); // At least 30kt scale for better spacing
 
     const center = hodoSize / 2;
@@ -634,7 +633,7 @@ const Sounding: React.FC<SoundingProps> = ({
         .attr('stroke-width', 0.5)
         .attr('stroke-dasharray', '2,2');
 
-      if (i % 2 === 1) {
+      if (zoomed || i % 2 === 1) {
         // Add speed label
         hodoG
           .append('text')
@@ -667,9 +666,10 @@ const Sounding: React.FC<SoundingProps> = ({
       .attr('stroke-width', 0.5);
 
     // Draw hodograph as colored segments
+    const maxHodoHeight = 12000;
     for (let i = 0; i < profile.pressureHPa.length - 1; i++) {
       const heightAGL = profile.heightM[i] - surfaceHeight;
-      if (heightAGL >= 12000) continue;
+      if (heightAGL >= maxHodoHeight) continue;
 
       const color = getColorForHeight(heightAGL);
       const x1 = center + (profile.uKt[i] / windScale) * (hodoSize / 2);
@@ -687,7 +687,7 @@ const Sounding: React.FC<SoundingProps> = ({
         .attr('stroke-width', 2.5)
         .attr('stroke-linecap', 'round');
     }
-  }, [width, height, profile, parcel, detailed, darkMode]);
+  }, [width, height, profile, parcel, detailed, darkMode, zoomed]);
 
   if (!profile || !profile.tempC?.length) {
     return (
@@ -702,6 +702,7 @@ const Sounding: React.FC<SoundingProps> = ({
       ref={containerRef}
       tw="p-4 rounded shadow w-full"
       style={{ backgroundColor: darkMode ? '#1f2937' : '#ffffff' }}
+      onClick={() => setZoomed(!zoomed)}
     >
       <svg
         ref={svgRef}

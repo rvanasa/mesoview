@@ -24,7 +24,7 @@ export default function Dropdown({ label, anchor, children }: DropdownProps) {
           <MenuItem
             key={i}
             as="div"
-            tw="cursor-pointer px-4 py-2 select-none hover:bg-[#0001] dark:hover:bg-gray-700 dark:text-white [transition-duration: .1s]"
+            tw="cursor-pointer [&>*]:(px-4 py-2) select-none hover:bg-[#0001] dark:hover:bg-gray-700 dark:text-white [transition-duration: .1s]"
           >
             {item}
           </MenuItem>

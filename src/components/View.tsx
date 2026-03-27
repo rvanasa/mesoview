@@ -25,7 +25,7 @@ import spliced from '../utils/spliced';
 import BufkitSounding from './BufkitSounding';
 import Dropdown from './Dropdown';
 import MesoanalysisImage from './MesoanalysisImage';
-import ViewDropdown from './ParamDropdown';
+import ViewDropdown from './ViewDropdown';
 import PivotalImage from './PivotalImage';
 import SurfaceAnalysisImage from './SurfaceAnalysisImage';
 import { ToolButton } from './ToolButton';

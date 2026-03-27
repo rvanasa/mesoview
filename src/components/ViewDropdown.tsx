@@ -37,16 +37,6 @@ export default function ViewDropdown({
         <div
           key={i}
           onClick={key ? () => onSelect(key) : undefined}
-          style={
-            !key
-              ? {
-                  fontWeight: 'bold',
-                  cursor: 'default',
-                  paddingTop: '8px',
-                  borderTop: '1px solid #ccc',
-                }
-              : undefined
-          }
         >
           {title}
         </div>

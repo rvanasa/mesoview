@@ -6,6 +6,7 @@ import {
   FaArrowUp,
   FaLayerGroup,
   FaTimes,
+  FaMapMarkerAlt,
 } from 'react-icons/fa';
 import 'twin.macro';
 import { wpcSectorMap } from '../utils/mesoanalysis';
@@ -15,14 +16,12 @@ import {
   getRegionFromSpcSector,
   pivotalParamMap,
 } from '../utils/pivotal';
-import {
-  ForecastModel,
-  soundingModels,
-  soundingStations,
-} from '../utils/profile';
+import { ForecastModel, soundingModels } from '../utils/profile';
+import { haversine } from '../utils/haversine';
 import { canCombine, parseView } from '../utils/source';
 import spliced from '../utils/spliced';
 import BufkitSounding from './BufkitSounding';
+import StationMap from './StationMap';
 import Dropdown from './Dropdown';
 import MesoanalysisImage from './MesoanalysisImage';
 import ViewDropdown from './ViewDropdown';
@@ -82,7 +81,7 @@ export default function View({
       : null;
   const soundingModel =
     (soundingMatch?.[1] as ForecastModel | undefined) || 'rap';
-  const soundingStation = soundingMatch?.[2] || 'kcef';
+  const soundingStation = soundingMatch?.[2];
 
   // Parse pivotal params: format is "model1-param1 model2-param2 model3-param3"
   // e.g., "hrrr-sfctd" or "hrrr-sfctd nam-refcmp"
@@ -121,6 +120,8 @@ export default function View({
       });
     }
   }, [source.key, primaryPivotalModel]);
+
+  
 
   return (
     <div>
@@ -173,35 +174,26 @@ export default function View({
                   </div>
                 ))}
               </Dropdown>
-              <Dropdown
-                label={
-                  <div tw="text-left min-w-[3rem]">
-                    {soundingStations.find((s) => s.key === soundingStation)
-                      ?.label ||
-                      soundingStation?.toUpperCase() ||
-                      'Station'}
-                  </div>
-                }
-                anchor="bottom"
-              >
-                {soundingStations.map((station) => (
-                  <div
-                    key={station.key}
-                    onClick={() =>
-                      setViews(
-                        spliced(
-                          views,
-                          i,
-                          1,
-                          `sounding-${soundingModel}-${station.key}`,
-                        ),
-                      )
-                    }
-                  >
-                    {station.label}
-                  </div>
-                ))}
-              </Dropdown>
+              {/* Remove the large station dropdown when no station is selected.
+                  When a specific sounding is selected, show a small button
+                  to open map selection instead. */}
+              {soundingStation ? (
+                <ToolButton
+                  onClick={() =>
+                    setViews(
+                      spliced(
+                        views,
+                        i,
+                        1,
+                        `sounding-${soundingModel}-`,
+                      ),
+                    )
+                  }
+                  title="Select on map"
+                >
+                  <FaMapMarkerAlt />
+                </ToolButton>
+              ) : null}
             </>
           )}
           {source.key === 'pivotal' && (
@@ -359,14 +351,30 @@ export default function View({
           )}
         </div>
       </div>
-      {source.key === 'sounding' && soundingModel && soundingStation ? (
-        <BufkitSounding
-          model={soundingModel}
-          station={soundingStation}
-          date={date}
-          detailed={detailedSoundings}
-          darkMode={darkMode}
-        />
+      {source.key === 'sounding' ? (
+        soundingModel && soundingStation ? (
+          <BufkitSounding
+            model={soundingModel}
+            station={soundingStation}
+            date={date}
+            detailed={detailedSoundings}
+            darkMode={darkMode}
+          />
+        ) : (
+          <StationMap
+            darkMode={darkMode}
+            onSelectStation={(srcid) =>
+              setViews(
+                spliced(
+                  views,
+                  i,
+                  1,
+                  `sounding-${soundingModel || 'rap'}-${srcid}`,
+                ),
+              )
+            }
+          />
+        )
       ) : source.key === 'surface' ? (
         <SurfaceAnalysisImage
           wpcSector={wpcSectorMap.get(sectorNumber) || 'us'}

@@ -49,7 +49,7 @@ export default function ViewDropdown({
 
     // Determine initial path based on current view
     let path: number[] = [];
-    
+
     if (view?.source.key === 'pivotal' && view.param) {
       // Parse pivotal param to get model and param
       const parts = view.param.split('-', 2);
@@ -57,7 +57,7 @@ export default function ViewDropdown({
         const [modelId, paramId] = parts;
         const modelIndex = pivotalModels.findIndex((m) => m.id === modelId);
         const paramIndex = pivotalParams.findIndex(([key]) => key === paramId);
-        
+
         if (modelIndex !== -1) {
           if (paramIndex !== -1) {
             // Start in the specific model's param list

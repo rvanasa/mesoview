@@ -32,7 +32,7 @@ import Calendar from './Calendar';
 import Card from './Card';
 import Dropdown from './Dropdown';
 import NumberInput from './NumberInput';
-import ViewDropdown from './ParamDropdown';
+import ViewDropdown from './ViewDropdown';
 import View from './View';
 
 const defaultMesoSector = 13; // Central U.S.

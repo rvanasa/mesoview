@@ -1,7 +1,7 @@
 import { ReactNode, useMemo } from 'react';
 import { spcMesoanalysisParams } from '../utils/mesoanalysis';
 import { pivotalModels, pivotalParams } from '../utils/pivotal';
-import { ParsedView, parseView } from '../utils/source';
+import { ParsedView, formatFavoriteLabel } from '../utils/source';
 import MultiStepDropdown, { MultiStepItem } from './MultiStepDropdown';
 import { useFavorites } from '../contexts/FavoritesContext';
 import {
@@ -82,7 +82,7 @@ export default function ViewDropdown({
       for (const fav of uniqueFavs) {
         menuItems.push({
           id: `fav-${fav}`,
-          label: parseView(fav).name || fav,
+          label: formatFavoriteLabel(fav),
           icon: <FaStar />,
           onClick: () => onSelect(fav),
         });

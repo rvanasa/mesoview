@@ -4,6 +4,7 @@ import {
   FaAngleDoubleUp,
   FaArrowDown,
   FaArrowUp,
+  FaEllipsisV,
   FaLayerGroup,
   FaTimes,
   FaMapMarkerAlt,
@@ -298,64 +299,103 @@ export default function View({
             );
           })()}
         <div tw="flex space-x-2">
-          <ToolButton
-            title={favorited ? 'Unfavorite' : 'Add favorite'}
-            onClick={() => toggleFavorite(view)}
-          >
-            {favorited ? <FaStar tw="text-yellow-500" /> : <FaRegStar />}
-          </ToolButton>
-          {source.combinable && view.includes(' ') && (
-            <ToolButton
-              onClick={() => {
-                const parts = view.split(' ');
-                const expandedViews = parts.map((part, idx) =>
-                  idx === 0 ? part : `${source.key}-${part}`,
-                );
-                setViews(spliced(views, i, 1, ...expandedViews));
-              }}
-            >
-              <FaLayerGroup />
-            </ToolButton>
-          )}
-          {i > 0 && canCombine(views[i - 1], views[i]) && (
-            <ToolButton
-              onClick={() =>
-                setViews(
-                  spliced(
-                    views,
-                    i - 1,
-                    2,
-                    `${views[i - 1]} ${parseView(views[i]).param}`,
-                  ),
-                )
-              }
-            >
-              <FaAngleDoubleUp />
-            </ToolButton>
-          )}
-          {i > 0 && (
-            <ToolButton
-              onClick={() =>
-                setViews(spliced(views, i - 1, 2, views[i], views[i - 1]))
-              }
-            >
-              <FaArrowUp />
-            </ToolButton>
-          )}
-          {i < views.length - 1 && (
-            <ToolButton
-              onClick={() =>
-                setViews(spliced(views, i, 2, views[i + 1], views[i]))
-              }
-            >
-              <FaArrowDown />
-            </ToolButton>
-          )}
-          {views.length > 1 && (
-            <ToolButton onClick={() => setViews(spliced(views, i, 1))}>
-              <FaTimes tw="text-red-700 dark:text-red-400" />
-            </ToolButton>
-          )}
+          {(() => {
+            const items = [
+              (
+                <div
+                  key="favorite"
+                  tw="flex items-center gap-3 whitespace-nowrap"
+                  onClick={() => toggleFavorite(view)}
+                >
+                  {favorited ? (
+                    <FaStar tw="text-yellow-500" />
+                  ) : (
+                    <FaRegStar />
+                  )}
+                  <div>{favorited ? 'Remove from Favorites' : 'Favorite'}</div>
+                </div>
+              ),
+              i > 0 && canCombine(views[i - 1], views[i]) && (
+                <div
+                  key="stack"
+                  tw="flex items-center gap-3"
+                  onClick={() =>
+                    setViews(
+                      spliced(
+                        views,
+                        i - 1,
+                        2,
+                        `${views[i - 1]} ${parseView(views[i]).param}`,
+                      ),
+                    )
+                  }
+                >
+                  <FaAngleDoubleUp />
+                  <div>Stack with Above</div>
+                </div>
+              ),
+              source.combinable && view.includes(' ') && (
+                <div
+                  key="unstack"
+                  tw="flex items-center gap-3"
+                  onClick={() => {
+                    const parts = view.split(' ');
+                    const expandedViews = parts.map((part, idx) =>
+                      idx === 0 ? part : `${source.key}-${part}`,
+                    );
+                    setViews(spliced(views, i, 1, ...expandedViews));
+                  }}
+                >
+                  <FaLayerGroup />
+                  <div>Unstack</div>
+                </div>
+              ),
+              i > 0 && (
+                <div
+                  key="move-up"
+                  tw="flex items-center gap-3"
+                  onClick={() =>
+                    setViews(spliced(views, i - 1, 2, views[i], views[i - 1]))
+                  }
+                >
+                  <FaArrowUp />
+                  <div>Move Up</div>
+                </div>
+              ),
+              i < views.length - 1 && (
+                <div
+                  key="move-down"
+                  tw="flex items-center gap-3"
+                  onClick={() =>
+                    setViews(spliced(views, i, 2, views[i + 1], views[i]))
+                  }
+                >
+                  <FaArrowDown />
+                  <div>Move Down</div>
+                </div>
+              ),
+              views.length > 1 && (
+                <div
+                  key="remove"
+                  tw="flex items-center gap-3"
+                  onClick={() => setViews(spliced(views, i, 1))}
+                >
+                  <FaTimes tw="text-red-700 dark:text-red-400" />
+                  <div>Remove</div>
+                </div>
+              ),
+            ].filter(Boolean);
+
+            return (
+              <Dropdown
+                label={<div tw="px-2 py-1 [font-size:11px]"><FaEllipsisV /></div>}
+                anchor="bottom"
+                noCaret
+              >
+                {items}
+              </Dropdown>
+            );
+          })()}
         </div>
       </div>
       {source.key === 'sounding' ? (

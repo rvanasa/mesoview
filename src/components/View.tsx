@@ -300,21 +300,13 @@ export default function View({
           })()}
         <div tw="flex space-x-2">
           {(() => {
+            const viewParts = view.split(' ').filter((p) => p);
+            const overlayCount =
+              source.combinable && viewParts.length > 1
+                ? viewParts.length - 1
+                : 0;
+
             const items = [
-              (
-                <div
-                  key="favorite"
-                  tw="flex items-center gap-3 whitespace-nowrap"
-                  onClick={() => toggleFavorite(view)}
-                >
-                  {favorited ? (
-                    <FaStar tw="text-yellow-500" />
-                  ) : (
-                    <FaRegStar />
-                  )}
-                  <div>{favorited ? 'Remove from Favorites' : 'Favorite'}</div>
-                </div>
-              ),
               i > 0 && canCombine(views[i - 1], views[i]) && (
                 <div
                   key="stack"
@@ -374,6 +366,20 @@ export default function View({
                   <div>Move Down</div>
                 </div>
               ),
+              (
+                <div
+                  key="favorite"
+                  tw="flex items-center gap-3"
+                  onClick={() => toggleFavorite(view)}
+                >
+                  {favorited ? (
+                    <FaRegStar tw="text-yellow-500" />
+                  ) : (
+                    <FaRegStar />
+                  )}
+                  <div>{favorited ? 'Unfavorite' : 'Favorite'}</div>
+                </div>
+              ),
               views.length > 1 && (
                 <div
                   key="remove"
@@ -388,7 +394,14 @@ export default function View({
 
             return (
               <Dropdown
-                label={<div tw="px-2 py-1 [font-size:11px]"><FaEllipsisV /></div>}
+                label={
+                  <div tw="flex items-center gap-2 px-2 py-1">
+                    {overlayCount > 0 && (
+                      <span tw="ml-1 text-sm text-gray-600 dark:text-gray-300 opacity-80">+{overlayCount}</span>
+                    )}
+                    <FaEllipsisV />
+                  </div>
+                }
                 anchor="bottom"
                 noCaret
               >

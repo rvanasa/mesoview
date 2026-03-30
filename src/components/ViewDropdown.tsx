@@ -1,5 +1,5 @@
 import { ReactNode, useMemo } from 'react';
-import { mesoParams } from '../utils/mesoanalysis';
+import { spcMesoanalysisParams } from '../utils/mesoanalysis';
 import { pivotalModels, pivotalParams } from '../utils/pivotal';
 import { ParsedView } from '../utils/source';
 import MultiStepDropdown, { MultiStepItem } from './MultiStepDropdown';
@@ -33,25 +33,28 @@ export default function ViewDropdown({
     // Build menu structure
     const menuItems: MultiStepItem[] = [
       {
-        label: 'Sounding',
-        onClick: () => onSelect('sounding'),
+        label: 'SPC Mesoanalysis',
+        submenu: spcMesoanalysisParams.map(([category, params]) => ({
+          label: category,
+          submenu: params.map(([paramKey, paramTitle]) => ({
+            label: paramTitle,
+            onClick: () => onSelect(`spc-${paramKey}`),
+          })),
+        })),
       },
       {
         label: 'Surface Analysis',
         onClick: () => onSelect('surface'),
       },
       {
+        label: 'Sounding',
+        onClick: () => onSelect('sounding'),
+      },
+      {
         label: 'Pivotal Weather',
         submenu: pivotalModels.map((model) => ({
           label: model.name,
           onClick: () => onSelect(`pivotal-${model.id}-${currentParam}`),
-        })),
-      },
-      {
-        label: 'SPC Mesoanalysis',
-        submenu: mesoParams.map(([paramKey, paramTitle]) => ({
-          label: paramTitle,
-          onClick: () => onSelect(`spc-${paramKey}`),
         })),
       },
     ];

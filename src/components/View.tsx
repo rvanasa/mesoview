@@ -175,23 +175,18 @@ export default function View({
                   </div>
                 ))}
               </Dropdown>
-              {/* Remove the large station dropdown when no station is selected.
-                  When a specific sounding is selected, show a small button
-                  to open map selection instead. */}
               {soundingStation ? (
-                <>
-                  <span tw="min-w-[50px]">{soundingStation.toUpperCase()}</span>
-                  <ToolButton
-                    onClick={() =>
-                      setViews(
-                        spliced(views, i, 1, `sounding-${soundingModel}-`),
-                      )
-                    }
-                    title="Select on map"
-                  >
+                <div
+                  tw="flex cursor-pointer"
+                  onClick={() =>
+                    setViews(spliced(views, i, 1, `sounding-${soundingModel}-`))
+                  }
+                >
+                  <span tw="min-w-[60px]">{soundingStation.toUpperCase()}</span>
+                  <ToolButton title="Select on map">
                     <FaMapMarkerAlt />
                   </ToolButton>
-                </>
+                </div>
               ) : null}
             </>
           )}

@@ -107,7 +107,7 @@ export default function MultiStepDropdown({
               item.isHeader ? (
                 <div
                   key={`header-${i}`}
-                  tw="px-4 py-2 select-none text-sm font-semibold text-gray-500 dark:text-gray-300"
+                  tw="px-4 py-2 select-none text-sm font-semibold text-gray-400 dark:text-gray-500"
                 >
                   {item.label}
                 </div>
@@ -131,7 +131,7 @@ export default function MultiStepDropdown({
                 >
                   <div tw="flex items-center gap-3">
                     {item.icon ? (
-                      <span tw="w-4 h-4 flex items-center justify-center">{item.icon}</span>
+                      <span tw="w-4 h-4 flex items-center justify-center text-gray-400 dark:text-gray-500">{item.icon}</span>
                     ) : null}
                     <span>{item.label}</span>
                   </div>

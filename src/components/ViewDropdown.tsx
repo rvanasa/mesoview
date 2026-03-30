@@ -40,7 +40,6 @@ export default function ViewDropdown({
       }
     }
 
-    // Build menu structure with optional icons and ids
     const menuItems: MultiStepItem[] = [
       {
         id: 'spc',
@@ -92,13 +91,13 @@ export default function ViewDropdown({
 
     let path: number[] = [];
 
-    if (view?.source.key === 'pivotal') {
-      const idx = menuItems.findIndex((it) => it.id === 'pivotal');
-      path = idx >= 0 ? [idx] : [];
-    } else if (view?.source.key === 'spc') {
-      const idx = menuItems.findIndex((it) => it.id === 'spc');
-      path = idx >= 0 ? [idx] : [];
-    }
+    // if (view?.source.key === 'pivotal') {
+    //   const idx = menuItems.findIndex((it) => it.id === 'pivotal');
+    //   path = idx >= 0 ? [idx] : [];
+    // } else if (view?.source.key === 'spc') {
+    //   const idx = menuItems.findIndex((it) => it.id === 'spc');
+    //   path = idx >= 0 ? [idx] : [];
+    // }
 
     return { items: menuItems, initialPath: path };
   }, [view, onSelect, favorites]);

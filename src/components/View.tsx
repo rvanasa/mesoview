@@ -16,8 +16,11 @@ import {
   getRegionFromSpcSector,
   pivotalParamMap,
 } from '../utils/pivotal';
-import { ForecastModel, soundingModels } from '../utils/profile';
-import { haversine } from '../utils/haversine';
+import {
+  ForecastModel,
+  getSoundingStations,
+  soundingModels,
+} from '../utils/profile';
 import { canCombine, parseView } from '../utils/source';
 import spliced from '../utils/spliced';
 import BufkitSounding from './BufkitSounding';
@@ -121,8 +124,6 @@ export default function View({
     }
   }, [source.key, primaryPivotalModel]);
 
-  
-
   return (
     <div>
       <div tw="flex items-center justify-between p-2">
@@ -178,21 +179,19 @@ export default function View({
                   When a specific sounding is selected, show a small button
                   to open map selection instead. */}
               {soundingStation ? (
-                <ToolButton
-                  onClick={() =>
-                    setViews(
-                      spliced(
-                        views,
-                        i,
-                        1,
-                        `sounding-${soundingModel}-`,
-                      ),
-                    )
-                  }
-                  title="Select on map"
-                >
-                  <FaMapMarkerAlt />
-                </ToolButton>
+                <>
+                  <span tw="min-w-[50px]">{soundingStation.toUpperCase()}</span>
+                  <ToolButton
+                    onClick={() =>
+                      setViews(
+                        spliced(views, i, 1, `sounding-${soundingModel}-`),
+                      )
+                    }
+                    title="Select on map"
+                  >
+                    <FaMapMarkerAlt />
+                  </ToolButton>
+                </>
               ) : null}
             </>
           )}

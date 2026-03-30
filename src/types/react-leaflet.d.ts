@@ -5,6 +5,7 @@ declare module 'react-leaflet' {
   export const TileLayer: React.ComponentType<any>;
   export const Popup: React.ComponentType<any>;
   export const CircleMarker: React.ComponentType<any>;
+  export function useMapEvents(handlers: any): any;
 
   const _default: any;
   export default _default;

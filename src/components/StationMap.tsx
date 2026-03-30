@@ -1,7 +1,12 @@
-import { MapContainer, TileLayer, Popup, CircleMarker } from 'react-leaflet';
-import L from 'leaflet';
+import {
+  MapContainer,
+  TileLayer,
+  Popup,
+  CircleMarker,
+  useMapEvents,
+} from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, Fragment } from 'react';
 import { useSessionStorage } from 'usehooks-ts';
 import { getSoundingStations } from '../utils/profile';
 
@@ -14,6 +19,25 @@ export interface Station {
   lon: number;
 }
 
+// Component to handle map events and store position
+function MapEventHandler({
+  onMapMove,
+}: {
+  onMapMove: (center: [number, number], zoom: number) => void;
+}) {
+  const map = useMapEvents({
+    moveend: () => {
+      const center = map.getCenter();
+      onMapMove([center.lat, center.lng], map.getZoom());
+    },
+    zoomend: () => {
+      const center = map.getCenter();
+      onMapMove([center.lat, center.lng], map.getZoom());
+    },
+  });
+  return null;
+}
+
 export default function StationMap({
   onSelectStation,
   darkMode,
@@ -23,9 +47,24 @@ export default function StationMap({
 }) {
   const [stations, setStations] = useSessionStorage<Station[]>(
     'mesoview.stations.rap',
-    []
+    [],
   );
   const [loading, setLoading] = useState(stations.length === 0);
+
+  // Store map position per view in sessionStorage
+  const [mapCenter, setMapCenter] = useSessionStorage<[number, number]>(
+    'mesoview.map.sounding.center',
+    [39, -98],
+  );
+  const [mapZoom, setMapZoom] = useSessionStorage<number>(
+    'mesoview.map.sounding.zoom',
+    4,
+  );
+
+  const handleMapMove = (center: [number, number], zoom: number) => {
+    setMapCenter(center);
+    setMapZoom(zoom);
+  };
 
   useEffect(() => {
     if (stations.length > 0) {
@@ -59,13 +98,14 @@ export default function StationMap({
 
   return (
     <MapContainer
-      center={[39, -98]}
-      zoom={4}
+      center={mapCenter}
+      zoom={mapZoom}
       style={{ height: 500, width: '100%', zIndex: 0 }}
       scrollWheelZoom={true}
       preferCanvas={true}
       attributionControl={false}
     >
+      <MapEventHandler onMapMove={handleMapMove} />
       <TileLayer
         url={
           darkMode
@@ -76,31 +116,45 @@ export default function StationMap({
       {stations.map((station) => {
         const name = station.name || station.srcid;
         const radius = 5;
+        const tapRadius = 15; // Larger invisible area for easier tapping
         return (
-          <CircleMarker
-            key={station.srcid}
-            center={[station.lat, station.lon]}
-            radius={radius}
-            pathOptions={{
-              color: darkMode ? '#93c5fd' : '#1d4ed8',
-              fillColor: darkMode ? '#60a5fa' : '#3b82f6',
-              weight: 1,
-              fillOpacity: 0.9,
-            }}
-            eventHandlers={{ click: () => onSelectStation(station.srcid) }}
-          >
-            <Popup>
-              <div>
-                <b>{name}</b>
-                {station.state || station.country ? (
-                  <>
-                    <br />
-                    {station.state} {station.country}
-                  </>
-                ) : null}
-              </div>
-            </Popup>
-          </CircleMarker>
+          <Fragment key={station.srcid}>
+            {/* Invisible larger circle for easier tapping on mobile */}
+            <CircleMarker
+              center={[station.lat, station.lon]}
+              radius={tapRadius}
+              pathOptions={{
+                fillOpacity: 0,
+                opacity: 0,
+                interactive: true,
+              }}
+              eventHandlers={{ click: () => onSelectStation(station.srcid) }}
+            />
+            {/* Visible marker */}
+            <CircleMarker
+              center={[station.lat, station.lon]}
+              radius={radius}
+              pathOptions={{
+                color: darkMode ? '#93c5fd' : '#1d4ed8',
+                fillColor: darkMode ? '#60a5fa' : '#3b82f6',
+                weight: 1,
+                fillOpacity: 0.9,
+              }}
+              eventHandlers={{ click: () => onSelectStation(station.srcid) }}
+            >
+              <Popup>
+                <div>
+                  <b>{name}</b>
+                  {station.state || station.country ? (
+                    <>
+                      <br />
+                      {station.state} {station.country}
+                    </>
+                  ) : null}
+                </div>
+              </Popup>
+            </CircleMarker>
+          </Fragment>
         );
       })}
     </MapContainer>

@@ -1,5 +1,5 @@
 import { Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/react';
-import { ReactNode, useState } from 'react';
+import { ReactNode, useEffect, useRef, useState } from 'react';
 import { FaCaretDown, FaCaretUp, FaChevronLeft } from 'react-icons/fa';
 import 'twin.macro';
 
@@ -26,6 +26,12 @@ export default function MultiStepDropdown({
   initialPath = [],
 }: MultiStepDropdownProps) {
   const [path, setPath] = useState<number[]>(initialPath);
+  const initialPathRef = useRef(initialPath);
+
+  // Update path when initialPath changes (when switching between different views)
+  useEffect(() => {
+    initialPathRef.current = initialPath;
+  }, [initialPath]);
 
   // Navigate to the current menu level based on path
   const getCurrentItems = (): MultiStepItem[] => {
@@ -61,11 +67,16 @@ export default function MultiStepDropdown({
     setPath(path.slice(0, -1));
   };
 
+  const handleMenuOpen = () => {
+    // Reset to initial path when menu opens
+    setPath(initialPathRef.current);
+  };
+
   return (
     <Menu>
       {({ close }) => (
         <>
-          <MenuButton tw="flex items-center gap-2">
+          <MenuButton tw="flex items-center gap-2" onClick={handleMenuOpen}>
             {label}
             {anchor === 'top' ? <FaCaretUp /> : <FaCaretDown />}
           </MenuButton>

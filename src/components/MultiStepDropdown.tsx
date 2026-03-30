@@ -4,11 +4,16 @@ import { FaCaretDown, FaCaretUp, FaChevronLeft } from 'react-icons/fa';
 import 'twin.macro';
 
 export interface MultiStepItem {
+  id?: string;
   label: string;
+  // Optional icon to show next to the label
+  icon?: ReactNode;
   // If submenu is provided, clicking navigates to that submenu
   submenu?: MultiStepItem[];
   // If onClick is provided, clicking triggers the action and closes menu
   onClick?: () => void;
+  // Render as a non-interactive header inside the menu
+  isHeader?: boolean;
 }
 
 export interface MultiStepDropdownProps {
@@ -98,27 +103,41 @@ export default function MultiStepDropdown({
                 Back
               </MenuItem>
             )}
-            {currentItems.map((item, i) => (
-              <MenuItem
-                key={i}
-                as="div"
-                tw="cursor-pointer px-4 py-2 select-none hover:bg-[#0001] dark:hover:bg-gray-700 dark:text-white [transition-duration: .1s]"
-                onClick={(e) => {
-                  if (item.submenu) {
-                    // Prevent menu from closing when navigating to submenu
-                    e.preventDefault();
-                    e.stopPropagation();
-                  }
-                  handleItemClick(item, i);
-                  // Only close if it's an action item (not a submenu)
-                  if (!item.submenu) {
-                    close();
-                  }
-                }}
-              >
-                {item.label}
-              </MenuItem>
-            ))}
+            {currentItems.map((item, i) =>
+              item.isHeader ? (
+                <div
+                  key={`header-${i}`}
+                  tw="px-4 py-2 select-none text-sm font-semibold text-gray-500 dark:text-gray-300"
+                >
+                  {item.label}
+                </div>
+              ) : (
+                <MenuItem
+                  key={i}
+                  as="div"
+                  tw="cursor-pointer px-4 py-2 select-none hover:bg-[#0001] dark:hover:bg-gray-700 dark:text-white [transition-duration: .1s]"
+                  onClick={(e) => {
+                    if (item.submenu) {
+                      // Prevent menu from closing when navigating to submenu
+                      e.preventDefault();
+                      e.stopPropagation();
+                    }
+                    handleItemClick(item, i);
+                    // Only close if it's an action item (not a submenu)
+                    if (!item.submenu) {
+                      close();
+                    }
+                  }}
+                >
+                  <div tw="flex items-center gap-3">
+                    {item.icon ? (
+                      <span tw="w-4 h-4 flex items-center justify-center">{item.icon}</span>
+                    ) : null}
+                    <span>{item.label}</span>
+                  </div>
+                </MenuItem>
+              ),
+            )}
           </MenuItems>
         </>
       )}

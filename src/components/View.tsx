@@ -7,6 +7,8 @@ import {
   FaLayerGroup,
   FaTimes,
   FaMapMarkerAlt,
+  FaStar,
+  FaRegStar,
 } from 'react-icons/fa';
 import 'twin.macro';
 import { wpcSectorMap } from '../utils/mesoanalysis';
@@ -31,6 +33,7 @@ import ViewDropdown from './ViewDropdown';
 import PivotalImage from './PivotalImage';
 import SurfaceAnalysisImage from './SurfaceAnalysisImage';
 import { ToolButton } from './ToolButton';
+import { useFavorites } from '../contexts/FavoritesContext';
 
 export const viewCategories: { param: string; label: string }[][] = [
   [
@@ -107,6 +110,10 @@ export default function View({
   const [modelRunOptions, setModelRunOptions] = useState<
     { date: Date | undefined; label: string }[]
   >([{ date: undefined, label: 'Latest' }]);
+
+  const { favorites, setFavorites, toggleFavorite, isFavorite } =
+    useFavorites();
+  const favorited = isFavorite(view);
 
   // Load available runs when pivotal model changes
   useEffect(() => {
@@ -291,6 +298,12 @@ export default function View({
             );
           })()}
         <div tw="flex space-x-2">
+          <ToolButton
+            title={favorited ? 'Unfavorite' : 'Add favorite'}
+            onClick={() => toggleFavorite(view)}
+          >
+            {favorited ? <FaStar tw="text-yellow-500" /> : <FaRegStar />}
+          </ToolButton>
           {source.combinable && view.includes(' ') && (
             <ToolButton
               onClick={() => {

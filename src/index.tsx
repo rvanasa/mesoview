@@ -6,6 +6,7 @@ import {
   useRouteError,
 } from 'react-router-dom';
 import App from './components/App';
+import { FavoritesProvider } from './contexts/FavoritesContext';
 
 import 'rc-slider/assets/index.css';
 import 'twin.macro';
@@ -33,6 +34,8 @@ const router = createBrowserRouter(
 const root = createRoot(document.getElementById('root')!);
 root.render(
   <React.StrictMode>
-    <RouterProvider router={router} />
+    <FavoritesProvider>
+      <RouterProvider router={router} />
+    </FavoritesProvider>
   </React.StrictMode>,
 );

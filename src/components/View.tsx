@@ -1,12 +1,12 @@
 import Slider from 'rc-slider';
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import {
   FaAngleDoubleUp,
   FaArrowDown,
   FaArrowUp,
   FaLayerGroup,
-  FaTimes,
   FaMapMarkerAlt,
+  FaTimes,
 } from 'react-icons/fa';
 import 'twin.macro';
 import { wpcSectorMap } from '../utils/mesoanalysis';
@@ -18,19 +18,18 @@ import {
 } from '../utils/pivotal';
 import {
   ForecastModel,
-  getSoundingStations,
-  soundingModels,
+  soundingModels
 } from '../utils/profile';
 import { canCombine, parseView } from '../utils/source';
 import spliced from '../utils/spliced';
 import BufkitSounding from './BufkitSounding';
-import StationMap from './StationMap';
 import Dropdown from './Dropdown';
 import MesoanalysisImage from './MesoanalysisImage';
-import ViewDropdown from './ViewDropdown';
 import PivotalImage from './PivotalImage';
+import StationMap from './StationMap';
 import SurfaceAnalysisImage from './SurfaceAnalysisImage';
 import { ToolButton } from './ToolButton';
+import ViewDropdown from './ViewDropdown';
 
 export const viewCategories: { param: string; label: string }[][] = [
   [

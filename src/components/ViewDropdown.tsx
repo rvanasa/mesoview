@@ -1,5 +1,5 @@
 import { ReactNode, useMemo } from 'react';
-import { spcMesoanalysisParams } from '../utils/mesoanalysis';
+import { mesoParamCategories } from '../utils/mesoanalysis';
 import { pivotalModels, pivotalParams } from '../utils/pivotal';
 import { ParsedView } from '../utils/source';
 import MultiStepDropdown, { MultiStepItem } from './MultiStepDropdown';
@@ -30,11 +30,10 @@ export default function ViewDropdown({
       }
     }
 
-    // Build menu structure
     const menuItems: MultiStepItem[] = [
       {
         label: 'SPC Mesoanalysis',
-        submenu: spcMesoanalysisParams.map(([category, params]) => ({
+        submenu: mesoParamCategories.map(([category, params]) => ({
           label: category,
           submenu: params.map(([paramKey, paramTitle]) => ({
             label: paramTitle,

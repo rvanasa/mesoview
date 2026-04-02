@@ -1,6 +1,6 @@
 import { ReactNode, useMemo } from 'react';
 import { mesoParamCategories } from '../utils/mesoanalysis';
-import { pivotalModels, pivotalParams } from '../utils/pivotal';
+import { pivotalModels, pivotalParams, pivotalParamCategories } from '../utils/pivotal';
 import { ParsedView } from '../utils/source';
 import MultiStepDropdown, { MultiStepItem } from './MultiStepDropdown';
 
@@ -53,7 +53,13 @@ export default function ViewDropdown({
         label: 'Pivotal Weather',
         submenu: pivotalModels.map((model) => ({
           label: model.name,
-          onClick: () => onSelect(`pivotal-${model.id}-${currentParam}`),
+          submenu: pivotalParamCategories.map(([category, params]) => ({
+            label: category,
+            submenu: params.map(([paramKey, paramTitle]) => ({
+              label: paramTitle,
+              onClick: () => onSelect(`pivotal-${model.id}-${paramKey}`),
+            })),
+          })),
         })),
       },
     ];

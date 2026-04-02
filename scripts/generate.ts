@@ -2,7 +2,7 @@ import fs from 'fs/promises';
 import path from 'path';
 import { chromium } from 'playwright';
 
-async function scrape() {
+async function scrapeSPC() {
   const url = 'https://www.spc.noaa.gov/exper/mesoanalysis/new/viewsector.php';
   const browser = await chromium.launch();
   const context = await browser.newContext({
@@ -85,14 +85,111 @@ async function scrape() {
   return categories;
 }
 
+async function scrapePivotal() {
+  const url = 'https://www.pivotalweather.com/model.php?m=hrrr&p=sbcape_hodo&r=us_c&dpdt=&mc=';
+  const browser = await chromium.launch();
+  const context = await browser.newContext({
+    viewport: { width: 1200, height: 900 },
+    userAgent:
+      'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.0.0 Safari/537.36',
+  });
+  await context.addInitScript(() => {
+    // hide webdriver flag
+    Object.defineProperty(navigator, 'webdriver', { get: () => false });
+  });
+  const page = await context.newPage();
+
+  // Listen for console messages from the page
+  page.on('console', (msg) => console.log('PAGE LOG:', msg.text()));
+
+  console.log('Navigating to', url);
+  await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 60000 });
+  
+  // Wait for the parameter accordion to be present
+  await page.waitForSelector('#parameter_selection', { timeout: 10000 });
+  await page.waitForTimeout(2000);
+
+  const categories = await page.evaluate(() => {
+    const result: [string, [string, string][]][] = [];
+    
+    // Find the parameter accordion
+    const paramAccordion = document.getElementById('parameter_selection');
+    if (!paramAccordion) {
+      console.log('No parameter_selection found');
+      return result;
+    }
+
+    // Get all accordion headers (categories)
+    const headers = Array.from(paramAccordion.querySelectorAll('h3.ui-accordion-header'));
+    console.log('Found', headers.length, 'accordion headers');
+    
+    for (const header of headers) {
+      const categoryName = (header.textContent || '').trim();
+      // Remove the icon text if present
+      const cleanName = categoryName.replace(/^\s*[\u25B6\u25BC]\s*/, '').trim();
+      
+      console.log('Processing category:', cleanName);
+      
+      // Get the corresponding content div
+      const contentId = header.getAttribute('aria-controls');
+      if (!contentId) continue;
+      
+      const contentDiv = document.getElementById(contentId);
+      if (!contentDiv) continue;
+      
+      const params: [string, string][] = [];
+      
+      // Find all links in the content div
+      const links = Array.from(contentDiv.querySelectorAll('a[href]'));
+      console.log(`Found ${links.length} links in category ${cleanName}`);
+      
+      for (const link of links) {
+        const href = link.getAttribute('href') || '';
+        // Extract parameter from URL like /model.php?m=hrrr&p=sbcape_hodo&...
+        const match = href.match(/[?&]p=([^&]+)/);
+        if (match) {
+          const paramId = match[1];
+          const paramText = (link.textContent || '').trim();
+          if (paramId && paramText) {
+            params.push([paramId, paramText]);
+          }
+        }
+      }
+      
+      console.log(`Category ${cleanName} has ${params.length} params`);
+      if (params.length) {
+        result.push([cleanName, params]);
+      }
+    }
+
+    console.log('Total categories found:', result.length);
+    return result;
+  });
+
+  console.log('Retrieved', categories.length, 'categories from Pivotal Weather');
+
+  await browser.close();
+  return categories;
+}
+
 async function main() {
   try {
-    const categories = await scrape();
     const outDir = path.resolve(process.cwd(), 'src', 'generated');
     await fs.mkdir(outDir, { recursive: true });
-    const outPath = path.join(outDir, 'spcMesoanalysis.json');
-    await fs.writeFile(outPath, JSON.stringify(categories, null, 2), 'utf8');
-    console.log('Wrote', outPath);
+
+    // Generate SPC Mesoanalysis
+    console.log('Scraping SPC Mesoanalysis...');
+    const spcCategories = await scrapeSPC();
+    const spcPath = path.join(outDir, 'spcMesoanalysis.json');
+    await fs.writeFile(spcPath, JSON.stringify(spcCategories, null, 2), 'utf8');
+    console.log('Wrote', spcPath);
+
+    // Generate Pivotal Weather
+    console.log('Scraping Pivotal Weather...');
+    const pivotalCategories = await scrapePivotal();
+    const pivotalPath = path.join(outDir, 'pivotalWeather.json');
+    await fs.writeFile(pivotalPath, JSON.stringify(pivotalCategories, null, 2), 'utf8');
+    console.log('Wrote', pivotalPath);
   } catch (err) {
     console.error('Error during scrape:', err);
     process.exit(1);

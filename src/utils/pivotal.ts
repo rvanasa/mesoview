@@ -1,5 +1,6 @@
 import { roundToNearestHour } from './date';
 import { proxy, loadDocument } from './proxy';
+import pivotalWeatherData from '../generated/pivotalWeather.json';
 
 export interface PivotalRegion {
   id: string;
@@ -46,23 +47,13 @@ export const pivotalModels: PivotalModel[] = [
     // { id: 'ecmwf_full', name: 'ECMWF', runFrequency: 12 },
 ];
 
-export const pivotalParams: [string, string][] = [
-  ['sbcape_hodo', 'Hodographs'],
-  ['cape03', '3CAPE'],
-  ['sfctd_b-imp', 'Dewpoint'],
-  ['sfct_b-imp', 'Temperature'],
-  ['sfcrh', 'Humidity'],
-  ['refcmp_uh001h', 'Reflectivity'],
-  ['sim_ir', 'IR Satellite'],
-  ['cloudcover_levels', 'Cloud Cover'],
-  ['200wh', '200 mb Wind'],
-  ['300wh', '300 mb Wind'],
-  ['500wh', '500 mb Wind'],
-  ['700wh', '700 mb Wind'],
-  ['850wh', '850 mb Wind'],
-  ['scp', 'Supercell'],
-  ['stp', 'SigTor'],
-];
+// Export the categorized parameters
+export const pivotalParamCategories = pivotalWeatherData as [string, [string, string][]][];
+
+// Flatten all parameters from categories into a single array
+export const pivotalParams: [string, string][] = pivotalParamCategories.flatMap(
+  ([_, params]) => params
+);
 
 export const pivotalRegionMap = new Map(
   pivotalRegions.map((r) => [r.id, r.name]),

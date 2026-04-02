@@ -40,9 +40,14 @@ async function scrapeSPC() {
       for (const aa of anchors) {
         const onclick = aa.getAttribute('onclick') || '';
         const outer = aa.outerHTML || '';
-        const mm = onclick.match(/showimage\s*\(\s*['"]([^'\"]+)['\"]/i) || outer.match(/showimage\s*\(\s*['"]([^'\"]+)['\"]/i);
+        const mm =
+          onclick.match(/showimage\s*\(\s*['"]([^'\"]+)['\"]/i) ||
+          outer.match(/showimage\s*\(\s*['"]([^'\"]+)['\"]/i);
         if (!mm) continue;
-        params.push([mm[1], (aa.textContent || '').replace(/\u00A0/g, ' ').trim()]);
+        params.push([
+          mm[1],
+          (aa.textContent || '').replace(/\u00A0/g, ' ').trim(),
+        ]);
       }
       const categoryName = (a.textContent || '').replace(/\u00A0/g, ' ').trim();
       if (params.length) result.push([categoryName, params]);
@@ -54,10 +59,14 @@ async function scrapeSPC() {
       for (const a of anchors) {
         const onclick = a.getAttribute('onclick') || '';
         const outer = a.outerHTML || '';
-        const m = onclick.match(/showimage\s*\(\s*['"]([^'\"]+)['\"]/i) || outer.match(/showimage\s*\(\s*['"]([^'\"]+)['\"]/i);
+        const m =
+          onclick.match(/showimage\s*\(\s*['"]([^'\"]+)['\"]/i) ||
+          outer.match(/showimage\s*\(\s*['"]([^'\"]+)['\"]/i);
         if (!m) continue;
         const parameter = m[1];
-        const parameterName = (a.textContent || '').replace(/\u00A0/g, ' ').trim();
+        const parameterName = (a.textContent || '')
+          .replace(/\u00A0/g, ' ')
+          .trim();
 
         let categoryName = 'Unknown';
         const innerUl = a.closest('ul');
@@ -65,7 +74,10 @@ async function scrapeSPC() {
           const categoryLi = innerUl.closest('li');
           if (categoryLi) {
             const catA = categoryLi.querySelector('a');
-            if (catA) categoryName = (catA.textContent || '').replace(/\u00A0/g, ' ').trim();
+            if (catA)
+              categoryName = (catA.textContent || '')
+                .replace(/\u00A0/g, ' ')
+                .trim();
           }
         }
 
@@ -85,8 +97,8 @@ async function scrapeSPC() {
   return categories;
 }
 
-async function scrapePivotal() {
-  const url = 'https://www.pivotalweather.com/model.php?m=hrrr&p=sbcape_hodo&r=us_c&dpdt=&mc=';
+async function scrapePivotalForModel(model: string) {
+  const url = `https://www.pivotalweather.com/model.php?m=${model}&p=sbcape_hodo&r=us_c&dpdt=&mc=`;
   const browser = await chromium.launch();
   const context = await browser.newContext({
     viewport: { width: 1200, height: 900 },
@@ -102,16 +114,16 @@ async function scrapePivotal() {
   // Listen for console messages from the page
   page.on('console', (msg) => console.log('PAGE LOG:', msg.text()));
 
-  console.log('Navigating to', url);
+  console.log(`Navigating to ${model}:`, url);
   await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 60000 });
-  
+
   // Wait for the parameter accordion to be present
   await page.waitForSelector('#parameter_selection', { timeout: 10000 });
   await page.waitForTimeout(2000);
 
   const categories = await page.evaluate(() => {
     const result: [string, [string, string][]][] = [];
-    
+
     // Find the parameter accordion
     const paramAccordion = document.getElementById('parameter_selection');
     if (!paramAccordion) {
@@ -120,29 +132,33 @@ async function scrapePivotal() {
     }
 
     // Get all accordion headers (categories)
-    const headers = Array.from(paramAccordion.querySelectorAll('h3.ui-accordion-header'));
+    const headers = Array.from(
+      paramAccordion.querySelectorAll('h3.ui-accordion-header'),
+    );
     console.log('Found', headers.length, 'accordion headers');
-    
+
     for (const header of headers) {
       const categoryName = (header.textContent || '').trim();
       // Remove the icon text if present
-      const cleanName = categoryName.replace(/^\s*[\u25B6\u25BC]\s*/, '').trim();
-      
+      const cleanName = categoryName
+        .replace(/^\s*[\u25B6\u25BC]\s*/, '')
+        .trim();
+
       console.log('Processing category:', cleanName);
-      
+
       // Get the corresponding content div
       const contentId = header.getAttribute('aria-controls');
       if (!contentId) continue;
-      
+
       const contentDiv = document.getElementById(contentId);
       if (!contentDiv) continue;
-      
+
       const params: [string, string][] = [];
-      
+
       // Find all links in the content div
       const links = Array.from(contentDiv.querySelectorAll('a[href]'));
       console.log(`Found ${links.length} links in category ${cleanName}`);
-      
+
       for (const link of links) {
         const href = link.getAttribute('href') || '';
         // Extract parameter from URL like /model.php?m=hrrr&p=sbcape_hodo&...
@@ -155,7 +171,7 @@ async function scrapePivotal() {
           }
         }
       }
-      
+
       console.log(`Category ${cleanName} has ${params.length} params`);
       if (params.length) {
         result.push([cleanName, params]);
@@ -166,10 +182,40 @@ async function scrapePivotal() {
     return result;
   });
 
-  console.log('Retrieved', categories.length, 'categories from Pivotal Weather');
+  console.log(
+    `Retrieved ${categories.length} categories from Pivotal Weather for ${model}`,
+  );
 
   await browser.close();
   return categories;
+}
+
+async function scrapePivotal() {
+  // Models to scrape parameters for
+  const models = [
+    'hrrr',
+    'rap',
+    'rrfs_a',
+    'nam4km',
+    'hrwarw',
+    'hrwnssl',
+    'hrwfv3',
+  ];
+  const modelParams: Record<string, [string, [string, string][]][]> = {};
+
+  for (const model of models) {
+    console.log(`\nScraping parameters for ${model}...`);
+    try {
+      modelParams[model] = await scrapePivotalForModel(model);
+      // Add a delay between requests to avoid rate limiting
+      await new Promise((resolve) => setTimeout(resolve, 2000));
+    } catch (error) {
+      console.error(`Error scraping ${model}:`, error);
+      modelParams[model] = [];
+    }
+  }
+
+  return modelParams;
 }
 
 async function main() {
@@ -186,9 +232,13 @@ async function main() {
 
     // Generate Pivotal Weather
     console.log('Scraping Pivotal Weather...');
-    const pivotalCategories = await scrapePivotal();
+    const pivotalModelParams = await scrapePivotal();
     const pivotalPath = path.join(outDir, 'pivotalWeather.json');
-    await fs.writeFile(pivotalPath, JSON.stringify(pivotalCategories, null, 2), 'utf8');
+    await fs.writeFile(
+      pivotalPath,
+      JSON.stringify(pivotalModelParams, null, 2),
+      'utf8',
+    );
     console.log('Wrote', pivotalPath);
   } catch (err) {
     console.error('Error during scrape:', err);

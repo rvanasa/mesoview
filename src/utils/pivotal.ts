@@ -47,13 +47,48 @@ export const pivotalModels: PivotalModel[] = [
   // { id: 'ecmwf_full', name: 'ECMWF', runFrequency: 12 },
 ];
 
-export const pivotalParamCategories = pivotalWeatherData as [
+// Model-specific parameter data
+const pivotalModelParamsData = pivotalWeatherData as unknown as Record<
   string,
-  [string, string][],
-][];
-export const pivotalParams: [string, string][] = pivotalParamCategories.flatMap(
-  ([_, params]) => params,
+  [string, [string, string][]][]
+>;
+
+// For backward compatibility, use HRRR params as default
+export const pivotalParamCategories: [string, [string, string][]][] =
+  pivotalModelParamsData['hrrr'] || [];
+
+// Get all unique parameters from all models
+export const pivotalParams: [string, string][] = Array.from(
+  new Map(
+    Object.values(pivotalModelParamsData)
+      .flatMap((categories) => categories.flatMap(([_, params]) => params))
+  ).entries(),
 );
+
+/**
+ * Get parameter categories for a specific model
+ */
+export function getParamCategoriesForModel(
+  model: string,
+): [string, [string, string][]][] {
+  return pivotalModelParamsData[model] || pivotalParamCategories;
+}
+
+/**
+ * Get all parameters for a specific model
+ */
+export function getParamsForModel(model: string): [string, string][] {
+  const categories = getParamCategoriesForModel(model);
+  return categories.flatMap(([_, params]) => params);
+}
+
+/**
+ * Check if a parameter is available for a specific model
+ */
+export function isParamAvailableForModel(model: string, param: string): boolean {
+  const params = getParamsForModel(model);
+  return params.some(([paramId]) => paramId === param);
+}
 
 export const pivotalRegionMap = new Map(
   pivotalRegions.map((r) => [r.id, r.name]),

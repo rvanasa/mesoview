@@ -20,8 +20,10 @@ import { wpcSectorMap } from '../utils/mesoanalysis';
 import {
   formatModelRun,
   getAvailableRuns,
+  getParamCategoriesForModel,
   getRegionFromSpcSector,
-  pivotalParamCategories,
+  pivotalModels,
+  pivotalModelMap,
   pivotalParamMap,
 } from '../utils/pivotal';
 import { ForecastModel, soundingModels } from '../utils/profile';
@@ -113,8 +115,7 @@ export default function View({
     { date: Date | undefined; label: string }[]
   >([{ date: undefined, label: 'Latest' }]);
 
-  const { favorites, setFavorites, toggleFavorite, isFavorite } =
-    useFavorites();
+  const { toggleFavorite, isFavorite } = useFavorites();
   const favorited = isFavorite(view);
 
   // Load available runs when pivotal model changes
@@ -201,6 +202,34 @@ export default function View({
           )}
           {source.key === 'pivotal' && (
             <>
+              <Dropdown
+                label={
+                  <div tw="text-left min-w-[3rem]">
+                    {pivotalModelMap.get(primaryPivotalModel) ||
+                      primaryPivotalModel.toUpperCase()}
+                  </div>
+                }
+                anchor="bottom"
+              >
+                {pivotalModels.map((model) => (
+                  <div
+                    key={model.id}
+                    onClick={() => {
+                      // Keep overlay layers by preserving all but the first model-param
+                      const overlayParts = pivotalModelParams
+                        .slice(1)
+                        .map((mp) => `${mp.model}-${mp.param}`)
+                        .join(' ');
+                      const newParam = overlayParts
+                        ? `${model.id}-${primaryPivotalParam} ${overlayParts}`
+                        : `${model.id}-${primaryPivotalParam}`;
+                      setViews(spliced(views, i, 1, `pivotal-${newParam}`));
+                    }}
+                  >
+                    {model.name}
+                  </div>
+                ))}
+              </Dropdown>
               <MultiStepDropdown
                 label={
                   <div tw="text-left min-w-[3rem]">
@@ -211,46 +240,48 @@ export default function View({
                   </div>
                 }
                 anchor="bottom"
-                items={pivotalParamCategories.map(([categoryName, params]) => {
-                  // Map category names to icons
-                  let icon;
-                  if (
-                    categoryName.includes('Upper-Air') &&
-                    categoryName.includes('Dynamics')
-                  ) {
-                    icon = <FaLayerGroup />;
-                  } else if (categoryName.includes('Upper-Air')) {
-                    icon = <FaWind />;
-                  } else if (
-                    categoryName.includes('Surface') ||
-                    categoryName.includes('Precipitation')
-                  ) {
-                    icon = <FaCloudRain />;
-                  } else if (categoryName.includes('Severe')) {
-                    icon = <FaBolt />;
-                  } else if (categoryName.includes('Winter')) {
-                    icon = <FaSnowflake />;
-                  }
+                items={getParamCategoriesForModel(primaryPivotalModel).map(
+                  ([categoryName, params]) => {
+                    // Map category names to icons
+                    let icon;
+                    if (
+                      categoryName.includes('Upper-Air') &&
+                      categoryName.includes('Dynamics')
+                    ) {
+                      icon = <FaLayerGroup />;
+                    } else if (categoryName.includes('Upper-Air')) {
+                      icon = <FaWind />;
+                    } else if (
+                      categoryName.includes('Surface') ||
+                      categoryName.includes('Precipitation')
+                    ) {
+                      icon = <FaCloudRain />;
+                    } else if (categoryName.includes('Severe')) {
+                      icon = <FaBolt />;
+                    } else if (categoryName.includes('Winter')) {
+                      icon = <FaSnowflake />;
+                    }
 
-                  return {
-                    label: categoryName,
-                    icon,
-                    submenu: params.map(([paramKey, paramName]) => ({
-                      label: paramName,
-                      onClick: () => {
-                        // Keep overlay layers by preserving all but the first model-param
-                        const overlayParts = pivotalModelParams
-                          .slice(1)
-                          .map((mp) => `${mp.model}-${mp.param}`)
-                          .join(' ');
-                        const newParam = overlayParts
-                          ? `${primaryPivotalModel}-${paramKey} ${overlayParts}`
-                          : `${primaryPivotalModel}-${paramKey}`;
-                        setViews(spliced(views, i, 1, `pivotal-${newParam}`));
-                      },
-                    })),
-                  };
-                })}
+                    return {
+                      label: categoryName,
+                      icon,
+                      submenu: params.map(([paramKey, paramName]) => ({
+                        label: paramName,
+                        onClick: () => {
+                          // Keep overlay layers by preserving all but the first model-param
+                          const overlayParts = pivotalModelParams
+                            .slice(1)
+                            .map((mp) => `${mp.model}-${mp.param}`)
+                            .join(' ');
+                          const newParam = overlayParts
+                            ? `${primaryPivotalModel}-${paramKey} ${overlayParts}`
+                            : `${primaryPivotalModel}-${paramKey}`;
+                          setViews(spliced(views, i, 1, `pivotal-${newParam}`));
+                        },
+                      })),
+                    };
+                  },
+                )}
               />
               <Dropdown
                 label={

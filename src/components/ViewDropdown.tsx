@@ -2,7 +2,7 @@ import { ReactNode, useMemo } from 'react';
 import { FaBolt, FaCloud, FaLayerGroup, FaMap, FaStar } from 'react-icons/fa';
 import { useFavorites } from '../contexts/FavoritesContext';
 import { spcMesoanalysisParams } from '../utils/mesoanalysis';
-import { pivotalModels } from '../utils/pivotal';
+import { pivotalModels, isParamAvailableForModel } from '../utils/pivotal';
 import { ParsedView, formatFavoriteLabel } from '../utils/source';
 import MultiStepDropdown, { MultiStepItem } from './MultiStepDropdown';
 
@@ -22,6 +22,16 @@ export default function ViewDropdown({
   const { favorites } = useFavorites();
 
   const { items, initialPath } = useMemo(() => {
+    // Extract current parameter if viewing a Pivotal Weather model
+    let currentPivotalParam = 'sbcape_hodo';
+    if (view?.source.key === 'pivotal' && view?.param) {
+      // Parse the param format: "model-param" or "model-param model2-param2"
+      const match = view.param.match(/^[^-]+-(.+?)(?:\s|$)/);
+      if (match) {
+        currentPivotalParam = match[1];
+      }
+    }
+
     const menuItems: MultiStepItem[] = [
       {
         id: 'spc',
@@ -39,10 +49,19 @@ export default function ViewDropdown({
         id: 'pivotal',
         label: 'Pivotal Weather',
         icon: <FaBolt />,
-        submenu: pivotalModels.map((model) => ({
-          label: model.name,
-          onClick: () => onSelect(`pivotal-${model.id}-sbcape_hodo`),
-        })),
+        submenu: pivotalModels.map((model) => {
+          // Use current parameter if it exists in the new model, otherwise default
+          const paramToUse = isParamAvailableForModel(
+            model.id,
+            currentPivotalParam,
+          )
+            ? currentPivotalParam
+            : 'sbcape_hodo';
+          return {
+            label: model.name,
+            onClick: () => onSelect(`pivotal-${model.id}-${paramToUse}`),
+          };
+        }),
       },
       {
         id: 'surface',

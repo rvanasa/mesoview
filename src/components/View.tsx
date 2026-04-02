@@ -22,8 +22,6 @@ import {
   getAvailableRuns,
   getParamCategoriesForModel,
   getRegionFromSpcSector,
-  pivotalModels,
-  pivotalModelMap,
   pivotalParamMap,
 } from '../utils/pivotal';
 import { ForecastModel, soundingModels } from '../utils/profile';
@@ -202,34 +200,6 @@ export default function View({
           )}
           {source.key === 'pivotal' && (
             <>
-              <Dropdown
-                label={
-                  <div tw="text-left min-w-[3rem]">
-                    {pivotalModelMap.get(primaryPivotalModel) ||
-                      primaryPivotalModel.toUpperCase()}
-                  </div>
-                }
-                anchor="bottom"
-              >
-                {pivotalModels.map((model) => (
-                  <div
-                    key={model.id}
-                    onClick={() => {
-                      // Keep overlay layers by preserving all but the first model-param
-                      const overlayParts = pivotalModelParams
-                        .slice(1)
-                        .map((mp) => `${mp.model}-${mp.param}`)
-                        .join(' ');
-                      const newParam = overlayParts
-                        ? `${model.id}-${primaryPivotalParam} ${overlayParts}`
-                        : `${model.id}-${primaryPivotalParam}`;
-                      setViews(spliced(views, i, 1, `pivotal-${newParam}`));
-                    }}
-                  >
-                    {model.name}
-                  </div>
-                ))}
-              </Dropdown>
               <MultiStepDropdown
                 label={
                   <div tw="text-left min-w-[3rem]">

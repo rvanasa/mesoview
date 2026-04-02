@@ -1,5 +1,5 @@
 import { mesoParamMap } from './mesoanalysis';
-import { pivotalModelMap } from './pivotal';
+import { pivotalModelMap, pivotalParamMap } from './pivotal';
 
 export type SourceKey = 'unknown' | 'spc' | 'sounding' | 'surface' | 'pivotal';
 export interface Source {
@@ -62,6 +62,43 @@ export function parseView(view: string): ParsedView {
     param: undefined,
     name: source.name,
   };
+}
+
+/**
+ * Produce a friendly label for a favorite view without changing dropdown labels.
+ * Examples:
+ * - pivotal-rrfs_a-refcmp_uh001h -> "RRFS · Reflectivity"
+ * - sounding-rap-kcef -> "Sounding · RAP · KCEF"
+ */
+export function formatFavoriteLabel(view: string): string {
+  const parsed = parseView(view);
+  const { source, param } = parsed;
+
+  if (!param) return parsed.name || view;
+
+  if (source.key === 'pivotal') {
+    const parts = param.split(' ').filter((p) => p);
+    const labels = parts.map((part) => {
+      const [model, p] = part.split('-', 2);
+      const modelName = pivotalModelMap.get(model) || model.toUpperCase();
+      const paramName = p ? pivotalParamMap.get(p) || p : '';
+      return paramName ? `${modelName} · ${paramName}` : modelName;
+    });
+    return labels.join(' + ');
+  }
+
+  if (source.key === 'sounding') {
+    const match = param.match(/^([^-]+)-(.+)$/);
+    const model = match ? match[1] : param.split('-', 1)[0];
+    const station = match ? match[2] : undefined;
+    const modelLabel = model ? model.toUpperCase() : '';
+    if (station) return `${source.name} · ${modelLabel} · ${station.toUpperCase()}`;
+    if (model) return `${source.name} · ${modelLabel}`;
+    return source.name;
+  }
+
+  // Default: fall back to existing parseView name (which resolves meso params)
+  return parsed.name || view;
 }
 
 function resolveParamName(

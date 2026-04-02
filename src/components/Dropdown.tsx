@@ -7,14 +7,15 @@ export interface DropdownProps {
   label: ReactNode;
   anchor: 'top' | 'bottom'; // TODO
   children: ReactNode[];
+  noCaret?: boolean;
 }
 
-export default function Dropdown({ label, anchor, children }: DropdownProps) {
+export default function Dropdown({ label, anchor, children, noCaret }: DropdownProps) {
   return (
     <Menu>
       <MenuButton tw="flex items-center gap-2">
         {label}
-        {anchor === 'top' ? <FaCaretUp /> : <FaCaretDown />}
+        {!noCaret && (anchor === 'top' ? <FaCaretUp /> : <FaCaretDown />)}
       </MenuButton>
       <MenuItems
         tw="border-2 rounded-xl bg-[#fffe] dark:bg-gray-800 dark:border-gray-600"

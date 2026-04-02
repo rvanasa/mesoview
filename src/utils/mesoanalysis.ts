@@ -33,6 +33,9 @@ export const wcpSectors: [number, string][] = [
 export const mesoParamCategories: [string, [string, string][]][] =
   spcMesoanalysisJson as [string, [string, string][]][];
 
+// Alias for compatibility with ViewDropdown component
+export const spcMesoanalysisParams = mesoParamCategories;
+
 export const mesoParams: [string, string][] = mesoParamCategories.flatMap(
   ([_category, params]) => params,
 );

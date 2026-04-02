@@ -4,9 +4,12 @@ import {
   FaAngleDoubleUp,
   FaArrowDown,
   FaArrowUp,
+  FaEllipsisV,
   FaLayerGroup,
   FaMapMarkerAlt,
   FaTimes,
+  FaStar,
+  FaRegStar,
 } from 'react-icons/fa';
 import 'twin.macro';
 import { wpcSectorMap } from '../utils/mesoanalysis';
@@ -30,6 +33,7 @@ import StationMap from './StationMap';
 import SurfaceAnalysisImage from './SurfaceAnalysisImage';
 import { ToolButton } from './ToolButton';
 import ViewDropdown from './ViewDropdown';
+import { useFavorites } from '../contexts/FavoritesContext';
 
 export const viewCategories: { param: string; label: string }[][] = [
   [
@@ -106,6 +110,10 @@ export default function View({
   const [modelRunOptions, setModelRunOptions] = useState<
     { date: Date | undefined; label: string }[]
   >([{ date: undefined, label: 'Latest' }]);
+
+  const { favorites, setFavorites, toggleFavorite, isFavorite } =
+    useFavorites();
+  const favorited = isFavorite(view);
 
   // Load available runs when pivotal model changes
   useEffect(() => {
@@ -290,58 +298,116 @@ export default function View({
             );
           })()}
         <div tw="flex space-x-2">
-          {source.combinable && view.includes(' ') && (
-            <ToolButton
-              onClick={() => {
-                const parts = view.split(' ');
-                const expandedViews = parts.map((part, idx) =>
-                  idx === 0 ? part : `${source.key}-${part}`,
-                );
-                setViews(spliced(views, i, 1, ...expandedViews));
-              }}
-            >
-              <FaLayerGroup />
-            </ToolButton>
-          )}
-          {i > 0 && canCombine(views[i - 1], views[i]) && (
-            <ToolButton
-              onClick={() =>
-                setViews(
-                  spliced(
-                    views,
-                    i - 1,
-                    2,
-                    `${views[i - 1]} ${parseView(views[i]).param}`,
-                  ),
-                )
-              }
-            >
-              <FaAngleDoubleUp />
-            </ToolButton>
-          )}
-          {i > 0 && (
-            <ToolButton
-              onClick={() =>
-                setViews(spliced(views, i - 1, 2, views[i], views[i - 1]))
-              }
-            >
-              <FaArrowUp />
-            </ToolButton>
-          )}
-          {i < views.length - 1 && (
-            <ToolButton
-              onClick={() =>
-                setViews(spliced(views, i, 2, views[i + 1], views[i]))
-              }
-            >
-              <FaArrowDown />
-            </ToolButton>
-          )}
-          {views.length > 1 && (
-            <ToolButton onClick={() => setViews(spliced(views, i, 1))}>
-              <FaTimes tw="text-red-700 dark:text-red-400" />
-            </ToolButton>
-          )}
+          {(() => {
+            const viewParts = view.split(' ').filter((p) => p);
+            const overlayCount =
+              source.combinable && viewParts.length > 1
+                ? viewParts.length - 1
+                : 0;
+
+            const items = [
+              i > 0 && canCombine(views[i - 1], views[i]) && (
+                <div
+                  key="stack"
+                  tw="flex items-center gap-3"
+                  onClick={() =>
+                    setViews(
+                      spliced(
+                        views,
+                        i - 1,
+                        2,
+                        `${views[i - 1]} ${parseView(views[i]).param}`,
+                      ),
+                    )
+                  }
+                >
+                  <FaAngleDoubleUp />
+                  <div>Stack with Above</div>
+                </div>
+              ),
+              source.combinable && view.includes(' ') && (
+                <div
+                  key="unstack"
+                  tw="flex items-center gap-3"
+                  onClick={() => {
+                    const parts = view.split(' ');
+                    const expandedViews = parts.map((part, idx) =>
+                      idx === 0 ? part : `${source.key}-${part}`,
+                    );
+                    setViews(spliced(views, i, 1, ...expandedViews));
+                  }}
+                >
+                  <FaLayerGroup />
+                  <div>Unstack</div>
+                </div>
+              ),
+              i > 0 && (
+                <div
+                  key="move-up"
+                  tw="flex items-center gap-3"
+                  onClick={() =>
+                    setViews(spliced(views, i - 1, 2, views[i], views[i - 1]))
+                  }
+                >
+                  <FaArrowUp />
+                  <div>Move Up</div>
+                </div>
+              ),
+              i < views.length - 1 && (
+                <div
+                  key="move-down"
+                  tw="flex items-center gap-3"
+                  onClick={() =>
+                    setViews(spliced(views, i, 2, views[i + 1], views[i]))
+                  }
+                >
+                  <FaArrowDown />
+                  <div>Move Down</div>
+                </div>
+              ),
+              (
+                <div
+                  key="favorite"
+                  tw="flex items-center gap-3"
+                  onClick={() => toggleFavorite(view)}
+                >
+                  {favorited ? (
+                    <FaRegStar tw="text-yellow-500" />
+                  ) : (
+                    <FaRegStar />
+                  )}
+                  <div>{favorited ? 'Unfavorite' : 'Favorite'}</div>
+                </div>
+              ),
+              views.length > 1 && (
+                <div
+                  key="remove"
+                  tw="flex items-center gap-3"
+                  onClick={() => setViews(spliced(views, i, 1))}
+                >
+                  <FaTimes tw="text-red-700 dark:text-red-400" />
+                  <div>Remove</div>
+                </div>
+              ),
+            ].filter(Boolean);
+
+            return (
+              <Dropdown
+                label={
+                  <div tw="flex items-center gap-2 px-2 py-1">
+                    {overlayCount > 0 && (
+                      <span tw="ml-1 text-sm text-gray-600 dark:text-gray-300 opacity-80">+{overlayCount}</span>
+                    )}
+                    <FaEllipsisV />
+                  </div>
+                }
+                anchor="bottom"
+                noCaret
+              >
+                {items}
+              </Dropdown>
+            );
+          })()}
         </div>
       </div>
       {source.key === 'sounding' ? (

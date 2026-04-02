@@ -4,11 +4,15 @@ import {
   FaAngleDoubleUp,
   FaArrowDown,
   FaArrowUp,
+  FaBolt,
+  FaCloudRain,
   FaEllipsisV,
   FaLayerGroup,
   FaMapMarkerAlt,
   FaRegStar,
+  FaSnowflake,
   FaTimes,
+  FaWind,
 } from 'react-icons/fa';
 import 'twin.macro';
 import { useFavorites } from '../contexts/FavoritesContext';
@@ -17,6 +21,7 @@ import {
   formatModelRun,
   getAvailableRuns,
   getRegionFromSpcSector,
+  pivotalParamCategories,
   pivotalParamMap,
 } from '../utils/pivotal';
 import { ForecastModel, soundingModels } from '../utils/profile';
@@ -25,6 +30,7 @@ import spliced from '../utils/spliced';
 import BufkitSounding from './BufkitSounding';
 import Dropdown from './Dropdown';
 import MesoanalysisImage from './MesoanalysisImage';
+import MultiStepDropdown from './MultiStepDropdown';
 import PivotalImage from './PivotalImage';
 import StationMap from './StationMap';
 import SurfaceAnalysisImage from './SurfaceAnalysisImage';
@@ -195,7 +201,7 @@ export default function View({
           )}
           {source.key === 'pivotal' && (
             <>
-              <Dropdown
+              <MultiStepDropdown
                 label={
                   <div tw="text-left min-w-[3rem]">
                     {primaryPivotalParam
@@ -205,26 +211,47 @@ export default function View({
                   </div>
                 }
                 anchor="bottom"
-              >
-                {[...pivotalParamMap.entries()].map(([paramKey, paramName]) => (
-                  <div
-                    key={paramKey}
-                    onClick={() => {
-                      // Keep overlay layers by preserving all but the first model-param
-                      const overlayParts = pivotalModelParams
-                        .slice(1)
-                        .map((mp) => `${mp.model}-${mp.param}`)
-                        .join(' ');
-                      const newParam = overlayParts
-                        ? `${primaryPivotalModel}-${paramKey} ${overlayParts}`
-                        : `${primaryPivotalModel}-${paramKey}`;
-                      setViews(spliced(views, i, 1, `pivotal-${newParam}`));
-                    }}
-                  >
-                    {paramName}
-                  </div>
-                ))}
-              </Dropdown>
+                items={pivotalParamCategories.map(([categoryName, params]) => {
+                  // Map category names to icons
+                  let icon;
+                  if (
+                    categoryName.includes('Upper-Air') &&
+                    categoryName.includes('Dynamics')
+                  ) {
+                    icon = <FaLayerGroup />;
+                  } else if (categoryName.includes('Upper-Air')) {
+                    icon = <FaWind />;
+                  } else if (
+                    categoryName.includes('Surface') ||
+                    categoryName.includes('Precipitation')
+                  ) {
+                    icon = <FaCloudRain />;
+                  } else if (categoryName.includes('Severe')) {
+                    icon = <FaBolt />;
+                  } else if (categoryName.includes('Winter')) {
+                    icon = <FaSnowflake />;
+                  }
+
+                  return {
+                    label: categoryName,
+                    icon,
+                    submenu: params.map(([paramKey, paramName]) => ({
+                      label: paramName,
+                      onClick: () => {
+                        // Keep overlay layers by preserving all but the first model-param
+                        const overlayParts = pivotalModelParams
+                          .slice(1)
+                          .map((mp) => `${mp.model}-${mp.param}`)
+                          .join(' ');
+                        const newParam = overlayParts
+                          ? `${primaryPivotalModel}-${paramKey} ${overlayParts}`
+                          : `${primaryPivotalModel}-${paramKey}`;
+                        setViews(spliced(views, i, 1, `pivotal-${newParam}`));
+                      },
+                    })),
+                  };
+                })}
+              />
               <Dropdown
                 label={
                   <div tw="text-left min-w-[3rem]">

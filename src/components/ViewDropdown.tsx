@@ -2,11 +2,7 @@ import { ReactNode, useMemo } from 'react';
 import { FaBolt, FaCloud, FaLayerGroup, FaMap, FaStar } from 'react-icons/fa';
 import { useFavorites } from '../contexts/FavoritesContext';
 import { spcMesoanalysisParams } from '../utils/mesoanalysis';
-import {
-  pivotalModels,
-  pivotalParamCategories,
-  pivotalParams,
-} from '../utils/pivotal';
+import { pivotalModels } from '../utils/pivotal';
 import { ParsedView, formatFavoriteLabel } from '../utils/source';
 import MultiStepDropdown, { MultiStepItem } from './MultiStepDropdown';
 
@@ -26,18 +22,6 @@ export default function ViewDropdown({
   const { favorites } = useFavorites();
 
   const { items, initialPath } = useMemo(() => {
-    let currentParam = pivotalParams[0][0]; // Default to first param
-    if (view?.source.key === 'pivotal' && view.param) {
-      const parts = view.param.split('-', 2);
-      if (parts.length === 2) {
-        const paramId = parts[1];
-        // Verify this is a valid parameter
-        if (pivotalParams.some(([key]) => key === paramId)) {
-          currentParam = paramId;
-        }
-      }
-    }
-
     const menuItems: MultiStepItem[] = [
       {
         id: 'spc',
@@ -52,6 +36,15 @@ export default function ViewDropdown({
         })),
       },
       {
+        id: 'pivotal',
+        label: 'Pivotal Weather',
+        icon: <FaBolt />,
+        submenu: pivotalModels.map((model) => ({
+          label: model.name,
+          onClick: () => onSelect(`pivotal-${model.id}-sbcape_hodo`),
+        })),
+      },
+      {
         id: 'surface',
         label: 'Surface Analysis',
         icon: <FaMap />,
@@ -62,21 +55,6 @@ export default function ViewDropdown({
         label: 'Sounding',
         icon: <FaCloud />,
         onClick: () => onSelect('sounding'),
-      },
-      {
-        id: 'pivotal',
-        label: 'Pivotal Weather',
-        icon: <FaBolt />,
-        submenu: pivotalModels.map((model) => ({
-          label: model.name,
-          submenu: pivotalParamCategories.map(([category, params]) => ({
-            label: category,
-            submenu: params.map(([paramKey, paramTitle]) => ({
-              label: paramTitle,
-              onClick: () => onSelect(`pivotal-${model.id}-${paramKey}`),
-            })),
-          })),
-        })),
       },
     ];
 

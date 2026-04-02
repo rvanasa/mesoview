@@ -1,16 +1,14 @@
 import { ReactNode, useMemo } from 'react';
+import { FaBolt, FaCloud, FaLayerGroup, FaMap, FaStar } from 'react-icons/fa';
+import { useFavorites } from '../contexts/FavoritesContext';
 import { spcMesoanalysisParams } from '../utils/mesoanalysis';
-import { pivotalModels, pivotalParams, pivotalParamCategories } from '../utils/pivotal';
+import {
+  pivotalModels,
+  pivotalParamCategories,
+  pivotalParams,
+} from '../utils/pivotal';
 import { ParsedView, formatFavoriteLabel } from '../utils/source';
 import MultiStepDropdown, { MultiStepItem } from './MultiStepDropdown';
-import { useFavorites } from '../contexts/FavoritesContext';
-import {
-  FaLayerGroup,
-  FaMap,
-  FaCloud,
-  FaBolt,
-  FaStar,
-} from 'react-icons/fa';
 
 export interface ViewDropdownProps {
   view?: ParsedView;

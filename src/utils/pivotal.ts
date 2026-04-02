@@ -43,16 +43,16 @@ export const pivotalModels: PivotalModel[] = [
   { id: 'hrwarw', name: 'HRW ARW', runFrequency: 12 },
   { id: 'hrwnssl', name: 'HRW NSSL', runFrequency: 12 },
   { id: 'hrwfv3', name: 'HRW FV3', runFrequency: 12 },
-    // { id: 'gfs', name: 'GFS', runFrequency: 6 },
-    // { id: 'ecmwf_full', name: 'ECMWF', runFrequency: 12 },
+  // { id: 'gfs', name: 'GFS', runFrequency: 6 },
+  // { id: 'ecmwf_full', name: 'ECMWF', runFrequency: 12 },
 ];
 
-// Export the categorized parameters
-export const pivotalParamCategories = pivotalWeatherData as [string, [string, string][]][];
-
-// Flatten all parameters from categories into a single array
+export const pivotalParamCategories = pivotalWeatherData as [
+  string,
+  [string, string][],
+][];
 export const pivotalParams: [string, string][] = pivotalParamCategories.flatMap(
-  ([_, params]) => params
+  ([_, params]) => params,
 );
 
 export const pivotalRegionMap = new Map(

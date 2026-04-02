@@ -7,11 +7,11 @@ import {
   FaEllipsisV,
   FaLayerGroup,
   FaMapMarkerAlt,
-  FaTimes,
-  FaStar,
   FaRegStar,
+  FaTimes,
 } from 'react-icons/fa';
 import 'twin.macro';
+import { useFavorites } from '../contexts/FavoritesContext';
 import { wpcSectorMap } from '../utils/mesoanalysis';
 import {
   formatModelRun,
@@ -19,10 +19,7 @@ import {
   getRegionFromSpcSector,
   pivotalParamMap,
 } from '../utils/pivotal';
-import {
-  ForecastModel,
-  soundingModels
-} from '../utils/profile';
+import { ForecastModel, soundingModels } from '../utils/profile';
 import { canCombine, parseView } from '../utils/source';
 import spliced from '../utils/spliced';
 import BufkitSounding from './BufkitSounding';
@@ -33,7 +30,6 @@ import StationMap from './StationMap';
 import SurfaceAnalysisImage from './SurfaceAnalysisImage';
 import { ToolButton } from './ToolButton';
 import ViewDropdown from './ViewDropdown';
-import { useFavorites } from '../contexts/FavoritesContext';
 
 export const viewCategories: { param: string; label: string }[][] = [
   [
@@ -365,20 +361,14 @@ export default function View({
                   <div>Move Down</div>
                 </div>
               ),
-              (
-                <div
-                  key="favorite"
-                  tw="flex items-center gap-3"
-                  onClick={() => toggleFavorite(view)}
-                >
-                  {favorited ? (
-                    <FaRegStar tw="text-yellow-500" />
-                  ) : (
-                    <FaRegStar />
-                  )}
-                  <div>{favorited ? 'Unfavorite' : 'Favorite'}</div>
-                </div>
-              ),
+              <div
+                key="favorite"
+                tw="flex items-center gap-3"
+                onClick={() => toggleFavorite(view)}
+              >
+                {favorited ? <FaRegStar tw="text-yellow-500" /> : <FaRegStar />}
+                <div>{favorited ? 'Unfavorite' : 'Favorite'}</div>
+              </div>,
               views.length > 1 && (
                 <div
                   key="remove"
@@ -396,7 +386,9 @@ export default function View({
                 label={
                   <div tw="flex items-center gap-2 px-2 py-1">
                     {overlayCount > 0 && (
-                      <span tw="ml-1 text-sm text-gray-600 dark:text-gray-300 opacity-80">+{overlayCount}</span>
+                      <span tw="ml-1 text-sm text-gray-600 dark:text-gray-300 opacity-80">
+                        +{overlayCount}
+                      </span>
                     )}
                     <FaEllipsisV />
                   </div>

@@ -6,6 +6,7 @@ import {
   getPivotalImageUrl,
 } from '../utils/pivotal';
 import CachedImage from './CachedImage';
+import useDevMode from '../hooks/useDevMode';
 
 /**
  * Determine the model run time and forecast hour for a given date.
@@ -56,6 +57,7 @@ export default function PivotalImage({
   onClick,
 }: PivotalImageProps) {
   const [urls, setUrls] = useState<string[]>([]);
+  const [isDevMode] = useDevMode();
 
   useEffect(() => {
     let cancelled = false;
@@ -65,6 +67,9 @@ export default function PivotalImage({
         const urlPromises = modelParams.map(
           async ({ model, param, selectedRun }) => {
             const info = await getPivotalRunInfo(date, model, selectedRun);
+            if (!isDevMode) {
+              return '';
+            }
             return getPivotalImageUrl(
               model,
               info.runDate,
@@ -90,9 +95,6 @@ export default function PivotalImage({
     };
   }, [date, modelParams, region]);
 
-  const width = 1180;
-  const height = 850;
-
   return (
     <div
       style={{ position: 'relative', background: darkMode ? 'black' : 'white' }}
@@ -102,8 +104,8 @@ export default function PivotalImage({
         <CachedImage
           key={`${model}-${param}`}
           src={urls[i] || ''}
-          width={width}
-          height={height}
+          width={1180}
+          height={850}
           alt=""
           style={{
             ...(i

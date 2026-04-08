@@ -60,8 +60,9 @@ export const pivotalParamCategories: [string, [string, string][]][] =
 // Get all unique parameters from all models
 export const pivotalParams: [string, string][] = Array.from(
   new Map(
-    Object.values(pivotalModelParamsData)
-      .flatMap((categories) => categories.flatMap(([_, params]) => params))
+    Object.values(pivotalModelParamsData).flatMap((categories) =>
+      categories.flatMap(([_, params]) => params),
+    ),
   ).entries(),
 );
 
@@ -85,7 +86,10 @@ export function getParamsForModel(model: string): [string, string][] {
 /**
  * Check if a parameter is available for a specific model
  */
-export function isParamAvailableForModel(model: string, param: string): boolean {
+export function isParamAvailableForModel(
+  model: string,
+  param: string,
+): boolean {
   const params = getParamsForModel(model);
   return params.some(([paramId]) => paramId === param);
 }

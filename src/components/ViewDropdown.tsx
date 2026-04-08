@@ -5,6 +5,7 @@ import { spcMesoanalysisParams } from '../utils/mesoanalysis';
 import { pivotalModels, isParamAvailableForModel } from '../utils/pivotal';
 import { ParsedView, formatFavoriteLabel } from '../utils/source';
 import MultiStepDropdown, { MultiStepItem } from './MultiStepDropdown';
+import useDevMode from '../hooks/useDevMode';
 
 export interface ViewDropdownProps {
   view?: ParsedView;
@@ -20,6 +21,7 @@ export default function ViewDropdown({
   onSelect,
 }: ViewDropdownProps) {
   const { favorites } = useFavorites();
+  const [isDevMode] = useDevMode();
 
   const { items, initialPath } = useMemo(() => {
     // Extract current parameter if viewing a Pivotal Weather model
@@ -45,24 +47,28 @@ export default function ViewDropdown({
           })),
         })),
       },
-      // {
-      //   id: 'pivotal',
-      //   label: 'Pivotal Weather',
-      //   icon: <FaBolt />,
-      //   submenu: pivotalModels.map((model) => {
-      //     // Use current parameter if it exists in the new model, otherwise default
-      //     const paramToUse = isParamAvailableForModel(
-      //       model.id,
-      //       currentPivotalParam,
-      //     )
-      //       ? currentPivotalParam
-      //       : 'sbcape_hodo';
-      //     return {
-      //       label: model.name,
-      //       onClick: () => onSelect(`pivotal-${model.id}-${paramToUse}`),
-      //     };
-      //   }),
-      // },
+      ...(isDevMode
+        ? [
+            {
+              id: 'pivotal',
+              label: 'Pivotal Weather',
+              icon: <FaBolt />,
+              submenu: pivotalModels.map((model) => {
+                // Use current parameter if it exists in the new model, otherwise default
+                const paramToUse = isParamAvailableForModel(
+                  model.id,
+                  currentPivotalParam,
+                )
+                  ? currentPivotalParam
+                  : 'sbcape_hodo';
+                return {
+                  label: model.name,
+                  onClick: () => onSelect(`pivotal-${model.id}-${paramToUse}`),
+                };
+              }),
+            },
+          ]
+        : []),
       {
         id: 'surface',
         label: 'Surface Analysis',

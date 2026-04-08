@@ -329,86 +329,6 @@ export default function View({
                 ? viewParts.length - 1
                 : 0;
 
-            const items = [
-              i > 0 && canCombine(views[i - 1], views[i]) && (
-                <div
-                  key="stack"
-                  tw="flex items-center gap-3"
-                  onClick={() =>
-                    setViews(
-                      spliced(
-                        views,
-                        i - 1,
-                        2,
-                        `${views[i - 1]} ${parseView(views[i]).param}`,
-                      ),
-                    )
-                  }
-                >
-                  <FaAngleDoubleUp />
-                  <div>Stack with Above</div>
-                </div>
-              ),
-              source.combinable && view.includes(' ') && (
-                <div
-                  key="unstack"
-                  tw="flex items-center gap-3"
-                  onClick={() => {
-                    const parts = view.split(' ');
-                    const expandedViews = parts.map((part, idx) =>
-                      idx === 0 ? part : `${source.key}-${part}`,
-                    );
-                    setViews(spliced(views, i, 1, ...expandedViews));
-                  }}
-                >
-                  <FaLayerGroup />
-                  <div>Unstack</div>
-                </div>
-              ),
-              i > 0 && (
-                <div
-                  key="move-up"
-                  tw="flex items-center gap-3"
-                  onClick={() =>
-                    setViews(spliced(views, i - 1, 2, views[i], views[i - 1]))
-                  }
-                >
-                  <FaArrowUp />
-                  <div>Move Up</div>
-                </div>
-              ),
-              i < views.length - 1 && (
-                <div
-                  key="move-down"
-                  tw="flex items-center gap-3"
-                  onClick={() =>
-                    setViews(spliced(views, i, 2, views[i + 1], views[i]))
-                  }
-                >
-                  <FaArrowDown />
-                  <div>Move Down</div>
-                </div>
-              ),
-              <div
-                key="favorite"
-                tw="flex items-center gap-3"
-                onClick={() => toggleFavorite(view)}
-              >
-                {favorited ? <FaRegStar tw="text-yellow-500" /> : <FaRegStar />}
-                <div>{favorited ? 'Unfavorite' : 'Favorite'}</div>
-              </div>,
-              views.length > 1 && (
-                <div
-                  key="remove"
-                  tw="flex items-center gap-3"
-                  onClick={() => setViews(spliced(views, i, 1))}
-                >
-                  <FaTimes tw="text-red-700 dark:text-red-400" />
-                  <div>Remove</div>
-                </div>
-              ),
-            ].filter(Boolean);
-
             return (
               <Dropdown
                 label={
@@ -424,7 +344,77 @@ export default function View({
                 anchor="bottom"
                 noCaret
               >
-                {items}
+                {i > 0 && canCombine(views[i - 1], views[i]) && (
+                  <div
+                    tw="whitespace-nowrap flex items-center gap-3"
+                    onClick={() =>
+                      setViews(
+                        spliced(
+                          views,
+                          i - 1,
+                          2,
+                          `${views[i - 1]} ${parseView(views[i]).param}`,
+                        ),
+                      )
+                    }
+                  >
+                    <FaAngleDoubleUp />
+                    <div>Stack with Above</div>
+                  </div>
+                )}
+                {source.combinable && view.includes(' ') && (
+                  <div
+                    tw="whitespace-nowrap flex items-center gap-3"
+                    onClick={() => {
+                      const parts = view.split(' ');
+                      const expandedViews = parts.map((part, idx) =>
+                        idx === 0 ? part : `${source.key}-${part}`,
+                      );
+                      setViews(spliced(views, i, 1, ...expandedViews));
+                    }}
+                  >
+                    <FaLayerGroup />
+                    <div>Unstack</div>
+                  </div>
+                )}
+                {i > 0 && (
+                  <div
+                    tw="whitespace-nowrap flex items-center gap-3"
+                    onClick={() =>
+                      setViews(spliced(views, i - 1, 2, views[i], views[i - 1]))
+                    }
+                  >
+                    <FaArrowUp />
+                    <div>Move Up</div>
+                  </div>
+                )}
+                {i < views.length - 1 && (
+                  <div
+                    tw="whitespace-nowrap flex items-center gap-3"
+                    onClick={() =>
+                      setViews(spliced(views, i, 2, views[i + 1], views[i]))
+                    }
+                  >
+                    <FaArrowDown />
+                    <div>Move Down</div>
+                  </div>
+                )}
+                <div
+                  tw="whitespace-nowrap flex items-center gap-3"
+                  onClick={() => toggleFavorite(view)}
+                >
+                  {favorited ? <FaRegStar tw="text-yellow-500" /> : <FaRegStar />}
+                  <div>{favorited ? 'Unfavorite' : 'Favorite'}</div>
+                </div>
+                {views.length > 1 && (
+                  <div
+                    tw="whitespace-nowrap flex items-center gap-3"
+                    onClick={() => setViews(spliced(views, i, 1))}
+                  >
+                    <FaTimes tw="text-red-700 dark:text-red-400" />
+                    <div>Remove</div>
+                  </div>
+                )}
               </Dropdown>
             );
           })()}

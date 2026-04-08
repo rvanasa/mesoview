@@ -45,24 +45,24 @@ export default function ViewDropdown({
           })),
         })),
       },
-      {
-        id: 'pivotal',
-        label: 'Pivotal Weather',
-        icon: <FaBolt />,
-        submenu: pivotalModels.map((model) => {
-          // Use current parameter if it exists in the new model, otherwise default
-          const paramToUse = isParamAvailableForModel(
-            model.id,
-            currentPivotalParam,
-          )
-            ? currentPivotalParam
-            : 'sbcape_hodo';
-          return {
-            label: model.name,
-            onClick: () => onSelect(`pivotal-${model.id}-${paramToUse}`),
-          };
-        }),
-      },
+      // {
+      //   id: 'pivotal',
+      //   label: 'Pivotal Weather',
+      //   icon: <FaBolt />,
+      //   submenu: pivotalModels.map((model) => {
+      //     // Use current parameter if it exists in the new model, otherwise default
+      //     const paramToUse = isParamAvailableForModel(
+      //       model.id,
+      //       currentPivotalParam,
+      //     )
+      //       ? currentPivotalParam
+      //       : 'sbcape_hodo';
+      //     return {
+      //       label: model.name,
+      //       onClick: () => onSelect(`pivotal-${model.id}-${paramToUse}`),
+      //     };
+      //   }),
+      // },
       {
         id: 'surface',
         label: 'Surface Analysis',

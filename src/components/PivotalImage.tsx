@@ -93,7 +93,7 @@ export default function PivotalImage({
     return () => {
       cancelled = true;
     };
-  }, [date, modelParams, region]);
+  }, [date, modelParams, region, isDevMode]);
 
   return (
     <div

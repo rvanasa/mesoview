@@ -107,7 +107,7 @@ export default function ViewDropdown({
     // }
 
     return { items: menuItems, initialPath: path };
-  }, [view, onSelect, favorites]);
+  }, [view, onSelect, favorites, isDevMode]);
 
   return (
     <MultiStepDropdown

@@ -43,7 +43,7 @@ export default function ViewDropdown({
     const menuItems: MultiStepItem[] = [
       {
         id: 'spc',
-        label: 'SPC Mesoanalysis',
+        label: 'Mesoanalysis',
         icon: <FaLayerGroup />,
         submenu: spcMesoanalysisParams.map(([category, params]) => ({
           label: category,

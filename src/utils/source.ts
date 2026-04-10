@@ -11,7 +11,7 @@ export interface Source {
 export const sources: Source[] = [
   {
     key: 'spc',
-    name: 'SPC Mesoanalysis',
+    name: 'Mesoanalysis',
     combinable: true,
   },
   {

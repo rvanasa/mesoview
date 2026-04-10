@@ -1,40 +1,41 @@
 import Slider from 'rc-slider';
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import {
   FaAngleDoubleUp,
   FaArrowDown,
   FaArrowUp,
+  FaBolt,
+  FaCloudRain,
   FaEllipsisV,
   FaLayerGroup,
-  FaTimes,
   FaMapMarkerAlt,
-  FaStar,
   FaRegStar,
+  FaSnowflake,
+  FaTimes,
+  FaWind,
 } from 'react-icons/fa';
 import 'twin.macro';
+import { useFavorites } from '../contexts/FavoritesContext';
 import { wpcSectorMap } from '../utils/mesoanalysis';
 import {
   formatModelRun,
   getAvailableRuns,
+  getParamCategoriesForModel,
   getRegionFromSpcSector,
   pivotalParamMap,
 } from '../utils/pivotal';
-import {
-  ForecastModel,
-  getSoundingStations,
-  soundingModels,
-} from '../utils/profile';
+import { ForecastModel, soundingModels } from '../utils/profile';
 import { canCombine, parseView } from '../utils/source';
 import spliced from '../utils/spliced';
 import BufkitSounding from './BufkitSounding';
-import StationMap from './StationMap';
 import Dropdown from './Dropdown';
 import MesoanalysisImage from './MesoanalysisImage';
-import ViewDropdown from './ViewDropdown';
+import MultiStepDropdown from './MultiStepDropdown';
 import PivotalImage from './PivotalImage';
+import StationMap from './StationMap';
 import SurfaceAnalysisImage from './SurfaceAnalysisImage';
 import { ToolButton } from './ToolButton';
-import { useFavorites } from '../contexts/FavoritesContext';
+import ViewDropdown from './ViewDropdown';
 
 export const viewCategories: { param: string; label: string }[][] = [
   [
@@ -112,8 +113,7 @@ export default function View({
     { date: Date | undefined; label: string }[]
   >([{ date: undefined, label: 'Latest' }]);
 
-  const { favorites, setFavorites, toggleFavorite, isFavorite } =
-    useFavorites();
+  const { toggleFavorite, isFavorite } = useFavorites();
   const favorited = isFavorite(view);
 
   // Load available runs when pivotal model changes
@@ -200,7 +200,7 @@ export default function View({
           )}
           {source.key === 'pivotal' && (
             <>
-              <Dropdown
+              <MultiStepDropdown
                 label={
                   <div tw="text-left min-w-[3rem]">
                     {primaryPivotalParam
@@ -210,26 +210,49 @@ export default function View({
                   </div>
                 }
                 anchor="bottom"
-              >
-                {[...pivotalParamMap.entries()].map(([paramKey, paramName]) => (
-                  <div
-                    key={paramKey}
-                    onClick={() => {
-                      // Keep overlay layers by preserving all but the first model-param
-                      const overlayParts = pivotalModelParams
-                        .slice(1)
-                        .map((mp) => `${mp.model}-${mp.param}`)
-                        .join(' ');
-                      const newParam = overlayParts
-                        ? `${primaryPivotalModel}-${paramKey} ${overlayParts}`
-                        : `${primaryPivotalModel}-${paramKey}`;
-                      setViews(spliced(views, i, 1, `pivotal-${newParam}`));
-                    }}
-                  >
-                    {paramName}
-                  </div>
-                ))}
-              </Dropdown>
+                items={getParamCategoriesForModel(primaryPivotalModel).map(
+                  ([categoryName, params]) => {
+                    // Map category names to icons
+                    let icon;
+                    if (
+                      categoryName.includes('Upper-Air') &&
+                      categoryName.includes('Dynamics')
+                    ) {
+                      icon = <FaLayerGroup />;
+                    } else if (categoryName.includes('Upper-Air')) {
+                      icon = <FaWind />;
+                    } else if (
+                      categoryName.includes('Surface') ||
+                      categoryName.includes('Precipitation')
+                    ) {
+                      icon = <FaCloudRain />;
+                    } else if (categoryName.includes('Severe')) {
+                      icon = <FaBolt />;
+                    } else if (categoryName.includes('Winter')) {
+                      icon = <FaSnowflake />;
+                    }
+
+                    return {
+                      label: categoryName,
+                      icon,
+                      submenu: params.map(([paramKey, paramName]) => ({
+                        label: paramName,
+                        onClick: () => {
+                          // Keep overlay layers by preserving all but the first model-param
+                          const overlayParts = pivotalModelParams
+                            .slice(1)
+                            .map((mp) => `${mp.model}-${mp.param}`)
+                            .join(' ');
+                          const newParam = overlayParts
+                            ? `${primaryPivotalModel}-${paramKey} ${overlayParts}`
+                            : `${primaryPivotalModel}-${paramKey}`;
+                          setViews(spliced(views, i, 1, `pivotal-${newParam}`));
+                        },
+                      })),
+                    };
+                  },
+                )}
+              />
               <Dropdown
                 label={
                   <div tw="text-left min-w-[3rem]">
@@ -306,98 +329,14 @@ export default function View({
                 ? viewParts.length - 1
                 : 0;
 
-            const items = [
-              i > 0 && canCombine(views[i - 1], views[i]) && (
-                <div
-                  key="stack"
-                  tw="flex items-center gap-3"
-                  onClick={() =>
-                    setViews(
-                      spliced(
-                        views,
-                        i - 1,
-                        2,
-                        `${views[i - 1]} ${parseView(views[i]).param}`,
-                      ),
-                    )
-                  }
-                >
-                  <FaAngleDoubleUp />
-                  <div>Stack with Above</div>
-                </div>
-              ),
-              source.combinable && view.includes(' ') && (
-                <div
-                  key="unstack"
-                  tw="flex items-center gap-3"
-                  onClick={() => {
-                    const parts = view.split(' ');
-                    const expandedViews = parts.map((part, idx) =>
-                      idx === 0 ? part : `${source.key}-${part}`,
-                    );
-                    setViews(spliced(views, i, 1, ...expandedViews));
-                  }}
-                >
-                  <FaLayerGroup />
-                  <div>Unstack</div>
-                </div>
-              ),
-              i > 0 && (
-                <div
-                  key="move-up"
-                  tw="flex items-center gap-3"
-                  onClick={() =>
-                    setViews(spliced(views, i - 1, 2, views[i], views[i - 1]))
-                  }
-                >
-                  <FaArrowUp />
-                  <div>Move Up</div>
-                </div>
-              ),
-              i < views.length - 1 && (
-                <div
-                  key="move-down"
-                  tw="flex items-center gap-3"
-                  onClick={() =>
-                    setViews(spliced(views, i, 2, views[i + 1], views[i]))
-                  }
-                >
-                  <FaArrowDown />
-                  <div>Move Down</div>
-                </div>
-              ),
-              (
-                <div
-                  key="favorite"
-                  tw="flex items-center gap-3"
-                  onClick={() => toggleFavorite(view)}
-                >
-                  {favorited ? (
-                    <FaRegStar tw="text-yellow-500" />
-                  ) : (
-                    <FaRegStar />
-                  )}
-                  <div>{favorited ? 'Unfavorite' : 'Favorite'}</div>
-                </div>
-              ),
-              views.length > 1 && (
-                <div
-                  key="remove"
-                  tw="flex items-center gap-3"
-                  onClick={() => setViews(spliced(views, i, 1))}
-                >
-                  <FaTimes tw="text-red-700 dark:text-red-400" />
-                  <div>Remove</div>
-                </div>
-              ),
-            ].filter(Boolean);
-
             return (
               <Dropdown
                 label={
                   <div tw="flex items-center gap-2 px-2 py-1">
                     {overlayCount > 0 && (
-                      <span tw="ml-1 text-sm text-gray-600 dark:text-gray-300 opacity-80">+{overlayCount}</span>
+                      <span tw="ml-1 text-sm text-gray-600 dark:text-gray-300 opacity-80">
+                        +{overlayCount}
+                      </span>
                     )}
                     <FaEllipsisV />
                   </div>
@@ -405,7 +344,77 @@ export default function View({
                 anchor="bottom"
                 noCaret
               >
-                {items}
+                {i > 0 && canCombine(views[i - 1], views[i]) && (
+                  <div
+                    tw="whitespace-nowrap flex items-center gap-3"
+                    onClick={() =>
+                      setViews(
+                        spliced(
+                          views,
+                          i - 1,
+                          2,
+                          `${views[i - 1]} ${parseView(views[i]).param}`,
+                        ),
+                      )
+                    }
+                  >
+                    <FaAngleDoubleUp />
+                    <div>Stack with Above</div>
+                  </div>
+                )}
+                {source.combinable && view.includes(' ') && (
+                  <div
+                    tw="whitespace-nowrap flex items-center gap-3"
+                    onClick={() => {
+                      const parts = view.split(' ');
+                      const expandedViews = parts.map((part, idx) =>
+                        idx === 0 ? part : `${source.key}-${part}`,
+                      );
+                      setViews(spliced(views, i, 1, ...expandedViews));
+                    }}
+                  >
+                    <FaLayerGroup />
+                    <div>Unstack</div>
+                  </div>
+                )}
+                {i > 0 && (
+                  <div
+                    tw="whitespace-nowrap flex items-center gap-3"
+                    onClick={() =>
+                      setViews(spliced(views, i - 1, 2, views[i], views[i - 1]))
+                    }
+                  >
+                    <FaArrowUp />
+                    <div>Move Up</div>
+                  </div>
+                )}
+                {i < views.length - 1 && (
+                  <div
+                    tw="whitespace-nowrap flex items-center gap-3"
+                    onClick={() =>
+                      setViews(spliced(views, i, 2, views[i + 1], views[i]))
+                    }
+                  >
+                    <FaArrowDown />
+                    <div>Move Down</div>
+                  </div>
+                )}
+                <div
+                  tw="whitespace-nowrap flex items-center gap-3"
+                  onClick={() => toggleFavorite(view)}
+                >
+                  {favorited ? <FaRegStar tw="text-yellow-500" /> : <FaRegStar />}
+                  <div>{favorited ? 'Unfavorite' : 'Favorite'}</div>
+                </div>
+                {views.length > 1 && (
+                  <div
+                    tw="whitespace-nowrap flex items-center gap-3"
+                    onClick={() => setViews(spliced(views, i, 1))}
+                  >
+                    <FaTimes tw="text-red-700 dark:text-red-400" />
+                    <div>Remove</div>
+                  </div>
+                )}
               </Dropdown>
             );
           })()}

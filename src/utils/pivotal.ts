@@ -1,5 +1,6 @@
 import { roundToNearestHour } from './date';
 import { proxy, loadDocument } from './proxy';
+import pivotalWeatherData from '../generated/pivotalWeather.json';
 
 export interface PivotalRegion {
   id: string;
@@ -42,27 +43,56 @@ export const pivotalModels: PivotalModel[] = [
   { id: 'hrwarw', name: 'HRW ARW', runFrequency: 12 },
   { id: 'hrwnssl', name: 'HRW NSSL', runFrequency: 12 },
   { id: 'hrwfv3', name: 'HRW FV3', runFrequency: 12 },
-    // { id: 'gfs', name: 'GFS', runFrequency: 6 },
-    // { id: 'ecmwf_full', name: 'ECMWF', runFrequency: 12 },
+  // { id: 'gfs', name: 'GFS', runFrequency: 6 },
+  // { id: 'ecmwf_full', name: 'ECMWF', runFrequency: 12 },
 ];
 
-export const pivotalParams: [string, string][] = [
-  ['sbcape_hodo', 'Hodographs'],
-  ['cape03', '3CAPE'],
-  ['sfctd_b-imp', 'Dewpoint'],
-  ['sfct_b-imp', 'Temperature'],
-  ['sfcrh', 'Humidity'],
-  ['refcmp_uh001h', 'Reflectivity'],
-  ['sim_ir', 'IR Satellite'],
-  ['cloudcover_levels', 'Cloud Cover'],
-  ['200wh', '200 mb Wind'],
-  ['300wh', '300 mb Wind'],
-  ['500wh', '500 mb Wind'],
-  ['700wh', '700 mb Wind'],
-  ['850wh', '850 mb Wind'],
-  ['scp', 'Supercell'],
-  ['stp', 'SigTor'],
-];
+// Model-specific parameter data
+const pivotalModelParamsData = pivotalWeatherData as unknown as Record<
+  string,
+  [string, [string, string][]][]
+>;
+
+// For backward compatibility, use HRRR params as default
+export const pivotalParamCategories: [string, [string, string][]][] =
+  pivotalModelParamsData['hrrr'] || [];
+
+// Get all unique parameters from all models
+export const pivotalParams: [string, string][] = Array.from(
+  new Map(
+    Object.values(pivotalModelParamsData).flatMap((categories) =>
+      categories.flatMap(([_, params]) => params),
+    ),
+  ).entries(),
+);
+
+/**
+ * Get parameter categories for a specific model
+ */
+export function getParamCategoriesForModel(
+  model: string,
+): [string, [string, string][]][] {
+  return pivotalModelParamsData[model] || pivotalParamCategories;
+}
+
+/**
+ * Get all parameters for a specific model
+ */
+export function getParamsForModel(model: string): [string, string][] {
+  const categories = getParamCategoriesForModel(model);
+  return categories.flatMap(([_, params]) => params);
+}
+
+/**
+ * Check if a parameter is available for a specific model
+ */
+export function isParamAvailableForModel(
+  model: string,
+  param: string,
+): boolean {
+  const params = getParamsForModel(model);
+  return params.some(([paramId]) => paramId === param);
+}
 
 export const pivotalRegionMap = new Map(
   pivotalRegions.map((r) => [r.id, r.name]),

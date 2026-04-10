@@ -92,7 +92,8 @@ export function formatFavoriteLabel(view: string): string {
     const model = match ? match[1] : param.split('-', 1)[0];
     const station = match ? match[2] : undefined;
     const modelLabel = model ? model.toUpperCase() : '';
-    if (station) return `${source.name} · ${modelLabel} · ${station.toUpperCase()}`;
+    if (station)
+      return `${source.name} · ${modelLabel} · ${station.toUpperCase()}`;
     if (model) return `${source.name} · ${modelLabel}`;
     return source.name;
   }

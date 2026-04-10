@@ -1,0 +1,1741 @@
+{
+  "hrrr": [
+    [
+      "Upper-Air: Height, Wind, Temperature",
+      [
+        [
+          "200wh",
+          "200 mb Height, Wind"
+        ],
+        [
+          "300wh",
+          "300 mb Height, Wind"
+        ],
+        [
+          "500wh",
+          "500 mb Height, Wind"
+        ],
+        [
+          "700wh",
+          "700 mb Height, Wind"
+        ],
+        [
+          "850wh",
+          "850 mb Height, Wind"
+        ],
+        [
+          "700th",
+          "700 mb Temperature, Height, Wind"
+        ],
+        [
+          "850th",
+          "850 mb Temperature, Height, Wind"
+        ]
+      ]
+    ],
+    [
+      "Surface and Precipitation",
+      [
+        [
+          "sfcrh",
+          "2 m AGL Relative Humidity"
+        ],
+        [
+          "sfct-imp",
+          "2 m AGL Temperature"
+        ],
+        [
+          "sfct_b-imp",
+          "2 m AGL Temperature, Wind Barbs"
+        ],
+        [
+          "sfctapp-imp",
+          "2 m AGL Wind Chill/Heat Index"
+        ],
+        [
+          "sfctd-imp",
+          "2 m AGL Dew Point"
+        ],
+        [
+          "sfctd_b-imp",
+          "2 m AGL Dew Point, Wind Barbs"
+        ],
+        [
+          "sfcthetae_b",
+          "2 m AGL Theta-e, Wind Barbs"
+        ],
+        [
+          "sfcwind_mslp",
+          "MSLP, 10 m AGL Wind"
+        ],
+        [
+          "smoke_sfc",
+          "Near-Surface Smoke Density"
+        ],
+        [
+          "smoke_viden",
+          "Vertically Integrated Smoke"
+        ],
+        [
+          "ref1km_ptype",
+          "1 km AGL Reflectivity with Precip Type"
+        ],
+        [
+          "qpf_001h-imp",
+          "1-h QPF"
+        ],
+        [
+          "qpf_006h-imp",
+          "6-h QPF"
+        ],
+        [
+          "qpf_012h-imp",
+          "12-h QPF"
+        ],
+        [
+          "qpf_024h-imp",
+          "24-h QPF"
+        ],
+        [
+          "qpf_acc-imp",
+          "Total QPF"
+        ],
+        [
+          "cloudcover",
+          "Cloud Cover"
+        ],
+        [
+          "cloudcover_levels",
+          "Cloud Cover, Levels"
+        ],
+        [
+          "lgtden",
+          "Lightning Flash Density"
+        ],
+        [
+          "pwat",
+          "Precipitable Water"
+        ],
+        [
+          "sim_ir",
+          "Simulated IR Satellite"
+        ],
+        [
+          "ref1km",
+          "1 km AGL Reflectivity"
+        ],
+        [
+          "refcmp",
+          "Composite Reflectivity"
+        ]
+      ]
+    ],
+    [
+      "Upper-Air: Dynamics",
+      [
+        [
+          "700tadv",
+          "700 mb Temperature Advection"
+        ],
+        [
+          "850tadv",
+          "850 mb Temperature Advection"
+        ]
+      ]
+    ],
+    [
+      "Severe Weather",
+      [
+        [
+          "cape03",
+          "0-3 km AGL CAPE"
+        ],
+        [
+          "lr0_3km_cape0500",
+          "Lapse Rate: 0-3 km AGL, CAPE>500"
+        ],
+        [
+          "lr75",
+          "Lapse Rate: 700-500 mb"
+        ],
+        [
+          "mlcape",
+          "Mixed-Layer CAPE"
+        ],
+        [
+          "mlcin",
+          "Mixed-Layer CIN"
+        ],
+        [
+          "mucape",
+          "Most Unstable CAPE"
+        ],
+        [
+          "sbcape",
+          "Surface-Based CAPE"
+        ],
+        [
+          "sbcin",
+          "Surface-Based CIN"
+        ],
+        [
+          "sblcl",
+          "Surface-Based LCL Height"
+        ],
+        [
+          "sbli",
+          "Surface-Based Lifted Index"
+        ],
+        [
+          "bs01",
+          "Bulk Shear: 0-1 km AGL"
+        ],
+        [
+          "bs06",
+          "Bulk Shear: 0-6 km AGL"
+        ],
+        [
+          "srh01",
+          "Storm Relative Helicity (SRH): 0-1 km AGL"
+        ],
+        [
+          "srh03",
+          "Storm Relative Helicity (SRH): 0-3 km AGL"
+        ],
+        [
+          "ehi01",
+          "Energy Helicity Index (EHI): 0-1 km AGL"
+        ],
+        [
+          "ehi03",
+          "Energy Helicity Index (EHI): 0-3 km AGL"
+        ],
+        [
+          "scp",
+          "Supercell Composite"
+        ],
+        [
+          "stp",
+          "Significant Tornado Parameter (SigTor)"
+        ],
+        [
+          "refcmp_uh001h",
+          "Reflectivity, UH>75"
+        ],
+        [
+          "uh03_max",
+          "Updraft Helicity: 0-3 km AGL (run max)"
+        ],
+        [
+          "uh25_001h",
+          "Updraft Helicity: 2-5 km AGL (1 h max)"
+        ],
+        [
+          "uh25_003h",
+          "Updraft Helicity: 2-5 km AGL (3 h max)"
+        ],
+        [
+          "uh25_max",
+          "Updraft Helicity: 2-5 km AGL (run max)"
+        ],
+        [
+          "crossover",
+          "SBCAPE, 500-850-Sfc Crossover"
+        ],
+        [
+          "sbcape_hodo",
+          "SBCAPE, Hodographs"
+        ]
+      ]
+    ],
+    [
+      "Winter Weather",
+      [
+        [
+          "snowfall_acc-imp",
+          "Total Snowfall"
+        ],
+        [
+          "sn10_acc-imp",
+          "Total Snowfall (10:1)"
+        ],
+        [
+          "snku_006h-imp",
+          "6-h Snowfall (Kuchera)"
+        ],
+        [
+          "snku_024h-imp",
+          "24-h Snowfall (Kuchera)"
+        ],
+        [
+          "snku_acc-imp",
+          "Total Snowfall (Kuchera)"
+        ],
+        [
+          "snodpc_acc-imp",
+          "Total Snowfall (Depth Chg)"
+        ],
+        [
+          "snod-imp",
+          "Snow Depth"
+        ],
+        [
+          "zr_acc-imp",
+          "Total Freezing Rain QPF"
+        ]
+      ]
+    ]
+  ],
+  "rap": [
+    [
+      "Upper-Air: Height, Wind, Temperature",
+      [
+        [
+          "200wh",
+          "200 mb Height, Wind"
+        ],
+        [
+          "300wh",
+          "300 mb Height, Wind"
+        ],
+        [
+          "500wh",
+          "500 mb Height, Wind"
+        ],
+        [
+          "700wh",
+          "700 mb Height, Wind"
+        ],
+        [
+          "850wh",
+          "850 mb Height, Wind"
+        ],
+        [
+          "925wh",
+          "925 mb Height, Wind"
+        ],
+        [
+          "500h_change_012h",
+          "500 mb Height Change (12 hr)"
+        ],
+        [
+          "500th",
+          "500 mb Temperature, Height, Wind"
+        ],
+        [
+          "700th",
+          "700 mb Temperature, Height, Wind"
+        ],
+        [
+          "850th",
+          "850 mb Temperature, Height, Wind"
+        ],
+        [
+          "925th",
+          "925 mb Temperature, Height, Wind"
+        ]
+      ]
+    ],
+    [
+      "Surface and Precipitation",
+      [
+        [
+          "sfct-imp",
+          "2 m AGL Temperature"
+        ],
+        [
+          "sfct_b-imp",
+          "2 m AGL Temperature, Wind Barbs"
+        ],
+        [
+          "sfctapp-imp",
+          "2 m AGL Wind Chill/Heat Index"
+        ],
+        [
+          "sfctd-imp",
+          "2 m AGL Dew Point"
+        ],
+        [
+          "sfctd_b-imp",
+          "2 m AGL Dew Point, Wind Barbs"
+        ],
+        [
+          "sfcthetae_b",
+          "2 m AGL Theta-e, Wind Barbs"
+        ],
+        [
+          "sfcwind_mslp",
+          "MSLP, 10 m AGL Wind"
+        ],
+        [
+          "ref1km_ptype",
+          "1 km AGL Reflectivity with Precip Type"
+        ],
+        [
+          "qpf_001h-imp",
+          "1-h QPF"
+        ],
+        [
+          "qpf_006h-imp",
+          "6-h QPF"
+        ],
+        [
+          "qpf_012h-imp",
+          "12-h QPF"
+        ],
+        [
+          "qpf_024h-imp",
+          "24-h QPF"
+        ],
+        [
+          "qpf_acc-imp",
+          "Total QPF"
+        ],
+        [
+          "cloudcover",
+          "Cloud Cover"
+        ],
+        [
+          "cloudcover_levels",
+          "Cloud Cover, Levels"
+        ],
+        [
+          "pwat",
+          "Precipitable Water"
+        ],
+        [
+          "sim_ir",
+          "Simulated IR Satellite"
+        ],
+        [
+          "refcmp",
+          "Composite Reflectivity"
+        ]
+      ]
+    ],
+    [
+      "Upper-Air: Moisture",
+      [
+        [
+          "200rh",
+          "200 mb Relative Humidity, Wind"
+        ],
+        [
+          "300rh",
+          "300 mb Relative Humidity, Wind"
+        ],
+        [
+          "500rh",
+          "500 mb Relative Humidity, Wind"
+        ],
+        [
+          "700rh",
+          "700 mb Relative Humidity, Wind"
+        ],
+        [
+          "850rh",
+          "850 mb Relative Humidity, Wind"
+        ],
+        [
+          "925rh",
+          "925 mb Relative Humidity, Wind"
+        ],
+        [
+          "850td",
+          "850 mb Dew Point, Height, Wind Barbs"
+        ],
+        [
+          "925td",
+          "925 mb Dew Point, Height, Wind Barbs"
+        ]
+      ]
+    ],
+    [
+      "Upper-Air: Dynamics",
+      [
+        [
+          "500hv",
+          "500 mb Height, Vorticity"
+        ],
+        [
+          "500hvv",
+          "500 mb Height, Vertical Velocity"
+        ],
+        [
+          "700hvv",
+          "700 mb Height, Vertical Velocity"
+        ],
+        [
+          "850hvv",
+          "850 mb Height, Vertical Velocity"
+        ],
+        [
+          "700fgen",
+          "700 mb Frontogenesis"
+        ],
+        [
+          "700tadv",
+          "700 mb Temperature Advection"
+        ],
+        [
+          "850fgen",
+          "850 mb Frontogenesis"
+        ],
+        [
+          "850tadv",
+          "850 mb Temperature Advection"
+        ]
+      ]
+    ],
+    [
+      "Severe Weather",
+      [
+        [
+          "cape03",
+          "0-3 km AGL CAPE"
+        ],
+        [
+          "lr0_3km_cape0500",
+          "Lapse Rate: 0-3 km AGL, CAPE>500"
+        ],
+        [
+          "lr75",
+          "Lapse Rate: 700-500 mb"
+        ],
+        [
+          "mlcape",
+          "Mixed-Layer CAPE"
+        ],
+        [
+          "mlcin",
+          "Mixed-Layer CIN"
+        ],
+        [
+          "mucape",
+          "Most Unstable CAPE"
+        ],
+        [
+          "sbcape",
+          "Surface-Based CAPE"
+        ],
+        [
+          "sbcin",
+          "Surface-Based CIN"
+        ],
+        [
+          "sblcl",
+          "Surface-Based LCL Height"
+        ],
+        [
+          "sbli",
+          "Surface-Based Lifted Index"
+        ],
+        [
+          "bs06",
+          "Bulk Shear: 0-6 km AGL"
+        ],
+        [
+          "srh01",
+          "Storm Relative Helicity (SRH): 0-1 km AGL"
+        ],
+        [
+          "srh03",
+          "Storm Relative Helicity (SRH): 0-3 km AGL"
+        ],
+        [
+          "ehi01",
+          "Energy Helicity Index (EHI): 0-1 km AGL"
+        ],
+        [
+          "ehi03",
+          "Energy Helicity Index (EHI): 0-3 km AGL"
+        ],
+        [
+          "scp",
+          "Supercell Composite"
+        ],
+        [
+          "stp",
+          "Significant Tornado Parameter (SigTor)"
+        ],
+        [
+          "crossover",
+          "SBCAPE, 500-850-Sfc Crossover"
+        ],
+        [
+          "sbcape_hodo",
+          "SBCAPE, Hodographs"
+        ]
+      ]
+    ],
+    [
+      "Winter Weather",
+      [
+        [
+          "snowfall_acc-imp",
+          "Total Snowfall"
+        ],
+        [
+          "sn10_acc-imp",
+          "Total Snowfall (10:1)"
+        ],
+        [
+          "snku_006h-imp",
+          "6-h Snowfall (Kuchera)"
+        ],
+        [
+          "snku_024h-imp",
+          "24-h Snowfall (Kuchera)"
+        ],
+        [
+          "snku_acc-imp",
+          "Total Snowfall (Kuchera)"
+        ],
+        [
+          "snodpc_acc-imp",
+          "Total Snowfall (Depth Chg)"
+        ],
+        [
+          "snod-imp",
+          "Snow Depth"
+        ],
+        [
+          "zr_acc-imp",
+          "Total Freezing Rain QPF"
+        ],
+        [
+          "coltmpmax500",
+          "Column Max Temp (Sfc-500 mb)"
+        ],
+        [
+          "ratioku",
+          "Kuchera Ratio"
+        ]
+      ]
+    ]
+  ],
+  "rrfs_a": [
+    [
+      "Upper-Air: Height, Wind, Temperature",
+      [
+        [
+          "200wh",
+          "200 mb Height, Wind"
+        ],
+        [
+          "300wh",
+          "300 mb Height, Wind"
+        ],
+        [
+          "500wh",
+          "500 mb Height, Wind"
+        ],
+        [
+          "700wh",
+          "700 mb Height, Wind"
+        ],
+        [
+          "850wh",
+          "850 mb Height, Wind"
+        ],
+        [
+          "700th",
+          "700 mb Temperature, Height, Wind"
+        ],
+        [
+          "850th",
+          "850 mb Temperature, Height, Wind"
+        ]
+      ]
+    ],
+    [
+      "Surface and Precipitation",
+      [
+        [
+          "sfcrh",
+          "2 m AGL Relative Humidity"
+        ],
+        [
+          "sfct-imp",
+          "2 m AGL Temperature"
+        ],
+        [
+          "sfct_b-imp",
+          "2 m AGL Temperature, Wind Barbs"
+        ],
+        [
+          "sfctapp-imp",
+          "2 m AGL Wind Chill/Heat Index"
+        ],
+        [
+          "sfctd-imp",
+          "2 m AGL Dew Point"
+        ],
+        [
+          "sfctd_b-imp",
+          "2 m AGL Dew Point, Wind Barbs"
+        ],
+        [
+          "sfcthetae_b",
+          "2 m AGL Theta-e, Wind Barbs"
+        ],
+        [
+          "sfcwind_mslp",
+          "MSLP, 10 m AGL Wind"
+        ],
+        [
+          "ref1km_ptype",
+          "1 km AGL Reflectivity with Precip Type"
+        ],
+        [
+          "qpf_001h-imp",
+          "1-h QPF"
+        ],
+        [
+          "qpf_006h-imp",
+          "6-h QPF"
+        ],
+        [
+          "qpf_012h-imp",
+          "12-h QPF"
+        ],
+        [
+          "qpf_024h-imp",
+          "24-h QPF"
+        ],
+        [
+          "qpf_acc-imp",
+          "Total QPF"
+        ],
+        [
+          "cloudcover",
+          "Cloud Cover"
+        ],
+        [
+          "cloudcover_levels",
+          "Cloud Cover, Levels"
+        ],
+        [
+          "lgtden",
+          "Lightning Flash Density"
+        ],
+        [
+          "pwat",
+          "Precipitable Water"
+        ],
+        [
+          "sim_ir",
+          "Simulated IR Satellite"
+        ],
+        [
+          "ref1km",
+          "1 km AGL Reflectivity"
+        ],
+        [
+          "refcmp",
+          "Composite Reflectivity"
+        ]
+      ]
+    ],
+    [
+      "Upper-Air: Dynamics",
+      [
+        [
+          "700tadv",
+          "700 mb Temperature Advection"
+        ],
+        [
+          "850tadv",
+          "850 mb Temperature Advection"
+        ]
+      ]
+    ],
+    [
+      "Severe Weather",
+      [
+        [
+          "cape03",
+          "0-3 km AGL CAPE"
+        ],
+        [
+          "lr0_3km_cape0500",
+          "Lapse Rate: 0-3 km AGL, CAPE>500"
+        ],
+        [
+          "lr75",
+          "Lapse Rate: 700-500 mb"
+        ],
+        [
+          "mlcape",
+          "Mixed-Layer CAPE"
+        ],
+        [
+          "mlcin",
+          "Mixed-Layer CIN"
+        ],
+        [
+          "mucape",
+          "Most Unstable CAPE"
+        ],
+        [
+          "sbcape",
+          "Surface-Based CAPE"
+        ],
+        [
+          "sbcin",
+          "Surface-Based CIN"
+        ],
+        [
+          "sblcl",
+          "Surface-Based LCL Height"
+        ],
+        [
+          "sbli",
+          "Surface-Based Lifted Index"
+        ],
+        [
+          "bs06",
+          "Bulk Shear: 0-6 km AGL"
+        ],
+        [
+          "srh01",
+          "Storm Relative Helicity (SRH): 0-1 km AGL"
+        ],
+        [
+          "srh03",
+          "Storm Relative Helicity (SRH): 0-3 km AGL"
+        ],
+        [
+          "ehi01",
+          "Energy Helicity Index (EHI): 0-1 km AGL"
+        ],
+        [
+          "ehi03",
+          "Energy Helicity Index (EHI): 0-3 km AGL"
+        ],
+        [
+          "scp",
+          "Supercell Composite"
+        ],
+        [
+          "stp",
+          "Significant Tornado Parameter (SigTor)"
+        ],
+        [
+          "refcmp_uh001h",
+          "Reflectivity, UH>75"
+        ],
+        [
+          "uh03_max",
+          "Updraft Helicity: 0-3 km AGL (run max)"
+        ],
+        [
+          "uh25_001h",
+          "Updraft Helicity: 2-5 km AGL (1 h max)"
+        ],
+        [
+          "uh25_003h",
+          "Updraft Helicity: 2-5 km AGL (3 h max)"
+        ],
+        [
+          "uh25_max",
+          "Updraft Helicity: 2-5 km AGL (run max)"
+        ],
+        [
+          "crossover",
+          "SBCAPE, 500-850-Sfc Crossover"
+        ],
+        [
+          "sbcape_hodo",
+          "SBCAPE, Hodographs"
+        ]
+      ]
+    ],
+    [
+      "Winter Weather",
+      [
+        [
+          "snowfall_acc-imp",
+          "Total Snowfall"
+        ],
+        [
+          "snod-imp",
+          "Snow Depth"
+        ],
+        [
+          "zr_acc-imp",
+          "Total Freezing Rain QPF"
+        ]
+      ]
+    ]
+  ],
+  "nam4km": [
+    [
+      "Upper-Air: Height, Wind, Temperature",
+      [
+        [
+          "500wh",
+          "500 mb Height, Wind"
+        ],
+        [
+          "700wh",
+          "700 mb Height, Wind"
+        ],
+        [
+          "850wh",
+          "850 mb Height, Wind"
+        ],
+        [
+          "700th",
+          "700 mb Temperature, Height, Wind"
+        ],
+        [
+          "850th",
+          "850 mb Temperature, Height, Wind"
+        ]
+      ]
+    ],
+    [
+      "Surface and Precipitation",
+      [
+        [
+          "sfcrh",
+          "2 m AGL Relative Humidity"
+        ],
+        [
+          "sfct-imp",
+          "2 m AGL Temperature"
+        ],
+        [
+          "sfct_b-imp",
+          "2 m AGL Temperature, Wind Barbs"
+        ],
+        [
+          "sfctapp-imp",
+          "2 m AGL Wind Chill/Heat Index"
+        ],
+        [
+          "sfctd-imp",
+          "2 m AGL Dew Point"
+        ],
+        [
+          "sfctd_b-imp",
+          "2 m AGL Dew Point, Wind Barbs"
+        ],
+        [
+          "sfcthetae_b",
+          "2 m AGL Theta-e, Wind Barbs"
+        ],
+        [
+          "sfcwind_mslp",
+          "MSLP, 10 m AGL Wind"
+        ],
+        [
+          "ref1km_ptype",
+          "1 km AGL Reflectivity with Precip Type"
+        ],
+        [
+          "qpf_003h-imp",
+          "3-h QPF"
+        ],
+        [
+          "qpf_006h-imp",
+          "6-h QPF"
+        ],
+        [
+          "qpf_012h-imp",
+          "12-h QPF"
+        ],
+        [
+          "qpf_024h-imp",
+          "24-h QPF"
+        ],
+        [
+          "qpf_acc-imp",
+          "Total QPF"
+        ],
+        [
+          "cloudcover",
+          "Cloud Cover"
+        ],
+        [
+          "cloudcover_levels",
+          "Cloud Cover, Levels"
+        ],
+        [
+          "pwat",
+          "Precipitable Water"
+        ],
+        [
+          "sim_ir",
+          "Simulated IR Satellite"
+        ],
+        [
+          "ref1km",
+          "1 km AGL Reflectivity"
+        ],
+        [
+          "refcmp",
+          "Composite Reflectivity"
+        ]
+      ]
+    ],
+    [
+      "Upper-Air: Dynamics",
+      [
+        [
+          "700tadv",
+          "700 mb Temperature Advection"
+        ],
+        [
+          "850tadv",
+          "850 mb Temperature Advection"
+        ]
+      ]
+    ],
+    [
+      "Severe Weather",
+      [
+        [
+          "lr0_3km_cape0500",
+          "Lapse Rate: 0-3 km AGL, CAPE>500"
+        ],
+        [
+          "lr75",
+          "Lapse Rate: 700-500 mb"
+        ],
+        [
+          "mlcape",
+          "Mixed-Layer CAPE"
+        ],
+        [
+          "mlcin",
+          "Mixed-Layer CIN"
+        ],
+        [
+          "mucape",
+          "Most Unstable CAPE"
+        ],
+        [
+          "sbcape",
+          "Surface-Based CAPE"
+        ],
+        [
+          "sbcin",
+          "Surface-Based CIN"
+        ],
+        [
+          "sblcl",
+          "Surface-Based LCL Height"
+        ],
+        [
+          "sbli",
+          "Surface-Based Lifted Index"
+        ],
+        [
+          "bs06",
+          "Bulk Shear: 0-6 km AGL"
+        ],
+        [
+          "srh01",
+          "Storm Relative Helicity (SRH): 0-1 km AGL"
+        ],
+        [
+          "srh03",
+          "Storm Relative Helicity (SRH): 0-3 km AGL"
+        ],
+        [
+          "ehi01",
+          "Energy Helicity Index (EHI): 0-1 km AGL"
+        ],
+        [
+          "ehi03",
+          "Energy Helicity Index (EHI): 0-3 km AGL"
+        ],
+        [
+          "scp",
+          "Supercell Composite"
+        ],
+        [
+          "stp",
+          "Significant Tornado Parameter (SigTor)"
+        ],
+        [
+          "refcmp_uh001h",
+          "Reflectivity, UH>75"
+        ],
+        [
+          "uh03_max",
+          "Updraft Helicity: 0-3 km AGL (run max)"
+        ],
+        [
+          "uh25_003h",
+          "Updraft Helicity: 2-5 km AGL (3 h max)"
+        ],
+        [
+          "uh25_max",
+          "Updraft Helicity: 2-5 km AGL (run max)"
+        ],
+        [
+          "crossover",
+          "SBCAPE, 500-850-Sfc Crossover"
+        ],
+        [
+          "sbcape_hodo",
+          "SBCAPE, Hodographs"
+        ]
+      ]
+    ],
+    [
+      "Winter Weather",
+      [
+        [
+          "sn10_006h-imp",
+          "6-h Snowfall (10:1)"
+        ],
+        [
+          "sn10_012h-imp",
+          "12-h Snowfall (10:1)"
+        ],
+        [
+          "sn10_024h-imp",
+          "24-h Snowfall (10:1)"
+        ],
+        [
+          "sn10_acc-imp",
+          "Total Snowfall (10:1)"
+        ],
+        [
+          "snku_006h-imp",
+          "6-h Snowfall (Kuchera)"
+        ],
+        [
+          "snku_012h-imp",
+          "12-h Snowfall (Kuchera)"
+        ],
+        [
+          "snku_024h-imp",
+          "24-h Snowfall (Kuchera)"
+        ],
+        [
+          "snku_acc-imp",
+          "Total Snowfall (Kuchera)"
+        ],
+        [
+          "snod-imp",
+          "Snow Depth"
+        ],
+        [
+          "zr_acc-imp",
+          "Total Freezing Rain QPF"
+        ],
+        [
+          "coltmpmax500",
+          "Column Max Temp (Sfc-500 mb)"
+        ],
+        [
+          "ratioku",
+          "Kuchera Ratio"
+        ]
+      ]
+    ]
+  ],
+  "hrwarw": [
+    [
+      "Upper-Air: Height, Wind, Temperature",
+      [
+        [
+          "500wh",
+          "500 mb Height, Wind"
+        ],
+        [
+          "700wh",
+          "700 mb Height, Wind"
+        ],
+        [
+          "850wh",
+          "850 mb Height, Wind"
+        ],
+        [
+          "700th",
+          "700 mb Temperature, Height, Wind"
+        ],
+        [
+          "850th",
+          "850 mb Temperature, Height, Wind"
+        ]
+      ]
+    ],
+    [
+      "Surface and Precipitation",
+      [
+        [
+          "sfcrh",
+          "2 m AGL Relative Humidity"
+        ],
+        [
+          "sfct-imp",
+          "2 m AGL Temperature"
+        ],
+        [
+          "sfct_b-imp",
+          "2 m AGL Temperature, Wind Barbs"
+        ],
+        [
+          "sfctd-imp",
+          "2 m AGL Dew Point"
+        ],
+        [
+          "sfctd_b-imp",
+          "2 m AGL Dew Point, Wind Barbs"
+        ],
+        [
+          "sfcthetae_b",
+          "2 m AGL Theta-e, Wind Barbs"
+        ],
+        [
+          "ref1km_ptype",
+          "1 km AGL Reflectivity with Precip Type"
+        ],
+        [
+          "qpf_006h-imp",
+          "6-h QPF"
+        ],
+        [
+          "qpf_012h-imp",
+          "12-h QPF"
+        ],
+        [
+          "qpf_024h-imp",
+          "24-h QPF"
+        ],
+        [
+          "qpf_acc-imp",
+          "Total QPF"
+        ],
+        [
+          "cloudcover",
+          "Cloud Cover"
+        ],
+        [
+          "cloudcover_levels",
+          "Cloud Cover, Levels"
+        ],
+        [
+          "refcmp",
+          "Composite Reflectivity"
+        ]
+      ]
+    ],
+    [
+      "Severe Weather",
+      [
+        [
+          "lr0_3km_cape0500",
+          "Lapse Rate: 0-3 km AGL, CAPE>500"
+        ],
+        [
+          "mlcape",
+          "Mixed-Layer CAPE"
+        ],
+        [
+          "mlcin",
+          "Mixed-Layer CIN"
+        ],
+        [
+          "sbcape",
+          "Surface-Based CAPE"
+        ],
+        [
+          "sbcin",
+          "Surface-Based CIN"
+        ],
+        [
+          "sblcl",
+          "Surface-Based LCL Height"
+        ],
+        [
+          "bs06",
+          "Bulk Shear: 0-6 km AGL"
+        ],
+        [
+          "srh01",
+          "Storm Relative Helicity (SRH): 0-1 km AGL"
+        ],
+        [
+          "srh03",
+          "Storm Relative Helicity (SRH): 0-3 km AGL"
+        ],
+        [
+          "ehi01",
+          "Energy Helicity Index (EHI): 0-1 km AGL"
+        ],
+        [
+          "ehi03",
+          "Energy Helicity Index (EHI): 0-3 km AGL"
+        ],
+        [
+          "scp",
+          "Supercell Composite"
+        ],
+        [
+          "stp",
+          "Significant Tornado Parameter (SigTor)"
+        ],
+        [
+          "refcmp_uh001h",
+          "Reflectivity, UH>75"
+        ],
+        [
+          "uh03_max",
+          "Updraft Helicity: 0-3 km AGL (run max)"
+        ],
+        [
+          "uh25_001h",
+          "Updraft Helicity: 2-5 km AGL (1 h max)"
+        ],
+        [
+          "uh25_max",
+          "Updraft Helicity: 2-5 km AGL (run max)"
+        ],
+        [
+          "crossover",
+          "SBCAPE, 500-850-Sfc Crossover"
+        ],
+        [
+          "sbcape_hodo",
+          "SBCAPE, Hodographs"
+        ]
+      ]
+    ],
+    [
+      "Winter Weather",
+      [
+        [
+          "sn10_acc-imp",
+          "Total Snowfall (10:1)"
+        ],
+        [
+          "snku_006h-imp",
+          "6-h Snowfall (Kuchera)"
+        ],
+        [
+          "snku_024h-imp",
+          "24-h Snowfall (Kuchera)"
+        ],
+        [
+          "snku_acc-imp",
+          "Total Snowfall (Kuchera)"
+        ],
+        [
+          "zr_acc-imp",
+          "Total Freezing Rain QPF"
+        ],
+        [
+          "coltmpmax500",
+          "Column Max Temp (Sfc-500 mb)"
+        ]
+      ]
+    ]
+  ],
+  "hrwnssl": [
+    [
+      "Upper-Air: Height, Wind, Temperature",
+      [
+        [
+          "500wh",
+          "500 mb Height, Wind"
+        ],
+        [
+          "700wh",
+          "700 mb Height, Wind"
+        ],
+        [
+          "850wh",
+          "850 mb Height, Wind"
+        ],
+        [
+          "700th",
+          "700 mb Temperature, Height, Wind"
+        ],
+        [
+          "850th",
+          "850 mb Temperature, Height, Wind"
+        ]
+      ]
+    ],
+    [
+      "Surface and Precipitation",
+      [
+        [
+          "sfcrh",
+          "2 m AGL Relative Humidity"
+        ],
+        [
+          "sfct-imp",
+          "2 m AGL Temperature"
+        ],
+        [
+          "sfct_b-imp",
+          "2 m AGL Temperature, Wind Barbs"
+        ],
+        [
+          "sfctd-imp",
+          "2 m AGL Dew Point"
+        ],
+        [
+          "sfctd_b-imp",
+          "2 m AGL Dew Point, Wind Barbs"
+        ],
+        [
+          "sfcthetae_b",
+          "2 m AGL Theta-e, Wind Barbs"
+        ],
+        [
+          "ref1km_ptype",
+          "1 km AGL Reflectivity with Precip Type"
+        ],
+        [
+          "qpf_006h-imp",
+          "6-h QPF"
+        ],
+        [
+          "qpf_012h-imp",
+          "12-h QPF"
+        ],
+        [
+          "qpf_024h-imp",
+          "24-h QPF"
+        ],
+        [
+          "qpf_acc-imp",
+          "Total QPF"
+        ],
+        [
+          "cloudcover",
+          "Cloud Cover"
+        ],
+        [
+          "cloudcover_levels",
+          "Cloud Cover, Levels"
+        ],
+        [
+          "refcmp",
+          "Composite Reflectivity"
+        ]
+      ]
+    ],
+    [
+      "Severe Weather",
+      [
+        [
+          "lr0_3km_cape0500",
+          "Lapse Rate: 0-3 km AGL, CAPE>500"
+        ],
+        [
+          "mlcape",
+          "Mixed-Layer CAPE"
+        ],
+        [
+          "mlcin",
+          "Mixed-Layer CIN"
+        ],
+        [
+          "sbcape",
+          "Surface-Based CAPE"
+        ],
+        [
+          "sbcin",
+          "Surface-Based CIN"
+        ],
+        [
+          "sblcl",
+          "Surface-Based LCL Height"
+        ],
+        [
+          "bs06",
+          "Bulk Shear: 0-6 km AGL"
+        ],
+        [
+          "srh01",
+          "Storm Relative Helicity (SRH): 0-1 km AGL"
+        ],
+        [
+          "srh03",
+          "Storm Relative Helicity (SRH): 0-3 km AGL"
+        ],
+        [
+          "ehi01",
+          "Energy Helicity Index (EHI): 0-1 km AGL"
+        ],
+        [
+          "ehi03",
+          "Energy Helicity Index (EHI): 0-3 km AGL"
+        ],
+        [
+          "scp",
+          "Supercell Composite"
+        ],
+        [
+          "stp",
+          "Significant Tornado Parameter (SigTor)"
+        ],
+        [
+          "refcmp_uh001h",
+          "Reflectivity, UH>75"
+        ],
+        [
+          "uh03_max",
+          "Updraft Helicity: 0-3 km AGL (run max)"
+        ],
+        [
+          "uh25_001h",
+          "Updraft Helicity: 2-5 km AGL (1 h max)"
+        ],
+        [
+          "uh25_max",
+          "Updraft Helicity: 2-5 km AGL (run max)"
+        ],
+        [
+          "crossover",
+          "SBCAPE, 500-850-Sfc Crossover"
+        ],
+        [
+          "sbcape_hodo",
+          "SBCAPE, Hodographs"
+        ]
+      ]
+    ],
+    [
+      "Winter Weather",
+      [
+        [
+          "sn10_acc-imp",
+          "Total Snowfall (10:1)"
+        ],
+        [
+          "snku_006h-imp",
+          "6-h Snowfall (Kuchera)"
+        ],
+        [
+          "snku_024h-imp",
+          "24-h Snowfall (Kuchera)"
+        ],
+        [
+          "snku_acc-imp",
+          "Total Snowfall (Kuchera)"
+        ],
+        [
+          "zr_acc-imp",
+          "Total Freezing Rain QPF"
+        ],
+        [
+          "coltmpmax500",
+          "Column Max Temp (Sfc-500 mb)"
+        ]
+      ]
+    ]
+  ],
+  "hrwfv3": [
+    [
+      "Upper-Air: Height, Wind, Temperature",
+      [
+        [
+          "500wh",
+          "500 mb Height, Wind"
+        ],
+        [
+          "700wh",
+          "700 mb Height, Wind"
+        ],
+        [
+          "850wh",
+          "850 mb Height, Wind"
+        ],
+        [
+          "700th",
+          "700 mb Temperature, Height, Wind"
+        ],
+        [
+          "850th",
+          "850 mb Temperature, Height, Wind"
+        ]
+      ]
+    ],
+    [
+      "Surface and Precipitation",
+      [
+        [
+          "sfcgust-imp",
+          "10 m AGL Wind Gusts"
+        ],
+        [
+          "sfcrh",
+          "2 m AGL Relative Humidity"
+        ],
+        [
+          "sfct-imp",
+          "2 m AGL Temperature"
+        ],
+        [
+          "sfct_b-imp",
+          "2 m AGL Temperature, Wind Barbs"
+        ],
+        [
+          "sfctd-imp",
+          "2 m AGL Dew Point"
+        ],
+        [
+          "sfctd_b-imp",
+          "2 m AGL Dew Point, Wind Barbs"
+        ],
+        [
+          "sfcthetae_b",
+          "2 m AGL Theta-e, Wind Barbs"
+        ],
+        [
+          "ref1km_ptype",
+          "1 km AGL Reflectivity with Precip Type"
+        ],
+        [
+          "qpf_006h-imp",
+          "6-h QPF"
+        ],
+        [
+          "qpf_012h-imp",
+          "12-h QPF"
+        ],
+        [
+          "qpf_024h-imp",
+          "24-h QPF"
+        ],
+        [
+          "qpf_acc-imp",
+          "Total QPF"
+        ],
+        [
+          "cloudcover",
+          "Cloud Cover"
+        ],
+        [
+          "cloudcover_levels",
+          "Cloud Cover, Levels"
+        ],
+        [
+          "refcmp",
+          "Composite Reflectivity"
+        ]
+      ]
+    ],
+    [
+      "Severe Weather",
+      [
+        [
+          "lr0_3km_cape0500",
+          "Lapse Rate: 0-3 km AGL, CAPE>500"
+        ],
+        [
+          "mlcape",
+          "Mixed-Layer CAPE"
+        ],
+        [
+          "mlcin",
+          "Mixed-Layer CIN"
+        ],
+        [
+          "sbcape",
+          "Surface-Based CAPE"
+        ],
+        [
+          "sbcin",
+          "Surface-Based CIN"
+        ],
+        [
+          "sblcl",
+          "Surface-Based LCL Height"
+        ],
+        [
+          "bs06",
+          "Bulk Shear: 0-6 km AGL"
+        ],
+        [
+          "srh01",
+          "Storm Relative Helicity (SRH): 0-1 km AGL"
+        ],
+        [
+          "srh03",
+          "Storm Relative Helicity (SRH): 0-3 km AGL"
+        ],
+        [
+          "ehi01",
+          "Energy Helicity Index (EHI): 0-1 km AGL"
+        ],
+        [
+          "ehi03",
+          "Energy Helicity Index (EHI): 0-3 km AGL"
+        ],
+        [
+          "scp",
+          "Supercell Composite"
+        ],
+        [
+          "stp",
+          "Significant Tornado Parameter (SigTor)"
+        ],
+        [
+          "refcmp_uh001h",
+          "Reflectivity, UH>75"
+        ],
+        [
+          "uh03_max",
+          "Updraft Helicity: 0-3 km AGL (run max)"
+        ],
+        [
+          "uh25_001h",
+          "Updraft Helicity: 2-5 km AGL (1 h max)"
+        ],
+        [
+          "uh25_max",
+          "Updraft Helicity: 2-5 km AGL (run max)"
+        ],
+        [
+          "crossover",
+          "SBCAPE, 500-850-Sfc Crossover"
+        ],
+        [
+          "sbcape_hodo",
+          "SBCAPE, Hodographs"
+        ]
+      ]
+    ],
+    [
+      "Winter Weather",
+      [
+        [
+          "sn10_acc-imp",
+          "Total Snowfall (10:1)"
+        ],
+        [
+          "snku_006h-imp",
+          "6-h Snowfall (Kuchera)"
+        ],
+        [
+          "snku_024h-imp",
+          "24-h Snowfall (Kuchera)"
+        ],
+        [
+          "snku_acc-imp",
+          "Total Snowfall (Kuchera)"
+        ],
+        [
+          "zr_acc-imp",
+          "Total Freezing Rain QPF"
+        ],
+        [
+          "coltmpmax500",
+          "Column Max Temp (Sfc-500 mb)"
+        ]
+      ]
+    ]
+  ]
+}

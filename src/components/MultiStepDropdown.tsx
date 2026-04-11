@@ -23,7 +23,7 @@ export interface MultiStepDropdownProps {
   // Optional initial path (array of indices) to start at a specific submenu
   initialPath?: number[];
   // Optional search component to render at the top of the menu
-  searchComponent?: ReactNode;
+  searchComponent?: (close: () => void) => ReactNode;
   // Optional path where search component should be shown (e.g., [0] for first submenu)
   searchAtPath?: number[];
 }
@@ -102,7 +102,13 @@ export default function MultiStepDropdown({
             tw="border-2 rounded-xl bg-[#fffe] dark:bg-gray-800 dark:border-gray-600"
             anchor={anchor}
           >
-            {shouldShowSearch && <div>{searchComponent}</div>}
+            {shouldShowSearch && (
+              <div>
+                {typeof searchComponent === 'function'
+                  ? searchComponent(close)
+                  : searchComponent}
+              </div>
+            )}
             {!isAtRoot && (
               <MenuItem
                 as="div"

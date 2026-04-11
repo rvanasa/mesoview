@@ -116,9 +116,12 @@ export default function ViewDropdown({
       anchor={anchor}
       items={items}
       initialPath={initialPath}
-      searchComponent={
-        <MesoParamSearch onSelect={(paramKey) => onSelect(`spc-${paramKey}`)} />
-      }
+      searchComponent={(close) => (
+        <MesoParamSearch
+          onSelect={(paramKey) => onSelect(`spc-${paramKey}`)}
+          onClose={close}
+        />
+      )}
       searchAtPath={[0]}
     />
   );

@@ -1,13 +1,23 @@
-import { ChangeEvent, useCallback, useMemo, useState } from 'react';
+import {
+  ChangeEvent,
+  KeyboardEvent,
+  useCallback,
+  useMemo,
+  useState,
+} from 'react';
 import { FaSearch } from 'react-icons/fa';
 import 'twin.macro';
 import { mesoParamCategories } from '../utils/mesoanalysis';
 
 export interface MesoParamSearchProps {
   onSelect: (paramKey: string) => void;
+  onClose?: () => void;
 }
 
-export default function MesoParamSearch({ onSelect }: MesoParamSearchProps) {
+export default function MesoParamSearch({
+  onSelect,
+  onClose,
+}: MesoParamSearchProps) {
   const [searchQuery, setSearchQuery] = useState('');
 
   const handleSearchChange = useCallback(
@@ -24,7 +34,8 @@ export default function MesoParamSearch({ onSelect }: MesoParamSearchProps) {
       return [];
     }
 
-    const query = trimmedQuery.toLowerCase();
+    // Split query into tokens for matching
+    const tokens = trimmedQuery.toLowerCase().split(/\s+/);
     const results: Array<{
       paramKey: string;
       paramTitle: string;
@@ -33,11 +44,12 @@ export default function MesoParamSearch({ onSelect }: MesoParamSearchProps) {
 
     for (const [category, params] of mesoParamCategories) {
       for (const [paramKey, paramTitle] of params) {
-        if (
-          paramTitle.toLowerCase().includes(query) ||
-          paramKey.toLowerCase().includes(query) ||
-          category.toLowerCase().includes(query)
-        ) {
+        const searchText =
+          `${paramTitle} ${paramKey} ${category}`.toLowerCase();
+        const allTokensMatch = tokens.every((token) =>
+          searchText.includes(token),
+        );
+        if (allTokensMatch) {
           results.push({ paramKey, paramTitle, category });
         }
       }
@@ -49,9 +61,20 @@ export default function MesoParamSearch({ onSelect }: MesoParamSearchProps) {
   const handleSelectParam = useCallback(
     (paramKey: string) => {
       onSelect(paramKey);
-      setSearchQuery('');
     },
     [onSelect],
+  );
+
+  const handleKeyDown = useCallback(
+    (event: KeyboardEvent<HTMLInputElement>) => {
+      event.stopPropagation();
+      if (event.key === 'Enter' && filteredResults.length > 0) {
+        event.preventDefault();
+        handleSelectParam(filteredResults[0].paramKey);
+        onClose?.();
+      }
+    },
+    [filteredResults, handleSelectParam, onClose],
   );
 
   return (
@@ -65,6 +88,7 @@ export default function MesoParamSearch({ onSelect }: MesoParamSearchProps) {
             placeholder="Search parameters..."
             value={searchQuery}
             onChange={handleSearchChange}
+            onKeyDown={handleKeyDown}
             autoFocus
           />
         </div>

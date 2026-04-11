@@ -21,7 +21,7 @@ export default function ViewDropdown({
   onSelect,
 }: ViewDropdownProps) {
   const { favorites } = useFavorites();
-  const [isDevMode] = useDevMode();
+  const isDevMode = useDevMode();
 
   const { items, initialPath } = useMemo(() => {
     // Extract current parameter if viewing a Pivotal Weather model

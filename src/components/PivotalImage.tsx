@@ -57,7 +57,7 @@ export default function PivotalImage({
   onClick,
 }: PivotalImageProps) {
   const [urls, setUrls] = useState<string[]>([]);
-  const [isDevMode] = useDevMode();
+  const isDevMode = useDevMode();
 
   useEffect(() => {
     let cancelled = false;

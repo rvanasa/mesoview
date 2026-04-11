@@ -19,8 +19,6 @@ if (urlParams.has('dev')) {
   window.history.replaceState({}, '', newUrl);
 }
 
-export default function useDevMode(): [boolean, (value: boolean) => void] {
-  const [isDevMode, setDevMode] = useLocalStorage(localStorageKey, false);
-
-  return [isDevMode, setDevMode];
+export default function useDevMode(): boolean {
+  return useLocalStorage(localStorageKey, false)[0];
 }

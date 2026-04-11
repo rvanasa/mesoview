@@ -1,13 +1,13 @@
-import { ReactNode, useMemo } from 'react';
+import { ReactNode, useCallback, useMemo } from 'react';
 import { FaBolt, FaCloud, FaLayerGroup, FaMap, FaStar } from 'react-icons/fa';
 import { useFavorites } from '../contexts/FavoritesContext';
-import { trackEvent } from '../utils/analytics';
-import { spcMesoanalysisParams } from '../utils/mesoanalysis';
-import { pivotalModels, isParamAvailableForModel } from '../utils/pivotal';
-import { ParsedView, formatFavoriteLabel } from '../utils/source';
-import MultiStepDropdown, { MultiStepItem } from './MultiStepDropdown';
-import MesoParamSearch from './MesoParamSearch';
 import useDevMode from '../hooks/useDevMode';
+import { spcMesoanalysisParams } from '../utils/mesoanalysis';
+import { isParamAvailableForModel, pivotalModels } from '../utils/pivotal';
+import { ParsedView, formatFavoriteLabel } from '../utils/source';
+import MesoParamSearch from './MesoParamSearch';
+import MultiStepDropdown, { MultiStepItem } from './MultiStepDropdown';
+import { trackEvent } from '../utils/analytics';
 
 export interface ViewDropdownProps {
   view?: ParsedView;
@@ -20,10 +20,18 @@ export default function ViewDropdown({
   view,
   label,
   anchor,
-  onSelect,
+  onSelect: onSelect_,
 }: ViewDropdownProps) {
   const { favorites } = useFavorites();
   const isDevMode = useDevMode();
+
+  const onSelect = useCallback(
+    (paramKey: string) => {
+      trackEvent('param_selected', { key: paramKey });
+      onSelect_(paramKey);
+    },
+    [onSelect_],
+  );
 
   const { items, initialPath } = useMemo(() => {
     // Extract current parameter if viewing a Pivotal Weather model
@@ -45,10 +53,7 @@ export default function ViewDropdown({
           label: category,
           submenu: params.map(([paramKey, paramTitle]) => ({
             label: paramTitle,
-            onClick: () => {
-              trackEvent('param_selected', { key: paramKey });
-              onSelect(`spc-${paramKey}`);
-            },
+            onClick: () => onSelect(`spc-${paramKey}`),
           })),
         })),
       },

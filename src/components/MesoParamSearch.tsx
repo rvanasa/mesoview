@@ -1,13 +1,12 @@
 import {
-  ChangeEvent,
-  KeyboardEvent,
-  useCallback,
-  useMemo,
-  useState,
+    ChangeEvent,
+    KeyboardEvent,
+    useCallback,
+    useMemo,
+    useState,
 } from 'react';
 import { FaSearch } from 'react-icons/fa';
 import 'twin.macro';
-import { trackEvent } from '../utils/analytics';
 import { mesoParamCategories } from '../utils/mesoanalysis';
 
 export interface MesoParamSearchProps {
@@ -59,24 +58,16 @@ export default function MesoParamSearch({
     return results;
   }, [searchQuery]);
 
-  const handleSelectParam = useCallback(
-    (paramKey: string) => {
-      trackEvent('param_selected', { key: paramKey, search: searchQuery });
-      onSelect(paramKey);
-    },
-    [onSelect, searchQuery],
-  );
-
   const handleKeyDown = useCallback(
     (event: KeyboardEvent<HTMLInputElement>) => {
       event.stopPropagation();
       if (event.key === 'Enter' && filteredResults.length > 0) {
         event.preventDefault();
-        handleSelectParam(filteredResults[0].paramKey);
+        onSelect(filteredResults[0].paramKey);
         onClose?.();
       }
     },
-    [filteredResults, handleSelectParam, onClose],
+    [filteredResults, onSelect, onClose],
   );
 
   return (
@@ -103,7 +94,7 @@ export default function MesoParamSearch({
               <div
                 key={paramKey}
                 tw="cursor-pointer px-4 py-2 select-none hover:bg-[#0001] dark:hover:bg-gray-700 dark:text-white [transition-duration: .1s]"
-                onClick={() => handleSelectParam(paramKey)}
+                onClick={() => onSelect(paramKey)}
               >
                 <div tw="font-medium">{paramTitle}</div>
                 <div tw="text-xs text-gray-500 dark:text-gray-400">

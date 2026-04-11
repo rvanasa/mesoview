@@ -7,6 +7,7 @@ import {
 } from 'react';
 import { FaSearch } from 'react-icons/fa';
 import 'twin.macro';
+import { trackEvent } from '../utils/analytics';
 import { mesoParamCategories } from '../utils/mesoanalysis';
 
 export interface MesoParamSearchProps {
@@ -60,9 +61,10 @@ export default function MesoParamSearch({
 
   const handleSelectParam = useCallback(
     (paramKey: string) => {
+      trackEvent('param_selected', { key: paramKey, search: searchQuery });
       onSelect(paramKey);
     },
-    [onSelect],
+    [onSelect, searchQuery],
   );
 
   const handleKeyDown = useCallback(

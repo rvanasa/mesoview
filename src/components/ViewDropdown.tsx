@@ -1,6 +1,7 @@
 import { ReactNode, useMemo } from 'react';
 import { FaBolt, FaCloud, FaLayerGroup, FaMap, FaStar } from 'react-icons/fa';
 import { useFavorites } from '../contexts/FavoritesContext';
+import { trackEvent } from '../utils/analytics';
 import { spcMesoanalysisParams } from '../utils/mesoanalysis';
 import { pivotalModels, isParamAvailableForModel } from '../utils/pivotal';
 import { ParsedView, formatFavoriteLabel } from '../utils/source';
@@ -44,7 +45,10 @@ export default function ViewDropdown({
           label: category,
           submenu: params.map(([paramKey, paramTitle]) => ({
             label: paramTitle,
-            onClick: () => onSelect(`spc-${paramKey}`),
+            onClick: () => {
+              trackEvent('param_selected', { key: paramKey });
+              onSelect(`spc-${paramKey}`);
+            },
           })),
         })),
       },

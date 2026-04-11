@@ -1,5 +1,5 @@
-import { roundToNearestHour } from './date';
-import { proxy, loadDocument } from './proxy';
+import { roundToNearestHour, floorNearestHour } from './date';
+import { proxy } from './proxy';
 import pivotalWeatherData from '../generated/pivotalWeather.json';
 
 export interface PivotalRegion {
@@ -146,6 +146,13 @@ export function getModelRunFrequency(model: string): number {
   return modelData?.runFrequency ?? 1;
 }
 
+/**
+ * Get the forecast interval for a model (in hours)
+ */
+export function getModelForecastInterval(model: string): number {
+  return 1; // TODO: implement
+}
+
 // Cache for available runs (5 minute TTL)
 const availableRunsCache = new Map<
   string,
@@ -172,68 +179,59 @@ export async function getAvailableRuns(
   }
 
   const runs: Date[] = [];
-  const runFrequency = getModelRunFrequency(model);
+  const interval = getModelRunFrequency(model);
+  const forecastInterval = getModelForecastInterval(model);
+  const modelData = pivotalModels.find((m) => m.id === model);
+  const host = modelData?.subdomain || 'm2o';
 
-  try {
-    // Fetch the latest available run from Pivotal Weather
-    const doc = await loadDocument(
-      proxy(`https://www.pivotalweather.com/model.php?m=${model}`, {
-        headers: { 'user-agent': navigator.userAgent },
-      }),
+  // Calculate the aligned hour based on the model's run interval
+  const now = floorNearestHour(new Date());
+  const currentHour = now.getUTCHours();
+  const alignedHour = Math.floor(currentHour / interval) * interval;
+  const hoursToSubtract = currentHour - alignedHour;
+  const alignedNow = new Date(now.getTime() - hoursToSubtract * 60 * 60 * 1000);
+  // Determine how many attempts to check based on interval
+  // For 1-hour models, check the current aligned hour and one hour back
+  const maxAttempts = interval === 1 ? 2 : 1;
+  let baseDate: Date | undefined;
+  // Try to find the latest available run
+  for (let hoursBack = 0; hoursBack <= 3; hoursBack += interval) {
+    const testDate = roundToNearestHour(
+      new Date(alignedNow.getTime() - hoursBack * 60 * 60 * 1000),
     );
-    const text =
-      doc.querySelector('#rh')?.children[0]?.textContent ?? undefined;
-    const match = text?.match(/(\d\d)z$/);
-
-    if (match) {
-      // Use the latest run hour from Pivotal Weather
-      const latestHour = parseInt(match[1], 10);
-      const now = new Date();
-      const baseDate = new Date(
-        Date.UTC(
-          now.getUTCFullYear(),
-          now.getUTCMonth(),
-          now.getUTCDate(),
-          latestHour,
-          0,
-          0,
-          0,
-        ),
+    const res = await fetch(
+      proxy(
+        `https://${host}.pivotalweather.com/maps/models/${model}/${testDate.getUTCFullYear()}${(testDate.getUTCMonth() + 1).toString().padStart(2, '0')}${testDate.getUTCDate().toString().padStart(2, '0')}${testDate.getUTCHours().toString().padStart(2, '0')}/${forecastInterval.toString().padStart(3, '0')}/sbcape_hodo.conus.png`,
+      ),
+      { method: 'HEAD' },
+    );
+    baseDate = testDate;
+    if (res.ok) {
+      break;
+    } else if (res.status === 404) {
+      continue;
+    } else {
+      console.error(
+        `Error checking model run availability: ${res.status} ${res.statusText}`,
       );
-
-      // If the latest run would be in the future, go back one day
-      if (baseDate.getTime() > now.getTime()) {
-        baseDate.setUTCDate(baseDate.getUTCDate() - 1);
-      }
-
-      // Generate runs working backwards from the latest available run
-      for (let i = 0; i < count; i++) {
-        const runDate = new Date(
-          baseDate.getTime() - i * runFrequency * 60 * 60 * 1000,
-        );
-        runs.push(runDate);
-      }
-
-      availableRunsCache.set(cacheKey, { runs, timestamp: Date.now() });
-      return runs;
     }
-  } catch (error) {
-    console.warn('Failed to fetch available runs from Pivotal Weather:', error);
   }
 
-  let date = roundToNearestHour(new Date());
+  // If no run was found after all attempts, fall back to the last attempted date
+  if (!baseDate) {
+    baseDate = roundToNearestHour(
+      new Date(
+        alignedNow.getTime() - (maxAttempts - 1) * interval * 60 * 60 * 1000,
+      ),
+    );
+  }
 
+  // Generate runs working backwards from the confirmed latest available run
   for (let i = 0; i < count; i++) {
-    const hoursBack = i * runFrequency;
-    const runDate = new Date(date.getTime() - hoursBack * 60 * 60 * 1000);
-
-    const runHour =
-      Math.floor(runDate.getUTCHours() / runFrequency) * runFrequency;
-    runDate.setUTCHours(runHour, 0, 0, 0);
-
-    if (i === 0 || runDate.getTime() !== runs[runs.length - 1].getTime()) {
-      runs.push(runDate);
-    }
+    const runDate = new Date(
+      baseDate.getTime() - i * interval * 60 * 60 * 1000,
+    );
+    runs.push(runDate);
   }
 
   availableRunsCache.set(cacheKey, { runs, timestamp: Date.now() });

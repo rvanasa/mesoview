@@ -7,6 +7,13 @@ export default function zeroPad(value: number, digits: number): string {
   return String(value).padStart(digits, '0');
 }
 
+export function floorNearestHour(date: Date) {
+  date = new Date(date);
+  date.setUTCHours(date.getUTCHours() + Math.floor(date.getUTCMinutes() / 60));
+  date.setUTCMinutes(0, 0, 0);
+  return date;
+}
+
 export function roundToNearestHour(date: Date) {
   date = new Date(date);
   date.setUTCHours(date.getUTCHours() + Math.round(date.getUTCMinutes() / 60));

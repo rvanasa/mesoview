@@ -1,6 +1,6 @@
-import { useLocalStorage } from 'usehooks-ts';
-
 const localStorageKey = 'mesoview.devMode';
+
+let _isDevMode = localStorage.getItem(localStorageKey) === 'true';
 const urlParams = new URLSearchParams(window.location.search);
 if (urlParams.has('dev')) {
   const devValue = urlParams.get('dev');
@@ -8,6 +8,7 @@ if (urlParams.has('dev')) {
     localStorage.removeItem(localStorageKey);
   } else {
     localStorage.setItem(localStorageKey, 'true');
+    _isDevMode = true;
   }
 
   urlParams.delete('dev');
@@ -19,6 +20,4 @@ if (urlParams.has('dev')) {
   window.history.replaceState({}, '', newUrl);
 }
 
-export default function useDevMode(): boolean {
-  return useLocalStorage(localStorageKey, false)[0];
-}
+export const isDevMode = _isDevMode;

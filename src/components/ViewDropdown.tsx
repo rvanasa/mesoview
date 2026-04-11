@@ -1,13 +1,13 @@
 import { ReactNode, useCallback, useMemo } from 'react';
 import { FaBolt, FaCloud, FaLayerGroup, FaMap, FaStar } from 'react-icons/fa';
 import { useFavorites } from '../contexts/FavoritesContext';
-import useDevMode from '../hooks/useDevMode';
 import { spcMesoanalysisParams } from '../utils/mesoanalysis';
 import { isParamAvailableForModel, pivotalModels } from '../utils/pivotal';
 import { ParsedView, formatFavoriteLabel } from '../utils/source';
 import MesoParamSearch from './MesoParamSearch';
 import MultiStepDropdown, { MultiStepItem } from './MultiStepDropdown';
 import { trackEvent } from '../utils/analytics';
+import { isDevMode } from '../utils/isDevMode';
 
 export interface ViewDropdownProps {
   view?: ParsedView;
@@ -23,7 +23,6 @@ export default function ViewDropdown({
   onSelect: onSelect_,
 }: ViewDropdownProps) {
   const { favorites } = useFavorites();
-  const isDevMode = useDevMode();
 
   const onSelect = useCallback(
     (paramKey: string) => {

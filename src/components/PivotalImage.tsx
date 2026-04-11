@@ -6,7 +6,7 @@ import {
   getPivotalImageUrl,
 } from '../utils/pivotal';
 import CachedImage from './CachedImage';
-import useDevMode from '../hooks/useDevMode';
+import { isDevMode } from '../utils/isDevMode';
 
 /**
  * Determine the model run time and forecast hour for a given date.
@@ -57,7 +57,6 @@ export default function PivotalImage({
   onClick,
 }: PivotalImageProps) {
   const [urls, setUrls] = useState<string[]>([]);
-  const isDevMode = useDevMode();
 
   useEffect(() => {
     let cancelled = false;

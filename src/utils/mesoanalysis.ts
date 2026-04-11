@@ -30,8 +30,24 @@ export const wcpSectors: [number, string][] = [
   // TODO: "North America" / `na`
 ];
 
+// List of mesoanalysis parameters to exclude
+const excludedMesoParams = new Set([
+  'pdfsfc', // Printable Surface Map [PDF]
+]);
+
+// Filter out excluded parameters from the categories
+const rawCategories = spcMesoanalysisJson as [string, [string, string][]][];
+const filteredCategories: [string, [string, string][]][] = rawCategories
+  .map(([category, params]) => {
+    const filteredParams = params.filter(
+      ([paramKey]) => !excludedMesoParams.has(paramKey),
+    );
+    return [category, filteredParams] as [string, [string, string][]];
+  })
+  .filter(([_category, params]) => params.length > 0);
+
 export const mesoParamCategories: [string, [string, string][]][] =
-  spcMesoanalysisJson as [string, [string, string][]][];
+  filteredCategories;
 
 // Alias for compatibility with ViewDropdown component
 export const spcMesoanalysisParams = mesoParamCategories;

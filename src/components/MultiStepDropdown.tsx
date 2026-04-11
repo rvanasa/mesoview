@@ -22,6 +22,10 @@ export interface MultiStepDropdownProps {
   items: MultiStepItem[];
   // Optional initial path (array of indices) to start at a specific submenu
   initialPath?: number[];
+  // Optional search component to render at the top of the menu
+  searchComponent?: ReactNode;
+  // Optional path where search component should be shown (e.g., [0] for first submenu)
+  searchAtPath?: number[];
 }
 
 export default function MultiStepDropdown({
@@ -29,6 +33,8 @@ export default function MultiStepDropdown({
   anchor,
   items,
   initialPath = [],
+  searchComponent,
+  searchAtPath,
 }: MultiStepDropdownProps) {
   const [path, setPath] = useState<number[]>(initialPath);
   const initialPathRef = useRef(initialPath);
@@ -55,6 +61,13 @@ export default function MultiStepDropdown({
 
   const currentItems = getCurrentItems();
   const isAtRoot = path.length === 0;
+
+  // Check if we should show search at current path
+  const shouldShowSearch =
+    searchComponent &&
+    searchAtPath &&
+    searchAtPath.length === path.length &&
+    searchAtPath.every((val, idx) => val === path[idx]);
 
   const handleItemClick = (item: MultiStepItem, index: number) => {
     if (item.submenu) {
@@ -89,6 +102,7 @@ export default function MultiStepDropdown({
             tw="border-2 rounded-xl bg-[#fffe] dark:bg-gray-800 dark:border-gray-600"
             anchor={anchor}
           >
+            {shouldShowSearch && <div>{searchComponent}</div>}
             {!isAtRoot && (
               <MenuItem
                 as="div"
@@ -131,7 +145,9 @@ export default function MultiStepDropdown({
                 >
                   <div tw="flex items-center gap-3">
                     {item.icon ? (
-                      <span tw="w-4 h-4 flex items-center justify-center text-gray-400 dark:text-gray-500">{item.icon}</span>
+                      <span tw="w-4 h-4 flex items-center justify-center text-gray-400 dark:text-gray-500">
+                        {item.icon}
+                      </span>
                     ) : null}
                     <span>{item.label}</span>
                   </div>

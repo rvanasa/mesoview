@@ -5,6 +5,7 @@ import { spcMesoanalysisParams } from '../utils/mesoanalysis';
 import { pivotalModels, isParamAvailableForModel } from '../utils/pivotal';
 import { ParsedView, formatFavoriteLabel } from '../utils/source';
 import MultiStepDropdown, { MultiStepItem } from './MultiStepDropdown';
+import MesoParamSearch from './MesoParamSearch';
 import useDevMode from '../hooks/useDevMode';
 
 export interface ViewDropdownProps {
@@ -115,6 +116,10 @@ export default function ViewDropdown({
       anchor={anchor}
       items={items}
       initialPath={initialPath}
+      searchComponent={
+        <MesoParamSearch onSelect={(paramKey) => onSelect(`spc-${paramKey}`)} />
+      }
+      searchAtPath={[0]}
     />
   );
 }

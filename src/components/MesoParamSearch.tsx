@@ -1,9 +1,9 @@
 import {
-    ChangeEvent,
-    KeyboardEvent,
-    useCallback,
-    useMemo,
-    useState,
+  ChangeEvent,
+  KeyboardEvent,
+  useCallback,
+  useMemo,
+  useState,
 } from 'react';
 import { FaSearch } from 'react-icons/fa';
 import 'twin.macro';
@@ -94,7 +94,10 @@ export default function MesoParamSearch({
               <div
                 key={paramKey}
                 tw="cursor-pointer px-4 py-2 select-none hover:bg-[#0001] dark:hover:bg-gray-700 dark:text-white [transition-duration: .1s]"
-                onClick={() => onSelect(paramKey)}
+                onClick={() => {
+                  onSelect(paramKey);
+                  onClose?.();
+                }}
               >
                 <div tw="font-medium">{paramTitle}</div>
                 <div tw="text-xs text-gray-500 dark:text-gray-400">

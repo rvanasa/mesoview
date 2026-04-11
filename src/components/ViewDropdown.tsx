@@ -33,11 +33,10 @@ export default function ViewDropdown({
     [onSelect_],
   );
 
-  const { items, initialPath } = useMemo(() => {
+  const items = useMemo(() => {
     // Extract current parameter if viewing a Pivotal Weather model
     let currentPivotalParam = 'sbcape_hodo';
     if (view?.source.key === 'pivotal' && view?.param) {
-      // Parse the param format: "model-param" or "model-param model2-param2"
       const match = view.param.match(/^[^-]+-(.+?)(?:\s|$)/);
       if (match) {
         currentPivotalParam = match[1];
@@ -106,17 +105,7 @@ export default function ViewDropdown({
       }
     }
 
-    let path: number[] = [];
-
-    // if (view?.source.key === 'pivotal') {
-    //   const idx = menuItems.findIndex((it) => it.id === 'pivotal');
-    //   path = idx >= 0 ? [idx] : [];
-    // } else if (view?.source.key === 'spc') {
-    //   const idx = menuItems.findIndex((it) => it.id === 'spc');
-    //   path = idx >= 0 ? [idx] : [];
-    // }
-
-    return { items: menuItems, initialPath: path };
+    return menuItems;
   }, [view, onSelect, favorites, isDevMode]);
 
   return (
@@ -124,7 +113,6 @@ export default function ViewDropdown({
       label={label}
       anchor={anchor}
       items={items}
-      initialPath={initialPath}
       searchComponent={(close) => (
         <MesoParamSearch
           onSelect={(paramKey) => onSelect(`spc-${paramKey}`)}

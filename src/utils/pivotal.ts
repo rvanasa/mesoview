@@ -28,6 +28,7 @@ export interface PivotalModel {
   name: string;
   subdomain?: string;
   runFrequency: number;
+  forecastInterval?: number;
 }
 
 export const pivotalModels: PivotalModel[] = [
@@ -44,7 +45,7 @@ export const pivotalModels: PivotalModel[] = [
   { id: 'hrwnssl', name: 'HRW NSSL', runFrequency: 12 },
   { id: 'hrwfv3', name: 'HRW FV3', runFrequency: 12 },
   // { id: 'gfs', name: 'GFS', runFrequency: 6 },
-  // { id: 'ecmwf_full', name: 'ECMWF', runFrequency: 12 },
+  // { id: 'ecmwf_full', name: 'ECMWF', runFrequency: 12, forecastInterval: 3 },
 ];
 
 // Model-specific parameter data
@@ -150,7 +151,8 @@ export function getModelRunFrequency(model: string): number {
  * Get the forecast interval for a model (in hours)
  */
 export function getModelForecastInterval(model: string): number {
-  return 1; // TODO: implement
+  const modelData = pivotalModels.find((m) => m.id === model);
+  return modelData?.forecastInterval ?? 1;
 }
 
 // Cache for available runs (5 minute TTL)

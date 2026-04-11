@@ -1737,5 +1737,201 @@
         ]
       ]
     ]
+  ],
+  "ecmwf_full": [
+    [
+      "Upper-Air: Height, Wind, Temperature",
+      [
+        [
+          "200wh",
+          "200 mb Height, Wind"
+        ],
+        [
+          "300wh",
+          "300 mb Height, Wind"
+        ],
+        [
+          "500wh",
+          "500 mb Height, Wind"
+        ],
+        [
+          "700wh",
+          "700 mb Height, Wind"
+        ],
+        [
+          "850wh",
+          "850 mb Height, Wind"
+        ],
+        [
+          "925wh",
+          "925 mb Height, Wind"
+        ],
+        [
+          "500h_change_012h",
+          "500 mb Height Change (12 hr)"
+        ],
+        [
+          "500th",
+          "500 mb Temperature, Height, Wind"
+        ],
+        [
+          "700th",
+          "700 mb Temperature, Height, Wind"
+        ],
+        [
+          "850th",
+          "850 mb Temperature, Height, Wind"
+        ],
+        [
+          "925th",
+          "925 mb Temperature, Height, Wind"
+        ],
+        [
+          "500h_anom",
+          "500 mb Height Anomaly"
+        ],
+        [
+          "850t_anom",
+          "850 mb Temperature Anomaly"
+        ]
+      ]
+    ],
+    [
+      "Surface and Precipitation",
+      [
+        [
+          "sfcrh",
+          "2 m AGL Relative Humidity"
+        ],
+        [
+          "sfct-imp",
+          "2 m AGL Temperature"
+        ],
+        [
+          "sfct_b-imp",
+          "2 m AGL Temperature, Wind Barbs"
+        ],
+        [
+          "sfctapp-imp",
+          "2 m AGL Wind Chill/Heat Index"
+        ],
+        [
+          "sfctd-imp",
+          "2 m AGL Dew Point"
+        ],
+        [
+          "sfctd_b-imp",
+          "2 m AGL Dew Point, Wind Barbs"
+        ],
+        [
+          "sfcwind_mslp",
+          "MSLP, 10 m AGL Wind"
+        ],
+        [
+          "prateptype_cat_ecmwf-imp",
+          "Precipitation Type, Rate"
+        ],
+        [
+          "qpf_003h-imp",
+          "3-h QPF"
+        ],
+        [
+          "qpf_006h-imp",
+          "6-h QPF"
+        ],
+        [
+          "qpf_024h-imp",
+          "24-h QPF"
+        ],
+        [
+          "qpf_048h-imp",
+          "48-h QPF"
+        ],
+        [
+          "qpf_acc-imp",
+          "Total QPF"
+        ]
+      ]
+    ],
+    [
+      "Upper-Air: Moisture",
+      [
+        [
+          "200rh",
+          "200 mb Relative Humidity, Wind"
+        ],
+        [
+          "300rh",
+          "300 mb Relative Humidity, Wind"
+        ],
+        [
+          "500rh",
+          "500 mb Relative Humidity, Wind"
+        ],
+        [
+          "700rh",
+          "700 mb Relative Humidity, Wind"
+        ],
+        [
+          "850rh",
+          "850 mb Relative Humidity, Wind"
+        ],
+        [
+          "925rh",
+          "925 mb Relative Humidity, Wind"
+        ],
+        [
+          "850td",
+          "850 mb Dew Point, Height, Wind Barbs"
+        ],
+        [
+          "925td",
+          "925 mb Dew Point, Height, Wind Barbs"
+        ]
+      ]
+    ],
+    [
+      "Upper-Air: Dynamics",
+      [
+        [
+          "500hv",
+          "500 mb Height, Vorticity"
+        ],
+        [
+          "700hv",
+          "700 mb Height, Vorticity"
+        ],
+        [
+          "850hv",
+          "850 mb Height, Vorticity"
+        ]
+      ]
+    ],
+    [
+      "Severe Weather",
+      [
+        [
+          "bs0500",
+          "Bulk Shear: Surface-500 mb"
+        ]
+      ]
+    ],
+    [
+      "Winter Weather",
+      [
+        [
+          "sn10_006h-imp",
+          "6-h Snowfall (10:1)"
+        ],
+        [
+          "sn10_024h-imp",
+          "24-h Snowfall (10:1)"
+        ],
+        [
+          "sn10_acc-imp",
+          "Total Snowfall (10:1)"
+        ]
+      ]
+    ]
   ]
 }

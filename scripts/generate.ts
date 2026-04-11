@@ -191,7 +191,7 @@ async function scrapePivotalForModel(model: string) {
 }
 
 async function scrapePivotal() {
-  // Models to scrape parameters for
+  // TODO: read from a config file shared with `pivotal.ts`
   const models = [
     'hrrr',
     'rap',

@@ -116,13 +116,7 @@ export default function MultiStepDropdown({
                 Back
               </MenuItem>
             )}
-            {shouldShowSearch && (
-              <div>
-                {typeof searchComponent === 'function'
-                  ? searchComponent(close)
-                  : searchComponent}
-              </div>
-            )}
+            {shouldShowSearch && <div>{searchComponent(close)}</div>}
             {currentItems.map((item, i) =>
               item.isHeader ? (
                 <div

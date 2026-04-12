@@ -102,13 +102,6 @@ export default function MultiStepDropdown({
             tw="border-2 rounded-xl bg-[#fffe] dark:bg-gray-800 dark:border-gray-600"
             anchor={anchor}
           >
-            {shouldShowSearch && (
-              <div>
-                {typeof searchComponent === 'function'
-                  ? searchComponent(close)
-                  : searchComponent}
-              </div>
-            )}
             {!isAtRoot && (
               <MenuItem
                 as="div"
@@ -122,6 +115,13 @@ export default function MultiStepDropdown({
                 <FaChevronLeft />
                 Back
               </MenuItem>
+            )}
+            {shouldShowSearch && (
+              <div>
+                {typeof searchComponent === 'function'
+                  ? searchComponent(close)
+                  : searchComponent}
+              </div>
             )}
             {currentItems.map((item, i) =>
               item.isHeader ? (

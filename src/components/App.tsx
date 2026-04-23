@@ -22,6 +22,7 @@ import {
 } from '../utils/date';
 import {
   continentalMesoSector,
+  getSectorFromCoords,
   mesoSectorMap,
   mesoSectors,
 } from '../utils/mesoanalysis';
@@ -108,9 +109,10 @@ export default function App() {
     [checkboxes],
   );
 
+  const [detectedSector, setDetectedSector] = useState<number | undefined>();
   const sectorNumber =
     sectorQueryParam === undefined || isNaN(+sectorQueryParam)
-      ? continentalMesoSector
+      ? detectedSector ?? continentalMesoSector
       : +sectorQueryParam;
 
   const inputDate = inputDateString
@@ -405,25 +407,42 @@ export default function App() {
             label={
               <>
                 <FaGlobe tw="text-[#222] dark:text-gray-300" />{' '}
-                {sectorName || 'Choose region...'}
+                {sectorQueryParam === undefined
+                  ? 'Default'
+                  : mesoSectorMap.get(sectorNumber) || '(Unknown region)'}
               </>
             }
             anchor="top"
             tw="flex-1"
           >
-            {mesoSectors.map(([number, name], i) => (
+            {[
               <div
-                key={i}
+                key="default"
                 onClick={() => {
-                  setSectorQueryParam(String(number));
-                  if (number !== continentalMesoSector) {
-                    setToggleSector(number);
-                  }
+                  setSectorQueryParam(undefined);
+                  navigator.geolocation?.getCurrentPosition(({ coords }) => {
+                    setDetectedSector(
+                      getSectorFromCoords(coords.latitude, coords.longitude),
+                    );
+                  });
                 }}
               >
-                {name}
-              </div>
-            ))}
+                Default
+              </div>,
+              ...mesoSectors.map(([number, name], i) => (
+                <div
+                  key={i}
+                  onClick={() => {
+                    setSectorQueryParam(String(number));
+                    if (number !== continentalMesoSector) {
+                      setToggleSector(number);
+                    }
+                  }}
+                >
+                  {name}
+                </div>
+              )),
+            ]}
           </Dropdown>
           <ButtonGroup>
             {!!navigator.share && (

@@ -59,3 +59,21 @@ export const mesoParams: [string, string][] = mesoParamCategories.flatMap(
 export const mesoSectorMap = new Map(mesoSectors);
 export const wpcSectorMap = new Map(wcpSectors);
 export const mesoParamMap = new Map(mesoParams);
+
+export function getSectorFromCoords(lat: number, lon: number): number {
+  if (lon < -104) {
+    return lat >= 43 ? 11 : 12; // Northwest or Southwest
+  }
+  if (lon < -85) {
+    if (lat >= 44) return 13; // Northern Plains
+    if (lat >= 34) return 14; // Central Plains (includes Oklahoma)
+    return 15; // Southern Plains
+  }
+  if (lon < -73) {
+    if (lat >= 43) return 21; // Great Lakes
+    if (lat >= 37) return 20; // Midwest
+    return 18; // Southeast
+  }
+  if (lat >= 38) return 16; // Northeast
+  return 17; // Atlantic
+}

@@ -420,18 +420,21 @@ export default function App() {
                 key="default"
                 onClick={() => {
                   setSectorQueryParam(undefined);
-                  navigator.geolocation?.getCurrentPosition(({ coords }) => {
-                    setDetectedSector(
-                      getSectorFromCoords(coords.latitude, coords.longitude),
-                    );
-                  });
+                  navigator.geolocation?.getCurrentPosition(
+                    ({ coords }) => {
+                      setDetectedSector(
+                        getSectorFromCoords(coords.latitude, coords.longitude),
+                      );
+                    },
+                    () => {}, // ignore errors (permission denied, unavailable, etc.)
+                  );
                 }}
               >
                 Default
               </div>,
-              ...mesoSectors.map(([number, name], i) => (
+              ...mesoSectors.map(([number, name]) => (
                 <div
-                  key={i}
+                  key={number}
                   onClick={() => {
                     setSectorQueryParam(String(number));
                     if (number !== continentalMesoSector) {

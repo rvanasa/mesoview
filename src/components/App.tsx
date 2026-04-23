@@ -173,15 +173,15 @@ export default function App() {
     if (sectorNumber === continentalMesoSector) {
       setSectorQueryParam(
         String(
-          toggleSector === continentalMesoSector
-            ? defaultMesoSector
-            : toggleSector,
+          toggleSector !== continentalMesoSector
+            ? toggleSector
+            : detectedSector ?? defaultMesoSector,
         ),
       );
     } else {
       setSectorQueryParam(undefined);
     }
-  }, [sectorNumber, setSectorQueryParam, toggleSector]);
+  }, [sectorNumber, setSectorQueryParam, toggleSector, detectedSector]);
 
   useEffect(() => {
     document.title = `${inputDateString ? (inputDateString.toLowerCase().endsWith('z') ? inputDateString : `${inputDateString}z`) : 'Current time'} | ${sectorName} | Mesoview`;

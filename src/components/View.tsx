@@ -247,7 +247,7 @@ export default function View({
                     css={[
                       tw`inline-block`,
                       locating && {
-                        animation: `${spin} 2s linear infinite`,
+                        animation: `${spin} 3s linear reverse infinite`,
                         opacity: 0.5,
                       },
                     ]}

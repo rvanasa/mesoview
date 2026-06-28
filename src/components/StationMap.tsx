@@ -3,10 +3,11 @@ import {
   TileLayer,
   Popup,
   CircleMarker,
+  useMap,
   useMapEvents,
 } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
-import { useEffect, useState, Fragment } from 'react';
+import { useEffect, useRef, useState, Fragment } from 'react';
 import { useSessionStorage } from 'usehooks-ts';
 import { getSoundingStations } from '../utils/profile';
 
@@ -17,6 +18,35 @@ export interface Station {
   country: string;
   lat: number;
   lon: number;
+}
+
+// Component to fly the map to a location
+function FlyToController({
+  flyTo,
+  suppressRef,
+}: {
+  flyTo?: { lat: number; lon: number; zoom: number };
+  suppressRef: React.MutableRefObject<boolean>;
+}) {
+  const map = useMap();
+  useEffect(() => {
+    if (!flyTo) return;
+    suppressRef.current = true;
+    map.setView([flyTo.lat, flyTo.lon], flyTo.zoom);
+    
+    // Wait for the animation to complete before unsuppressing
+    const onMoveEnd = () => {
+      suppressRef.current = false;
+      map.off('moveend', onMoveEnd);
+    };
+    map.on('moveend', onMoveEnd);
+    
+    return () => {
+      map.off('moveend', onMoveEnd);
+      suppressRef.current = false;
+    };
+  }, [flyTo, map, suppressRef]);
+  return null;
 }
 
 // Component to handle map events and store position
@@ -41,9 +71,13 @@ function MapEventHandler({
 export default function StationMap({
   onSelectStation,
   darkMode,
+  flyTo,
+  onMapMove,
 }: {
   onSelectStation: (srcid: string) => void;
   darkMode?: boolean;
+  flyTo?: { lat: number; lon: number; zoom: number };
+  onMapMove?: () => void;
 }) {
   const [stations, setStations] = useSessionStorage<Station[]>(
     'mesoview.stations.rap',
@@ -61,9 +95,14 @@ export default function StationMap({
     4,
   );
 
+  const suppressRef = useRef(false);
+
   const handleMapMove = (center: [number, number], zoom: number) => {
     setMapCenter(center);
     setMapZoom(zoom);
+    if (!suppressRef.current) {
+      onMapMove?.();
+    }
   };
 
   useEffect(() => {
@@ -106,6 +145,7 @@ export default function StationMap({
       attributionControl={false}
     >
       <MapEventHandler onMapMove={handleMapMove} />
+      <FlyToController flyTo={flyTo} suppressRef={suppressRef} />
       <TileLayer
         url={
           darkMode

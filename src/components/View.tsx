@@ -6,6 +6,7 @@ import {
   FaArrowUp,
   FaBolt,
   FaCloudRain,
+  FaCrosshairs,
   FaEllipsisV,
   FaLayerGroup,
   FaMapMarkerAlt,
@@ -14,7 +15,8 @@ import {
   FaTimes,
   FaWind,
 } from 'react-icons/fa';
-import 'twin.macro';
+import tw from 'twin.macro';
+import { keyframes } from '@emotion/react';
 import { useFavorites } from '../contexts/FavoritesContext';
 import { wpcSectorMap } from '../utils/mesoanalysis';
 import {
@@ -36,6 +38,15 @@ import StationMap from './StationMap';
 import SurfaceAnalysisImage from './SurfaceAnalysisImage';
 import { ToolButton } from './ToolButton';
 import ViewDropdown from './ViewDropdown';
+
+const spin = keyframes`
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+`;
 
 export const viewCategories: { param: string; label: string }[][] = [
   [
@@ -116,6 +127,25 @@ export default function View({
   const { toggleFavorite, isFavorite } = useFavorites();
   const favorited = isFavorite(view);
 
+  const [geoPermission, setGeoPermission] = useState<PermissionState | null>(
+    null,
+  );
+  const [soundingFlyTo, setSoundingFlyTo] = useState<
+    { lat: number; lon: number; zoom: number } | undefined
+  >(undefined);
+  const [locating, setLocating] = useState(false);
+
+  useEffect(() => {
+    if (!navigator.permissions) return;
+    navigator.permissions
+      .query({ name: 'geolocation' })
+      .then((result) => {
+        setGeoPermission(result.state);
+        result.addEventListener('change', () => setGeoPermission(result.state));
+      })
+      .catch(() => {});
+  }, []);
+
   // Load available runs when pivotal model changes
   useEffect(() => {
     if (source.key === 'pivotal') {
@@ -195,6 +225,36 @@ export default function View({
                     <FaMapMarkerAlt />
                   </ToolButton>
                 </div>
+              ) : geoPermission === 'granted' && !soundingFlyTo ? (
+                <ToolButton
+                  title="Center map on my location"
+                  onClick={() => {
+                    setLocating(true);
+                    navigator.geolocation.getCurrentPosition(
+                      (pos) => {
+                        setSoundingFlyTo({
+                          lat: pos.coords.latitude,
+                          lon: pos.coords.longitude,
+                          zoom: 9,
+                        });
+                        setLocating(false);
+                      },
+                      () => setLocating(false),
+                    );
+                  }}
+                >
+                  <span
+                    css={[
+                      tw`inline-block`,
+                      locating && {
+                        animation: `${spin} 2s linear infinite`,
+                        opacity: 0.5,
+                      },
+                    ]}
+                  >
+                    <FaCrosshairs />
+                  </span>
+                </ToolButton>
               ) : null}
             </>
           )}
@@ -403,7 +463,11 @@ export default function View({
                   tw="whitespace-nowrap flex items-center gap-3"
                   onClick={() => toggleFavorite(view)}
                 >
-                  {favorited ? <FaRegStar tw="text-yellow-500" /> : <FaRegStar />}
+                  {favorited ? (
+                    <FaRegStar tw="text-yellow-500" />
+                  ) : (
+                    <FaRegStar />
+                  )}
                   <div>{favorited ? 'Unfavorite' : 'Favorite'}</div>
                 </div>
                 {views.length > 1 && (
@@ -432,6 +496,8 @@ export default function View({
         ) : (
           <StationMap
             darkMode={darkMode}
+            flyTo={soundingFlyTo}
+            onMapMove={() => setSoundingFlyTo(undefined)}
             onSelectStation={(srcid) =>
               setViews(
                 spliced(

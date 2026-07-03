@@ -3,18 +3,18 @@ import spcMesoanalysisJson from '../generated/spcMesoanalysis.json';
 export const continentalMesoSector = 19;
 
 export const mesoSectors: [number, string][] = [
-  [19, 'Continental U.S.'],
-  [11, 'Northwest'],
-  [12, 'Southwest'],
-  [13, 'Northern Plains'],
-  [14, 'Central Plains'],
-  [15, 'Southern Plains'],
-  [16, 'Northeast'],
-  [18, 'Southeast'],
   [17, 'Atlantic'],
-  [20, 'Midwest'],
+  [14, 'Central Plains'],
+  [19, 'Continental U.S.'],
   [21, 'Great Lakes'],
+  [20, 'Midwest'],
   [22, 'Mountain West'],
+  [16, 'Northeast'],
+  [13, 'Northern Plains'],
+  [11, 'Northwest'],
+  [18, 'Southeast'],
+  [15, 'Southern Plains'],
+  [12, 'Southwest'],
 ];
 
 export const wcpSectors: [number, string][] = [

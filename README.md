@@ -1,19 +1,79 @@
-# Mesoview
+# [Mesoview](https://mesoview.app)
 
-This repository contains source code for a mobile-friendly adaptation of the official [SPC Mesoanalysis](https://www.spc.noaa.gov/exper/mesoanalysis/new/viewsector.php?sector=19) website.
+A mobile-friendly viewer for weather analysis products from NOAA's Storm Prediction Center.
+
+## Features
+
+### SPC Mesoanalysis
+Browse dozens of surface and upper-air parameters from the [Storm Prediction Center](https://www.spc.noaa.gov/exper/mesoanalysis/) across multiple U.S. sectors, including short-range forecasts up to 6 hours ahead.
+
+### Sounding Viewer
+View atmospheric sounding profiles for any available station, with parcel trajectories for convective analysis. Pick a forecast sounding anywhere in the US from an interactive map using the same data sources as [SHARPpy](https://sharp.weather.ou.edu/dev/).
+
+### Composable Views
+Overlay multiple parameters at once. For example, combine the SPC mesoanalysis surface vorticity and 3CAPE parameters. Views are encoded in the URL for easy bookmarking and sharing.
+
+### Other
+- Date/time navigation with keyboard shortcuts (arrow keys; Ctrl for 6-hour steps)
+- Optional overlays for counties, highways, radar, warnings, and SPC convective outlooks
+- Dark mode
+- Favorites for frequently used view combinations
+- Responsive layout optimized for mobile
 
 ## Development
 
-### Generating Parameter Lists
+### Prerequisites
+- [Node.js](https://nodejs.org/) 22+
 
-The application uses automatically generated parameter lists for SPC Mesoanalysis and Pivotal Weather. To update these lists:
+### Getting started
+
+```bash
+npm install
+npm start  # dev server at http://localhost:3000
+```
+
+### Available scripts
+
+| Command | Description |
+|---|---|
+| `npm start` | Start the Vite dev server on port 3000 |
+| `npm run build` | Production build to `dist/` |
+| `npm run preview` | Serve the production build locally |
+| `npm run generate` | Regenerate parameter JSON files from upstream sites |
+| `npm run lint` | Run ESLint on `src/` |
+| `npm test` | Run the Vitest test suite |
+
+### Regenerating parameter lists
+
+`src/generated/` contains scraped parameter catalogs. These files are committed to source control. Regenerate them whenever the upstream sites change:
 
 ```bash
 npm run generate
 ```
 
-This will scrape the official websites and update:
-- `src/generated/spcMesoanalysis.json` - SPC Mesoanalysis parameters organized by category
-- `src/generated/pivotalWeather.json` - Pivotal Weather parameters organized by category
+## Contributing
 
-The generate script uses Playwright to visit the websites and extract all available parameters and their categories. Run this periodically to keep the parameter lists up to date with any changes on the source websites.
+### Project structure
+
+```
+src/
+  components/   React components and views
+  contexts/     React context providers
+  generated/    Auto-generated parameter catalogs
+  hooks/        Custom React hooks
+  styles/       Global SCSS
+  utils/        Pure utility functions
+tests/          Vitest unit tests
+scripts/        Code generation scripts
+```
+
+### Reporting issues
+Open a GitHub issue with a description of the problem and steps to reproduce. Including the URL from your address bar is helpful, as it captures the active view state.
+
+### Making changes
+
+1. Fork the repository and create a branch from `main`.
+2. Make your changes, keeping commits focused on one logical change.
+3. Add or update tests in `tests/` if you are changing utility logic.
+4. Run `npm test` and `npm run lint` and ensure both pass.
+5. Open a pull request against `main` with a description of what changed and why.

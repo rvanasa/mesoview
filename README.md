@@ -5,10 +5,13 @@ A mobile-friendly viewer for weather analysis products from NOAA's Storm Predict
 ## Features
 
 ### SPC Mesoanalysis
-Browse dozens of surface and upper-air parameters from the [Storm Prediction Center](https://www.spc.noaa.gov/exper/mesoanalysis/) across multiple U.S. sectors, including short-range forecasts up to 6 hours ahead.
+Browse all surface and upper-air parameters from the official [SPC mesoanalysis website](https://www.spc.noaa.gov/exper/mesoanalysis/).
+
+### Surface Analysis
+Use one slider to view the surface pattern from the Weather Prediction Center synchronized with SPC mesoanalysis products.
 
 ### Sounding Viewer
-View atmospheric sounding profiles for any available station, with parcel trajectories for convective analysis. Pick a forecast sounding anywhere in the US from an interactive map using the same data sources as [SHARPpy](https://sharp.weather.ou.edu/dev/).
+Use the time slider to animate through Skew-T and hodograph plots for any available station, with parcel trajectories for convective analysis. Pick a forecast sounding anywhere in the US from an interactive map using the same data sources available in [SHARPpy](https://sharp.weather.ou.edu/dev/).
 
 ### Composable Views
 Overlay multiple parameters at once. For example, combine the SPC mesoanalysis surface vorticity and 3CAPE parameters. Views are encoded in the URL for easy bookmarking and sharing.

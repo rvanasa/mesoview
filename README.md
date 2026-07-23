@@ -2,7 +2,7 @@
 
 A mobile-friendly viewer for weather analysis products from NOAA's Storm Prediction Center.
 
-![Mesoview.app](docs/example.png)
+![Mesoview.app](docs/mobile.png)
 
 ## Features
 

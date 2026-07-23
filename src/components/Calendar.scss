@@ -20,7 +20,11 @@
     color: #e5e7eb;
 
     &:focus {
-      background: #0004;
+      background: #fff1;
+    }
+
+    &:hover {
+      background: #fff2;
     }
   }
 

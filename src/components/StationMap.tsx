@@ -11,6 +11,11 @@ import { useEffect, useRef, useState, Fragment } from 'react';
 import { useSessionStorage } from 'usehooks-ts';
 import { getSoundingStations } from '../utils/profile';
 
+const VITE_CARTO_API_KEY = import.meta.env.VITE_CARTO_API_KEY;
+if(VITE_CARTO_API_KEY === undefined) {
+  console.warn('VITE_CARTO_API_KEY is undefined');
+}
+
 export interface Station {
   srcid: string;
   name: string;
@@ -149,7 +154,7 @@ export default function StationMap({
       <TileLayer
         url={
           darkMode
-            ? 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png'
+            ? `https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png?key=${VITE_CARTO_API_KEY}`
             : 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
         }
       />

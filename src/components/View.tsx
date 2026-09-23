@@ -1,5 +1,5 @@
 import Slider from 'rc-slider';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import {
   FaAngleDoubleUp,
   FaArrowDown,
@@ -28,6 +28,7 @@ import {
 } from '../utils/pivotal';
 import { ForecastModel, soundingModels } from '../utils/profile';
 import { canCombine, parseView } from '../utils/source';
+import { LatLon } from '../utils/location';
 import spliced from '../utils/spliced';
 import BufkitSounding from './BufkitSounding';
 import Dropdown from './Dropdown';
@@ -76,6 +77,7 @@ interface ViewProps {
   radar: boolean;
   detailedSoundings: boolean;
   onClickImage: () => void;
+  location?: LatLon;
 }
 
 export default function View({
@@ -91,6 +93,7 @@ export default function View({
   radar,
   detailedSoundings,
   onClickImage,
+  location,
 }: ViewProps) {
   const parsedView = parseView(view);
   const { source, param, name } = parsedView;
@@ -134,6 +137,20 @@ export default function View({
     { lat: number; lon: number; zoom: number } | undefined
   >(undefined);
   const [locating, setLocating] = useState(false);
+
+  // Center/zoom the sounding map on the `location` query param by default.
+  const appliedLocationRef = useRef(false);
+  useEffect(() => {
+    if (
+      location &&
+      !appliedLocationRef.current &&
+      source.key === 'sounding' &&
+      !soundingStation
+    ) {
+      appliedLocationRef.current = true;
+      setSoundingFlyTo({ lat: location.lat, lon: location.lon, zoom: 9 });
+    }
+  }, [location, source.key, soundingStation]);
 
   useEffect(() => {
     if (!navigator.permissions) return;
@@ -498,6 +515,7 @@ export default function View({
             darkMode={darkMode}
             flyTo={soundingFlyTo}
             onMapMove={() => setSoundingFlyTo(undefined)}
+            location={location}
             onSelectStation={(srcid) =>
               setViews(
                 spliced(
@@ -532,10 +550,12 @@ export default function View({
         <MesoanalysisImage
           date={date}
           sector={sector}
+          sectorNumber={sectorNumber}
           layers={layers}
           radar={radar}
           params={param ? param.split(' ').filter((param) => param) : []}
           darkMode={darkMode}
+          location={location}
           onClick={onClickImage}
         />
       )}

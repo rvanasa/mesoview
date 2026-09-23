@@ -26,6 +26,7 @@ import {
   mesoSectors,
 } from '../utils/mesoanalysis';
 import { parseView } from '../utils/source';
+import { parseLocation } from '../utils/location';
 import { Button } from './Button';
 import { ButtonGroup } from './ButtonGroup';
 import Calendar from './Calendar';
@@ -68,9 +69,25 @@ export default function App() {
     }
   }, [queryParams, setQueryParams]);
 
+  // react-router always percent-encodes commas; unescape them cosmetically in the URL bar.
+  useEffect(() => {
+    if (window.location.search.includes('%2C')) {
+      const decodedUrl =
+        window.location.pathname +
+        window.location.search.replace(/%2C/g, ',') +
+        window.location.hash;
+      window.history.replaceState(window.history.state, '', decodedUrl);
+    }
+  }, [queryParams]);
+
   const [views, setViews] = useQueryParams('view', ['spc-500mb', 'spc-3cvr']);
   const [sectorQueryParam, setSectorQueryParam] = useQueryParam('sector');
   const [inputDateString, setInputDateString] = useQueryParam('time');
+  const [locationQueryParam] = useQueryParam('location');
+  const location = useMemo(
+    () => parseLocation(locationQueryParam),
+    [locationQueryParam],
+  );
   const [modal, setModal] = useState<'calendar' | 'settings'>();
   const [sliderRange, setSliderRange] = useState(
     +queryParams.get('range')! || 1,
@@ -309,6 +326,7 @@ export default function App() {
           radar={!!checkboxes['radar']}
           detailedSoundings={detailedSoundings}
           onClickImage={onClickMesoanalysisImage}
+          location={location}
         />
       ))}
       <div tw="p-3 flex justify-between">

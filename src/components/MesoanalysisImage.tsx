@@ -1,5 +1,8 @@
 import { roundToNearestHour } from '../utils/date';
+import { projectLocationToImage } from '../utils/carto';
+import { LatLon } from '../utils/location';
 import CachedImage from './CachedImage';
+import LocationCrosshair from './LocationCrosshair';
 
 const mesoBaseUrl = 'https://www.spc.noaa.gov/exper/mesoanalysis';
 
@@ -58,20 +61,24 @@ function getRadarUrl(date: Date, sector: string): string | undefined {
 export interface MesoanalysisImageProps {
   date: Date;
   sector: string;
+  sectorNumber: number;
   layers: string[];
   params: string[];
   radar: boolean;
   darkMode?: boolean;
+  location?: LatLon;
   onClick?(event: React.MouseEvent<HTMLDivElement>): void;
 }
 
 export default function MesoanalysisImage({
   date,
   sector,
+  sectorNumber,
   layers,
   params,
   radar,
   darkMode,
+  location,
   onClick,
 }: MesoanalysisImageProps) {
   const urls: [string | undefined, 'layer' | 'radar' | 'param'][] = layers.map(
@@ -89,6 +96,9 @@ export default function MesoanalysisImage({
 
   const width = 1000;
   const height = 750;
+  const locationPoint = location
+    ? projectLocationToImage(sectorNumber, location.lat, location.lon)
+    : undefined;
   return (
     <div
       style={{ position: 'relative', background: darkMode ? 'black' : 'white' }}
@@ -113,6 +123,23 @@ export default function MesoanalysisImage({
             />
           ),
       )}
+      {locationPoint &&
+        locationPoint.x >= 0 &&
+        locationPoint.x <= width &&
+        locationPoint.y >= 0 &&
+        locationPoint.y <= height && (
+          <div
+            style={{
+              position: 'absolute',
+              left: locationPoint.x,
+              top: locationPoint.y,
+              transform: 'translate(-50%, -50%)',
+              pointerEvents: 'none',
+            }}
+          >
+            <LocationCrosshair />
+          </div>
+        )}
     </div>
   );
 }

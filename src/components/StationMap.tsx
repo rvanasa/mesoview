@@ -3,13 +3,18 @@ import {
   TileLayer,
   Popup,
   CircleMarker,
+  Marker,
   useMap,
   useMapEvents,
 } from 'react-leaflet';
+import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { useEffect, useRef, useState, Fragment } from 'react';
+import { renderToStaticMarkup } from 'react-dom/server';
 import { useSessionStorage } from 'usehooks-ts';
 import { getSoundingStations } from '../utils/profile';
+import { LatLon } from '../utils/location';
+import LocationCrosshair from './LocationCrosshair';
 
 export interface Station {
   srcid: string;
@@ -73,11 +78,13 @@ export default function StationMap({
   darkMode,
   flyTo,
   onMapMove,
+  location,
 }: {
   onSelectStation: (srcid: string) => void;
   darkMode?: boolean;
   flyTo?: { lat: number; lon: number; zoom: number };
   onMapMove?: () => void;
+  location?: LatLon;
 }) {
   const [stations, setStations] = useSessionStorage<Station[]>(
     'mesoview.stations.rap',
@@ -197,6 +204,18 @@ export default function StationMap({
           </Fragment>
         );
       })}
+      {location && (
+        <Marker
+          position={[location.lat, location.lon]}
+          icon={L.divIcon({
+            html: renderToStaticMarkup(<LocationCrosshair />),
+            className: '',
+            iconSize: [26, 26],
+            iconAnchor: [13, 13],
+          })}
+          interactive={false}
+        />
+      )}
     </MapContainer>
   );
 }

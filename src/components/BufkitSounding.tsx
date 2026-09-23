@@ -51,24 +51,14 @@ const BufkitSounding: React.FC<BufkitSoundingProps> = ({
   }, [model, station, date]);
 
   return (
-    <div tw="relative">
-      {!!profile && (
-        <Sounding profile={profile} detailed={detailed} darkMode={darkMode} />
-      )}
-      <div
-        tw="absolute inset-0 flex items-center justify-center pointer-events-none"
-        style={{
-          backgroundColor: darkMode
-            ? 'rgba(31, 41, 55, 0.75)'
-            : 'rgba(255, 255, 255, 0.75)',
-          opacity: loading ? 1 : 0,
-          transition: 'opacity 100ms ease-in-out',
-        }}
-      >
-        {/* <div tw="text-gray-600 font-semibold">
-          Loading {model} sounding for {station.toUpperCase()}...
-        </div> */}
-      </div>
+    <div
+      tw="relative"
+      style={{
+        opacity: loading ? 0.5 : 1,
+        transition: 'opacity 100ms ease-in-out',
+      }}
+    >
+      <Sounding profile={profile} detailed={detailed} darkMode={darkMode} />
       <div
         tw="absolute inset-0 flex items-center justify-center pointer-events-none"
         style={{

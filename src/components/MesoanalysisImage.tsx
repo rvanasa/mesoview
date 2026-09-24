@@ -137,7 +137,7 @@ export default function MesoanalysisImage({
               pointerEvents: 'none',
             }}
           >
-            <LocationCrosshair />
+            <LocationCrosshair darkMode={darkMode} />
           </div>
         )}
     </div>

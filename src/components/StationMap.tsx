@@ -38,14 +38,14 @@ function FlyToController({
     if (!flyTo) return;
     suppressRef.current = true;
     map.setView([flyTo.lat, flyTo.lon], flyTo.zoom);
-    
+
     // Wait for the animation to complete before unsuppressing
     const onMoveEnd = () => {
       suppressRef.current = false;
       map.off('moveend', onMoveEnd);
     };
     map.on('moveend', onMoveEnd);
-    
+
     return () => {
       map.off('moveend', onMoveEnd);
       suppressRef.current = false;
@@ -208,7 +208,9 @@ export default function StationMap({
         <Marker
           position={[location.lat, location.lon]}
           icon={L.divIcon({
-            html: renderToStaticMarkup(<LocationCrosshair />),
+            html: renderToStaticMarkup(
+              <LocationCrosshair darkMode={darkMode} />,
+            ),
             className: '',
             iconSize: [26, 26],
             iconAnchor: [13, 13],

@@ -102,7 +102,7 @@ export default function App() {
   const [detailedSoundings, setDetailedSoundings] = useState(false);
   const [darkMode, setDarkMode] = useLocalStorage<boolean>(
     'mesoview.darkMode',
-    false,
+    true,
   );
 
   // const [showKeys, setShowKeys] = useQueryParams('show');
